@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="globals.h" />
+    <ClInclude Include="keyboard.h" />
+    <ClInclude Include="script.h" />
+    <ClInclude Include="inc\enums.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\types.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="log.h" />
+    <ClInclude Include="inc\main.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\natives.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\nativeCaller.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="wagon.h" />
+    <ClInclude Include="menu_base.h" />
+    <ClInclude Include="SimpleIni.h" />
+    <ClInclude Include="menu.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="globals.cpp" />
+    <ClCompile Include="keyboard.cpp" />
+    <ClCompile Include="log.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="script.cpp" />
+    <ClCompile Include="wagon.cpp" />
+    <ClCompile Include="menu.cpp" />
+    <ClCompile Include="menu_base.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="inc">
+      <UniqueIdentifier>{bc636f1e-382f-4b76-8989-c7a186f6d974}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

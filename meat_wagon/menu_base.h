@@ -1,0 +1,191 @@
+#pragma 
+
+enum menu_item_types
+{
+	MENU_ITEM_TYPE_EMPTY,
+	MENU_ITEM_TYPE_NUMBER,
+	MENU_ITEM_TYPE_GXT_NUMBER,
+	MENU_ITEM_TYPE_NUMBER_FORMAT,
+	MENU_ITEM_TYPE_KB_NUMBER_FORMAT,
+	MENU_ITEM_TYPE_FLOAT,
+	MENU_ITEM_TYPE_KB_FLOAT,
+	MENU_ITEM_TYPE_BOOL,
+	MENU_ITEM_TYPE_STRING,
+	MENU_ITEM_TYPE_KB_STRING,
+	MENU_ITEM_TYPE_KB_NUMBER,
+	MENU_ITEM_TYPE_STRING_SELECT,
+	MENU_ITEM_TYPE_STRING_SELECT_2,
+};
+
+bool menu_get_open_state();
+void menu_set_open_state(bool state);
+int menu_get_last_selected(int menu_level);
+int menu_get_current_stored_data();
+int menu_get_stored_data(int menu_item);
+void menu_set_stored_data(int menu_item, int store_data);
+void menu_clean_stored_data();
+int menu_get_current_stored_data_2();
+int menu_get_stored_data_2(int menu_item);
+void menu_set_stored_data_2(int menu_item, int store_data);
+void menu_clean_stored_data_2();
+float menu_get_current_stored_float_data();
+float menu_get_stored_float_data(int menu_item);
+void menu_set_stored_float_data(int menu_item, float store_data);
+void menu_clean_stored_float_data();
+float menu_get_current_stored_float_data_2();
+float menu_get_stored_float_data_2(int menu_item);
+void menu_set_stored_float_data_2(int menu_item, float store_data);
+void menu_clean_stored_float_data_2();
+char* menu_get_current_stored_string_data();
+char* menu_get_stored_string_data(int menu_item);
+void menu_set_stored_string_data(int menu_item, char* store_string_data);
+void menu_clean_stored_string_data();
+char* menu_get_current_stored_string_data_2();
+char* menu_get_stored_string_data_2(int menu_item);
+void menu_set_stored_string_data_2(int menu_item, char* store_string_data);
+void menu_clean_stored_string_data_2();
+void menu_set_title(char* menu_title);
+void menu_set_bool_strings(char* bool_string_off, char* bool_string_on);
+void menu_set_header_font(int font);
+void menu_set_items_font(int font);
+void menu_set_menu_align(int align);
+void menu_set_scroll_multiplier(int mult);
+void menu_set_sfx(bool state);
+void menu_set_divider_colour(int r, int g, int b);
+void menu_set_background_colour(int r, int g, int b);
+void menu_set_highlight_bar_colour(int r, int g, int b);
+void menu_set_header_border_colour(int r, int g, int b);
+void menu_set_header_text_colour(int r, int g, int b);
+void menu_set_highlighted_text_colour(int r, int g, int b);
+void menu_set_non_highlighted_text_colour(int r, int g, int b);
+void menu_set_items_count_colour(int r, int g, int b);
+void menu_set_info_background_colour(int r, int g, int b);
+void menu_set_info_header_text_colour(int r, int g, int b);
+void menu_set_info_text_colour(int r, int g, int b);
+void menu_set_item_selected(int menu_item);
+void menu_set_items_selected(int menu_item);
+void menu_clean_items_selected();
+void menu_onUpdate(funcptr callback_func, bool this_frame = true);
+void menu_add_onUpdate(funcptr callback_func);
+void menu_set_onUpdate(int menu_item, funcptr callback_func);
+void menu_onBack(funcptr callback_func);
+int menu_addPrompt(char* menu_prompt_string, int button_id, int button_id_2 = 0, bool visible = true);
+int menu_addDefaultPrompt(char* menu_prompt_string, int button_id, int button_id_2 = 0, bool visible = true);
+int menu_get_prompt_handle(int prompt_id);
+int menu_get_default_prompt_handle(int prompt_id);
+void menu_addItem(char* menu_item_string, funcptr callback_func = 0);
+void menu_add_callback_all(funcptr callback_func);
+void menu_addItem_gxt_number(char* gxt, int num_val);
+void menu_addItem_gxt_number_callback(char* gxt, int num_val, funcptr action_func);
+void menu_addItem_number(int num_val, int min, int max);
+char* menu_get_current_name();
+void menu_add_string(char* string_val);
+void menu_set_string(int menu_item, char* string_val);
+char* menu_get_current_string();
+char* menu_get_string(int menu_item);
+void menu_add_extra_string(char* string_val);
+void menu_set_extra_string(int menu_item, char* string_val);
+char* menu_get_current_extra_string();
+char* menu_get_extra_string(int menu_item);
+void menu_add_number(int num_val);
+void menu_set_number(int menu_item, int num_val);
+int menu_get_current_number();
+int menu_get_number(int menu_item);
+void menu_addItem_float(float float_val, int dp, float min = -9999.9f, float max = 9999.9f);
+void menu_set_float(int menu_item, float float_val);
+float menu_get_current_float();
+float menu_get_float(int menu_item);
+void menu_set_extra_float(int menu_item, float float_val);
+float menu_get_current_extra_float();
+float menu_get_extra_float(int menu_item);
+void menu_add_data(int data);
+void menu_set_data(int menu_item, int data);
+int menu_get_current_data();
+int menu_get_data(int menu_item);
+void menu_add_data_2(int data_2);
+void menu_set_data_2(int menu_item, int data);
+int menu_get_current_data_2();
+int menu_get_data_2(int menu_item);
+void menu_add_float_data(float data);
+void menu_set_float_data(int menu_item, float data);
+float menu_get_current_float_data();
+float menu_get_float_data(int menu_item);
+void menu_add_float_data_2(float data_2);
+void menu_set_float_data_2(int menu_item, float data);
+float menu_get_current_float_data_2();
+float menu_get_float_data_2(int menu_item);
+void menu_addItem_bool(BOOL state);
+void menu_set_current_bool(BOOL state);
+void menu_set_bool(int menu_item, BOOL state);
+void menu_toggle_bool(int menu_item);
+void menu_toggle_current_bool();
+int menu_get_current_bool();
+int menu_get_bool(int menu_item);
+void menu_addItem_string(char* string_val);
+void menu_addItem_string_select(char* string_val, int num_val, int min, int max, int action_type);
+void menu_addItem_2_strings_select(char* string_val, char* extra_string_val, int num_val, int min, int max, int action_type);
+void menu_addItem_string_select_2(char* string_val, int num_val, int min, int max, int action_type);
+void menu_addItem_2_strings_select_2(char* string_val, char* extra_string_val, int num_val, int min, int max, int action_type);
+void menu_addItem_keyboard(char* string_val, int keyboard_len);
+void menu_addItem_number_keyboard(int int_val, int min, int max, int keyboard_len);
+void menu_addItem_float_keyboard(float float_val, int keyboard_len, int dp, float min = -9999.9f, float max = 9999.9f);
+char* menu_get_current_keyboard();
+void menu_add_extra(int extra_val);
+void menu_set_extra(int menu_item, int extra_val);
+int menu_get_current_extra();
+int menu_get_extra(int menu_item);
+void menu_addItem_callback(char* menu_item_string, funcptr action_func = 0, bool update_on_button_press = false);
+void menu_add_callback_action(funcptr action_func);
+void menu_add_callback_action_all(funcptr action_func);
+void menu_setup();
+void menu_modify_game_state();
+void menu_update();
+void menu_action();
+void menu_shutdown();
+void menu_catch_button_press();
+void menu_set_last_selected();
+void menu_catch_select_button_press();
+void menu_play_sound(char* sound_name);
+bool menu_keyboard();
+void menu_msg(char* string_val, bool force = false);
+void menu_msg_2_strings(char* string_val, char* string_val2, bool force = false);
+void print_msg_bottom_screen(char* string_val);
+void print_msg_2_strings_bottom_screen(char* string_val, char* string_val2);
+void menu_error(char* string_val, int menu_level_back);
+void menu_error_2_strings(char* string_val, char* string_val2, int menu_level_back);
+void menu_back(int menu_level_back);
+bool menu_confirm(char* string_val);
+void menu_refresh();
+void menu_clean();
+void menu_clean_prompts();
+void menu_clean_txd(char* txd_string);
+void menu_draw_window();
+void menu_draw_rect(float rect_x, float rect_y, float rect_size_x, float rect_size_y, int rect_r, int rect_g, int rect_b, int rect_a);
+void menu_do_hold_pressed(int button_id);
+bool menu_up_pressed();
+bool menu_down_pressed();
+bool menu_left_pressed();
+bool menu_right_pressed();
+bool menu_accept_pressed();
+bool menu_is_item_float(int item_index);
+bool menu_is_item_number(int item_index);
+bool menu_is_item_keyboard(int item_index);
+bool menu_is_item_bool(int item_index);
+bool menu_is_item_string_select(int item_index);
+bool menu_is_item_string(int item_index);
+void menu_load_sprite();
+void menu_set_prompts();
+void menu_draw_prompts();
+void menu_register_prompts(menu_prompt(&prompt)[MAX_MENU_PROMPTS], int prompt_count);
+void GetScreenResolution(int& horizontal, int& vertical);
+void menu_draw();
+void draw_string(char* string_val, float x, float y);
+void draw_string_2(std::string string_val, float x, float y);
+void draw_number(int num_val, float x, float y);
+void draw_float(float num_val, float x, float y, int dp);
+void html_sprite(std::ostream& ss, std::string texture_dict, std::string texture_name, float width_height, int vspace);
+void start_html_font(std::ostream& ss, std::string face, float size);
+void end_html_font(std::ostream& ss);
+void start_html_align(std::ostream& ss, float percent_right = 0, std::string align = "");
+void end_html_align(std::ostream& ss);
+void set_up_draw(int font, float scale1, float scale2, int r, int g, int b, bool centre);
