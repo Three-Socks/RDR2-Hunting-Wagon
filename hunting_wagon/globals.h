@@ -1,7 +1,5 @@
 #pragma once
 
-extern int wagon_sub_action_mode;
-
 typedef void(*funcptr)();
 
 extern int menu_keyboard_input, menu_gamepad_input, menu_gamepad_input2, menu_count, menu_item_highlighted, menu_item_selected,
@@ -81,16 +79,14 @@ extern int menu_item_highlighted_prompt[MAX_MENU_PROMPTS];
 
 extern CSimpleIniA ini;
 
-extern bool wagon_spawn_action;
+extern Hash wagon_vehicle_hash;
+extern Vehicle wagon_spawned_vehicle;
+extern Vector3 wagon_spawn_camp_coords;
+extern float wagon_spawn_camp_heading;
+extern bool wagon_spawn_action, wagon_log_debug_info;
 extern Ped animal_holding;
-extern int wagon_prompt, closest_camp;
+extern int wagon_spawn_action_mode, wagon_pickup_action_mode, wagon_bone, wagon_prompt, wagon_closest_camp;
 
-extern int trainer_request_time;
+extern int wagon_request_time;
 
 extern bool menu_adjust;
-
-//// Vehicle Globals ////
-extern Vehicle trainer_spawned_vehicle;
-extern float trainer_spawned_vehicle_speed;
-extern Vehicle trainer_current_vehicle;
-extern Ped trainer_current_mount;

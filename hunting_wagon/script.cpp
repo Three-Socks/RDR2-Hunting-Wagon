@@ -126,7 +126,7 @@ void wagon_set_config_default_ini()
 {
 	ini.Delete("config", NULL);
 
-	ini.SetValue("config", NULL, NULL, "; Meat Wagon.");
+	ini.SetValue("config", NULL, NULL, "; Hunting Wagon.");
 
 	ini.SetLongValue("config", "menu_keyboard_input", VK_F3, "; For menu_keyboard_input use Virtual-Key Codes in hex (Example KEY N = 0x4E) https://msdn.microsoft.com/en-us/library/windows/desktop/dd375731(v=vs.85).aspx", true);
 	ini.SetLongValue("config", "menu_gamepad_input", INPUT_FRONTEND_RB);
@@ -156,7 +156,7 @@ SI_Error wagon_load_ini_file(char* ini_file, bool display_error, int menu_level_
 	if (display_error && rc < 0)
 	{
 		char path_error[MAX_PATH + 28];
-		sprintf_s(path_error, "Meat Wagon: Unable to load config file %s", ini_file_path);
+		sprintf_s(path_error, "Hunting Wagon: Unable to load config file %s", ini_file_path);
 		menu_error(path_error, menu_level_back);
 	}
 
@@ -173,7 +173,7 @@ void wagon_save_ini_file(char* ini_file)
 	if (rc < 0)
 	{
 		char path_error[MAX_PATH + 28];
-		sprintf_s(path_error, "Meat Wagon: Unable to save config file %s", ini_file_path);
+		sprintf_s(path_error, "Hunting Wagon: Unable to save config file %s", ini_file_path);
 		menu_error(path_error, 0);
 		ini.Reset();
 	}
@@ -315,21 +315,27 @@ void wagon_get_config_default_ini()
 void wagon_setup()
 {
 	menu_open_state = false;
-
 	menu_default_prompts = false;
-
 	menu_ini_default = false;
 
-	wagon_sub_action_mode = 0;
+	wagon_spawn_camp_coords = { 0.0f, 0.0f, 0.0f };
+	wagon_spawn_camp_heading = 0.0f;
 
-	closest_camp = -1;
+	wagon_vehicle_hash = GET_HASH_KEY("chuckwagon000x");
+	wagon_spawned_vehicle = 0;
+	wagon_bone = 58;
+	wagon_spawn_action = false;
+	wagon_spawn_action_mode = 0;
+	wagon_pickup_action_mode = 0;
+	wagon_closest_camp = -1;
+	wagon_log_debug_info = false;
 }
 
 void main()
 {
 	Log::Init();
 
-	Log::Write(Log::Type::Normal, "meat_wagon started");
+	Log::Write(Log::Type::Normal, "hunting_wagon started");
 
 	menu_setup();
 	wagon_setup();

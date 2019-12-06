@@ -1,7 +1,5 @@
 #include "script.h"
 
-int wagon_sub_action_mode;
-
 int menu_keyboard_input, menu_gamepad_input, menu_gamepad_input2, menu_count, menu_item_highlighted, menu_item_selected,
 menu_action_mode, menu_load_hold_pressed, menu_level, press_time, hold_time, press_delay, press_id, menu_sound_id, menu_res_x, menu_res_y,
 menu_max, menu_consts_max, menu_start_scrolling, menu_sub_action_mode,
@@ -72,19 +70,15 @@ int menu_item_highlighted_prompt[MAX_MENU_PROMPTS];
 
 CSimpleIniA ini(false, false, false);
 
-//std::map<Entity, bool> animal_map;
-bool wagon_spawn_action;
+Hash wagon_vehicle_hash;
+Vehicle wagon_spawned_vehicle;
+Vector3 wagon_spawn_camp_coords;
+float wagon_spawn_camp_heading;
+bool wagon_spawn_action, wagon_log_debug_info;
 Ped animal_holding;
-int wagon_prompt, closest_camp;
+int wagon_spawn_action_mode, wagon_pickup_action_mode, wagon_bone, wagon_prompt, wagon_closest_camp;
 
-float wagon_vehicle_area_x, wagon_vehicle_area_y, wagon_vehicle_area_z;
-
-int trainer_request_time;
+int wagon_request_time;
 
 bool menu_adjust;
 
-//// Vehicle Globals ////
-Vehicle trainer_spawned_vehicle;
-float trainer_spawned_vehicle_speed;
-Vehicle trainer_current_vehicle;
-Ped trainer_current_mount;

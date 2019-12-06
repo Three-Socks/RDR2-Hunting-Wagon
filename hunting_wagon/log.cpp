@@ -1,6 +1,20 @@
+#include "script.h"
 #include "log.h"
 
+#include <Shlobj.h>
+
 #pragma warning(disable : 4996) //_CRT_SECURE_NO_WARNINGS
+
+void wagon_get_log_file_path(char* log_file, char* log_file_path)
+{
+	char path[MAX_PATH];
+	HRESULT hr = SHGetFolderPath(NULL, CSIDL_PERSONAL, NULL, SHGFP_TYPE_CURRENT, path);
+
+	if (hr == S_OK)
+		sprintf_s(log_file_path, MAX_PATH, "%s\\Rockstar Games\\Red Dead Redemption 2\\%s.log", path, log_file);
+	else
+		sprintf_s(log_file_path, MAX_PATH, "%s.log", log_file);
+}
 
 char g_logFile[MAX_PATH];
 bool Log::s_bConsole;
@@ -9,24 +23,14 @@ void Log::Init(bool createConsole)
 	FILE* file;
 	memset(g_logFile, 0, sizeof(g_logFile));
 
-	//if (GetCurrentDirectoryA(sizeof(g_logFile), g_logFile))
-	//{
-		strcat_s(g_logFile, "C:\\rdr2\\wagonLog.txt");
-		if ((fopen_s(&file, g_logFile, "w")) == 0)
-		{
-			fprintf_s(file, "Wagon\n");
-			fclose(file);
-		}
-		else
-		{
-			MessageBoxA(0, "Failed to open riotLog.txt", "FATAL ERROR", MB_ICONERROR);
-		}
-	//}
-	/*else
+	wagon_get_log_file_path(CONFIG_NAME, g_logFile);
+
+	if ((fopen_s(&file, g_logFile, "w")) == 0)
 	{
-		MessageBoxA(NULL, "GetCurrentDirectory failed", "ERROR", MB_OK);
-		ExitProcess(0);
-	}*/
+		fprintf_s(file, "%s\n", CONFIG_NAME);
+		fclose(file);
+	}
+
 	if (createConsole)
 	{
 		HWND handle = GetConsoleWindow();
