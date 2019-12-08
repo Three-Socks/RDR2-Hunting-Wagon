@@ -7,14 +7,7 @@
 #include "script.h"
 #include "keyboard.h"
 
-//#include <vector>
-//#include <string>
-//#include <ctime>
-//#include <sstream>
-//
-//#include <cstdint>
 #include <Shlobj.h>
-//#include <Psapi.h>
 
 bool wagon_load_pressed()
 {
@@ -106,28 +99,13 @@ struct RGB wagon_get_rgb_from_hex(int hex_val)
 	return ret;
 }
 
-void wagon_set_style_default_ini()
-{
-	ini.SetLongValue("config", "menu_config_version", VERSION_CONFIG);
-	ini.SetLongValue("config", "menu_background_colour", COLOUR_BACKGROUND, NULL, true);
-	ini.SetLongValue("config", "menu_divider_colour", COLOUR_DIVIDER, NULL, true);
-	ini.SetLongValue("config", "menu_header_border_colour", COLOUR_HEADER_BORDER, NULL, true);
-	ini.SetLongValue("config", "menu_header_text_colour", COLOUR_HEADER_TEXT, NULL, true);
-	ini.SetLongValue("config", "menu_highlight_bar_colour", COLOUR_HIGHLIGHT_BAR, NULL, true);
-	ini.SetLongValue("config", "menu_highlighted_text_colour", COLOUR_HIGHLIGHT_TEXT, NULL, true);
-	ini.SetLongValue("config", "menu_non_highlighted_text_colour", COLOUR_NON_HIGHLIGHT_TEXT, NULL, true);
-	ini.SetLongValue("config", "menu_items_count_colour", COLOUR_ITEMS_COUNT, NULL, true);
-	ini.SetLongValue("config", "menu_info_background_colour", COLOUR_INFO_BACKGROUND, NULL, true);
-	ini.SetLongValue("config", "menu_info_header_text_colour", COLOUR_INFO_HEADER_TEXT, NULL, true);
-	ini.SetLongValue("config", "menu_info_text_colour", COLOUR_INFO_TEXT, NULL, true);
-}
-
 void wagon_set_config_default_ini()
 {
 	ini.Delete("config", NULL);
 
 	ini.SetValue("config", NULL, NULL, "; Hunting Wagon.");
 
+	ini.SetLongValue("config", "menu_config_version", VERSION_CONFIG);
 	ini.SetLongValue("config", "menu_keyboard_input", VK_F3, "; For menu_keyboard_input use Virtual-Key Codes in hex (Example KEY N = 0x4E) https://msdn.microsoft.com/en-us/library/windows/desktop/dd375731(v=vs.85).aspx", true);
 	ini.SetLongValue("config", "menu_gamepad_input", INPUT_FRONTEND_RB);
 	ini.SetLongValue("config", "menu_gamepad_input2", INPUT_FRONTEND_LEFT);
@@ -233,11 +211,11 @@ void wagon_get_config_default_ini()
 
 	menu_notifications = ini.GetBoolValue("config", "menu_notifications", true);
 
-	if (menu_config_version < VERSION_CONFIG)
+	/*if (menu_config_version < VERSION_CONFIG)
 	{
 		wagon_set_style_default_ini();
 		wagon_save_ini_file();
-	}
+	}*/
 
 	struct RGB col;
 	int ini_divider_colour = ini.GetLongValue("config", "menu_divider_colour", COLOUR_DIVIDER);

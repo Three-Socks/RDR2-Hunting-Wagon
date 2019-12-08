@@ -55,6 +55,25 @@ void menu_set()
 		}
 	);
 
+	menu_addItem_callback("Dump on mount 2",
+		[]
+		{
+			if (!DOES_ENTITY_EXIST(animal_holding))
+			{
+				menu_error("no animal_holding", 0);
+				return;
+			}
+
+			if (!DOES_ENTITY_EXIST(wagon_spawned_vehicle))
+			{
+				menu_error("no wagon_spawned_vehicle", 0);
+				return;
+			}
+
+			_0xE2CF104ADD49D4BF(PLAYER_PED_ID());
+		}
+		);
+
 	menu_addItem_callback("Force Respawn",
 		[]
 		{

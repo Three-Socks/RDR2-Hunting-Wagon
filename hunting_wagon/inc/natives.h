@@ -5235,7 +5235,7 @@ static void _0xD543487A1F12828F(Any p0, Any p1, Any p2, Any p3) { invoke<Void>(0
 static void _0xD9BC98B55BCFAA9B(BOOL p0) { invoke<Void>(0xD9BC98B55BCFAA9B, p0); }
 static void _0x735762E8D7573E42(Any p0, Any p1, float p2) { invoke<Void>(0x735762E8D7573E42, p0, p1, p2); }
 static void _0x981C7D863980FA51() { invoke<Void>(0x981C7D863980FA51); }
-static void _0x5199405EABFBD7F0(Any* p0) { invoke<Void>(0x5199405EABFBD7F0, p0); }
+static void _0x5199405EABFBD7F0(char* p0) { invoke<Void>(0x5199405EABFBD7F0, p0); }
 static BOOL _0xBF2DD155B2ADCD0A(Any* p0) { return invoke<BOOL>(0xBF2DD155B2ADCD0A, p0); }
 static void _0x37D7BDBA89F13959(Any* p0) { invoke<Void>(0x37D7BDBA89F13959, p0); }
 static void ANIMPOSTFX_PLAY(char* effectName) { invoke<Void>(0x4102732DF6B4005F, effectName); }

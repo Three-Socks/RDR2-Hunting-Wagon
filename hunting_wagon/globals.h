@@ -82,6 +82,7 @@ extern CSimpleIniA ini;
 extern Hash wagon_vehicle_hash;
 extern Vehicle wagon_spawned_vehicle;
 extern Vector3 wagon_spawn_camp_coords;
+extern Blip wagon_blip;
 extern float wagon_spawn_camp_heading;
 extern bool wagon_spawn_action, wagon_log_debug_info;
 extern Ped animal_holding;

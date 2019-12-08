@@ -73,6 +73,7 @@ CSimpleIniA ini(false, false, false);
 Hash wagon_vehicle_hash;
 Vehicle wagon_spawned_vehicle;
 Vector3 wagon_spawn_camp_coords;
+Blip wagon_blip;
 float wagon_spawn_camp_heading;
 bool wagon_spawn_action, wagon_log_debug_info;
 Ped animal_holding;

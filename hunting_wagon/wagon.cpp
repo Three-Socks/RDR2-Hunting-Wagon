@@ -88,6 +88,7 @@ void wagon_update()
 	// Donation box 0xF66C8B0E
 	Object closest_obj = GET_CLOSEST_OBJECT_OF_TYPE(player_coords.x, player_coords.y, player_coords.z, 100.0f, 0xF66C8B0E, 0, 0, 1);
 
+	// Find camp
 	if (wagon_closest_camp == -1 && DOES_ENTITY_EXIST(closest_obj))
 	{
 		float closest_distance = 0.0f;
@@ -143,10 +144,17 @@ void wagon_update()
 	{
 		SET_VEHICLE_DOOR_SHUT(wagon_spawned_vehicle, 5, 1);
 
+		// Stow on wagon.
 		if (_PROMPT_IS_VALID(wagon_prompt))
 		{
 			if (_PROMPT_HAS_HOLD_MODE_COMPLETED(wagon_prompt))
 			{
+				//_0x5199405EABFBD7F0("CamTransitionBlinkSlow");
+				//if (!ANIMPOSTFX_IS_RUNNING("CamTransitionBlinkSlow"))
+				//{
+					ANIMPOSTFX_PLAY("CamTransition01");
+				//}
+
 				Log::Write(Log::Type::Normal, "_PROMPT_HAS_HOLD_MODE_COMPLETED");
 				DETACH_ENTITY(animal_holding, 1, 1);
 
@@ -168,6 +176,8 @@ void wagon_update()
 				_PROMPT_DELETE(wagon_prompt);
 				wagon_prompt = 0;
 				Log::Write(Log::Type::Normal, "_PROMPT_DELETE");
+
+				//ANIMPOSTFX_STOP("CamTransitionBlinkSlow");
 			}
 		}
 	}
@@ -333,7 +343,12 @@ void wagon_vehicle_spawn_action(Hash vehicle_hash, Vector3 spawn_vehicle_coordss
 
 	case 3:
 	{
-		SET_VEHICLE_EXTRA(wagon_spawned_vehicle, 3, 0);
+		SET_VEHICLE_EXTRA(wagon_spawned_vehicle, 1, 1);
+		SET_VEHICLE_EXTRA(wagon_spawned_vehicle, 2, 1);
+		SET_VEHICLE_EXTRA(wagon_spawned_vehicle, 3, 1);
+
+		wagon_blip = _0x23F74C2FDA6E7C61(GET_HASH_KEY("BLIP_STYLE_PLAYER_COACH"), wagon_spawned_vehicle);
+		_0x662D364ABF16DE2F(wagon_blip, -401963276);
 
 		wagon_spawn_action = false;
 		wagon_spawn_action_mode = 0;
