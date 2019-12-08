@@ -8,22 +8,23 @@ Vector3 wagon_get_camp_spawn_coords(int camp_id)
 			return { -79.8061f, -20.7927f, 95.3961f };
 		
 		case 2:
-			return { 703.402f, -1230.448f, 44.2554f };
+			return { 705.5705f, -1198.2249f, 45.5605f };
 		
 		case 3:
-			return { 1848.78f, -1838.562f, 42.1948f };
+			return { 1829.4888f, -1829.0985f, 44.7012f };
 		
+		// TODO Swamp
 		case 5:
 			return { 2277.974f, -753.376f, 41.0869f };
 		
 		case 6:
-			return { 2370.903f, 1339.88f, 105.1385f };
+			return { 2366.8948f, 1296.0991f, 110.5597f };
 		
 		case 7:
-			return { -2591.979f, 464.4913f, 145.3082f };
+			return { -2584.8486f, 475.0491f, 145.3142f };
 		
 		case 8:
-			return { -1663.893f, -1331.753f, 82.9211f };
+			return { -1594.3573f, -1307.4619f, 79.9090f };
 			//return { -1642.401f, -1376.996f, 82.9705f };
 
 		default:
@@ -38,6 +39,21 @@ float wagon_get_camp_spawn_heading(int camp_id)
 		case 1:
 			return 36.0f;
 
+		case 2:
+			return 245.0f;
+
+		case 3:
+			return 356.0f;
+
+		case 6:
+			return 225.0f;
+
+		case 7:
+			return 255.0f;
+
+		case 8:
+			return 38.0f;
+
 		default:
 			return 0.0f;
 	}
@@ -47,8 +63,8 @@ Vector3 wagon_get_camp_coords(int camp_id)
 {
 	switch (camp_id)
 	{
-		case 0:
-			return { -1356.339f, 2443.121f, 308.1876f };
+		/*case 0:
+			return { -1356.339f, 2443.121f, 308.1876f };*/
 			
 		case 1:
 			return { -125.85f, -39.9599f, 96.0908f };
@@ -59,15 +75,15 @@ Vector3 wagon_get_camp_coords(int camp_id)
 		case 3:
 			return { 1905.086f, -1861.727f, 46.3492f };
 					
+		/*case 4:
+			return { 1422.625f, -7332.473f, 80.5977f };*/
+
 		case 5:
 			return { 2222.172f, -772.852f, 42.662f };
 					
 		case 6:
 			return { 2342.779f, 1359.049f, 106.3936f };
-					
-		case 4:
-			return { 1422.625f, -7332.473f, 80.5977f };
-					
+										
 		case 7:
 			return { -2592.702f, 453.0722f, 146.4588f };			
 		
@@ -75,7 +91,7 @@ Vector3 wagon_get_camp_coords(int camp_id)
 			return { -1639.306f, -1361.465f, 83.3963f };			
 		
 		default:
-			return { -125.85f, -39.9599f, 96.0908f };
+			return { 0.0f, 0.0f, 0.0f };
 	}
 }
 
@@ -86,7 +102,8 @@ void wagon_update()
 	Vector3 player_coords = GET_ENTITY_COORDS(PLAYER_PED_ID(), true, 0);
 
 	// Donation box 0xF66C8B0E
-	Object closest_obj = GET_CLOSEST_OBJECT_OF_TYPE(player_coords.x, player_coords.y, player_coords.z, 100.0f, 0xF66C8B0E, 0, 0, 1);
+	// Shaving Mirror 0x63085BCC
+	Object closest_obj = GET_CLOSEST_OBJECT_OF_TYPE(player_coords.x, player_coords.y, player_coords.z, 200.0f, 0x63085BCC, 0, 0, 1);
 
 	// Find camp
 	if (wagon_closest_camp == -1 && DOES_ENTITY_EXIST(closest_obj))
@@ -102,6 +119,9 @@ void wagon_update()
 		{
 			Vector3 camp_coords = wagon_get_camp_coords(i);
 
+			if (camp_coords.x == 0.0f)
+				continue;
+
 			Log::Write(Log::Type::Normal, "CAMP %i", i);
 
 			/*Log::Write(Log::Type::Normal, "camp_coords.x = %f", camp_coords.x);
@@ -110,7 +130,8 @@ void wagon_update()
 
 			float camp_distance = VDIST2(obj_coords.x, obj_coords.y, obj_coords.z, camp_coords.x, camp_coords.y, camp_coords.z);
 
-			//Log::Write(Log::Type::Normal, "camp_distance = %f", camp_distance);
+			Log::Write(Log::Type::Normal, "camp_distance = %f", camp_distance);
+			//Log::Write(Log::Type::Normal, "closest_distance = %f", closest_distance);
 
 			if (closest_distance == 0.0f || camp_distance <= closest_distance)
 			{
@@ -119,7 +140,7 @@ void wagon_update()
 				Log::Write(Log::Type::Normal, "new closest_distance = %f", closest_distance);
 			}
 
-			//Log::Write(Log::Type::Normal, "\n");
+			Log::Write(Log::Type::Normal, "\n");
 		}
 
 		Log::Write(Log::Type::Normal, "wagon_closest_camp = %i", wagon_closest_camp);
@@ -173,6 +194,8 @@ void wagon_update()
 				FREEZE_ENTITY_POSITION(animal_holding, false);
 				SET_ENTITY_COMPLETELY_DISABLE_COLLISION(animal_holding, true, 0);
 
+				SET_ENTITY_AS_MISSION_ENTITY(animal_holding, 1, 1);
+
 				_PROMPT_DELETE(wagon_prompt);
 				wagon_prompt = 0;
 				Log::Write(Log::Type::Normal, "_PROMPT_DELETE");
@@ -183,12 +206,14 @@ void wagon_update()
 	}
 	else if (!wagon_spawn_action)
 	{
-		// Force get camp and spawn vehicle if not already spawning one.
+		// Force get camp and spawn vehicle if not already spawning one and in a camp we support.
+		//Log::Write(Log::Type::Normal, "Force get camp");
 		wagon_closest_camp = -1;
 	}
 
 	if (wagon_spawn_action)
 	{
+		Log::Write(Log::Type::Normal, "wagon_vehicle_spawn_action");
 		wagon_vehicle_spawn_action(wagon_vehicle_hash, wagon_spawn_camp_coords, wagon_spawn_camp_heading);
 	}
 
@@ -347,6 +372,11 @@ void wagon_vehicle_spawn_action(Hash vehicle_hash, Vector3 spawn_vehicle_coordss
 		SET_VEHICLE_EXTRA(wagon_spawned_vehicle, 2, 1);
 		SET_VEHICLE_EXTRA(wagon_spawned_vehicle, 3, 1);
 
+		SET_ENTITY_AS_MISSION_ENTITY(wagon_spawned_vehicle, 1, 1);
+
+		if (DOES_BLIP_EXIST(wagon_blip))
+			REMOVE_BLIP(&wagon_blip);
+
 		wagon_blip = _0x23F74C2FDA6E7C61(GET_HASH_KEY("BLIP_STYLE_PLAYER_COACH"), wagon_spawned_vehicle);
 		_0x662D364ABF16DE2F(wagon_blip, -401963276);
 
@@ -361,7 +391,10 @@ void wagon_vehicle_spawn_action(Hash vehicle_hash, Vector3 spawn_vehicle_coordss
 void wagon_spawn_vehicle(Hash vehicle_hash, Vector3 spawn_vehicle_coords, float spawn_vehicle_heading)
 {
 	if (DOES_ENTITY_EXIST(wagon_spawned_vehicle))
-		SET_ENTITY_AS_NO_LONGER_NEEDED(&wagon_spawned_vehicle);
+	{
+		SET_ENTITY_AS_MISSION_ENTITY(wagon_spawned_vehicle, 0, 1);
+		DELETE_VEHICLE(&wagon_spawned_vehicle);
+	}
 
 	wagon_spawned_vehicle = CREATE_VEHICLE(vehicle_hash, spawn_vehicle_coords.x, spawn_vehicle_coords.y, spawn_vehicle_coords.z, spawn_vehicle_heading, 1, 1, 0, 0);
 	SET_VEHICLE_ON_GROUND_PROPERLY(wagon_spawned_vehicle, 1);

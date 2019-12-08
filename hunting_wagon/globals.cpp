@@ -70,6 +70,8 @@ int menu_item_highlighted_prompt[MAX_MENU_PROMPTS];
 
 CSimpleIniA ini(false, false, false);
 
+int wagon_debug_menu;
+
 Hash wagon_vehicle_hash;
 Vehicle wagon_spawned_vehicle;
 Vector3 wagon_spawn_camp_coords;

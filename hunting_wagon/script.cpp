@@ -13,39 +13,16 @@ bool wagon_load_pressed()
 {
 	if (!menu_action_mode && !IS_PAUSE_MENU_ACTIVE())
 	{
-		if (IsKeyDown(menu_keyboard_input) && !IsKeyDown(VK_LCONTROL) && !IsKeyDown(VK_RCONTROL))
+		if (IsKeyDown(menu_keyboard_input))
 		{
-			if (!menu_unload_hold_pressed)
+			if (GET_GAME_TIMER() - menu_load_hold_pressed > 1000 && !menu_unload_hold_pressed)
 			{
-				menu_unload_hold_pressed = true;
+				menu_load_hold_pressed = GET_GAME_TIMER();
+				menu_unload_hold_pressed = 1;
 				return true;
 			}
 			else
 				return false;
-		}
-		else if (IS_DISABLED_CONTROL_PRESSED(2, menu_gamepad_input))
-		{
-			DISABLE_CONTROL_ACTION(0, INPUT_PLAYER_MENU, false);
-			DISABLE_CONTROL_ACTION(2, INPUT_OPEN_JOURNAL, false);
-			if (IS_DISABLED_CONTROL_PRESSED(2, menu_gamepad_input2))
-			{
-				DISABLE_CONTROL_ACTION(0, INPUT_JUMP, false);
-				DISABLE_CONTROL_ACTION(0, INPUT_COVER, false);
-
-				if (IS_PED_GOING_INTO_COVER(PLAYER_PED_ID()) || IS_PED_JUMPING(PLAYER_PED_ID()))
-				{
-					CLEAR_PED_TASKS_IMMEDIATELY(PLAYER_PED_ID(), 0, 1);
-				}
-
-				if (GET_GAME_TIMER() - menu_load_hold_pressed > 400 && !menu_unload_hold_pressed)
-				{
-					menu_load_hold_pressed = GET_GAME_TIMER();
-					menu_unload_hold_pressed = 1;
-					return true;
-				}
-				else
-					return false;
-			}
 		}
 	}
 	menu_unload_hold_pressed = false;

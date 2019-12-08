@@ -79,6 +79,8 @@ extern int menu_item_highlighted_prompt[MAX_MENU_PROMPTS];
 
 extern CSimpleIniA ini;
 
+extern int wagon_debug_menu;
+
 extern Hash wagon_vehicle_hash;
 extern Vehicle wagon_spawned_vehicle;
 extern Vector3 wagon_spawn_camp_coords;

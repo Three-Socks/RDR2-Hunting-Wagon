@@ -55,25 +55,6 @@ void menu_set()
 		}
 	);
 
-	menu_addItem_callback("Dump on mount 2",
-		[]
-		{
-			if (!DOES_ENTITY_EXIST(animal_holding))
-			{
-				menu_error("no animal_holding", 0);
-				return;
-			}
-
-			if (!DOES_ENTITY_EXIST(wagon_spawned_vehicle))
-			{
-				menu_error("no wagon_spawned_vehicle", 0);
-				return;
-			}
-
-			_0xE2CF104ADD49D4BF(PLAYER_PED_ID());
-		}
-		);
-
 	menu_addItem_callback("Force Respawn",
 		[]
 		{
@@ -129,97 +110,6 @@ void menu_set()
 		},
 	true);
 	menu_addItem_number_keyboard(wagon_bone, -1, 9999, 9);
-
-	/*menu_addItem_callback("Spawn Wagon",
-		[]
-		{
-			if (!DOES_ENTITY_EXIST(animal_holding))
-			{
-				menu_error("no animal_holding", 0);
-				return;
-			}
-
-			if (!DOES_ENTITY_EXIST(wagon_spawned_vehicle))
-			{
-				menu_error("no wagon_spawned_vehicle", 0);
-				return;
-			}
-
-			Vector3 player_coords = GET_ENTITY_COORDS(PLAYER_PED_ID(), true, 0);
-
-			ADD_NAVMESH_REQUIRED_REGION(player_coords.x, player_coords.y, 750.01);
-
-			int attemptStart = GET_GAME_TIMER();
-
-			await WaitFor(() = > IS_NAVMESH_LOADED_IN_AREA(coords[0] - 10.0, coords[1] - 10.0, 0.0, coords[0] + 10.0, coords[1] + 10.0, 100.01) || (GetGameTimer() - attemptStart) > 500);
-
-
-
-
-			player_coords.x = player_coords.x + GET_RANDOM_FLOAT_IN_RANGE(-20.0f, 20.0f);
-			player_coords.y = player_coords.y + GET_RANDOM_FLOAT_IN_RANGE(-20.0f, 20.0f);
-
-			float ground_z = player_coords.z;
-			int ground_index = 0;
-			bool ground_found = false;
-
-			REQUEST_COLLISION_AT_COORD(player_coords.x, player_coords.y, player_coords.z);
-			while (!GET_GROUND_Z_FOR_3D_COORD(player_coords.x, player_coords.y, player_coords.z, &ground_z, 0) && !ground_found)
-			{
-				if (ground_index < 50)
-				{
-					ground_index++;
-					player_coords.z = player_coords.z + 50.0f;
-					REQUEST_COLLISION_AT_COORD(player_coords.x, player_coords.y, player_coords.z);
-				}
-				else
-					ground_found = true;
-			}
-
-			Log::Write(Log::Type::Normal, "player_coords.x = %f", player_coords.x);
-			Log::Write(Log::Type::Normal, "player_coords.y = %f", player_coords.y);
-			Log::Write(Log::Type::Normal, "player_coords.z = %f", player_coords.z);
-
-
-			Vector3 safe_coords = { 0.0f, 0.0f, 0.0f };
-
-			int tries = 0;
-			float range = 50.0f;
-			while (tries < 15)
-			{
-				if (!GET_SAFE_COORD_FOR_PED(player_coords.x, player_coords.y, player_coords.z, true, &safe_coords, 16))
-				{
-					player_coords.x = player_coords.x + GET_RANDOM_FLOAT_IN_RANGE(-range, range);
-					player_coords.y = player_coords.y + GET_RANDOM_FLOAT_IN_RANGE(-range, range);
-					range += 20.0f;
-					Log::Write(Log::Type::Normal, "player_coords.x = %f", player_coords.x);
-					Log::Write(Log::Type::Normal, "player_coords.y = %f", player_coords.y);
-
-					Log::Write(Log::Type::Normal, "no safe coords");
-				}
-				else
-				{
-					SET_ENTITY_COORDS(PLAYER_PED_ID(), safe_coords.x, safe_coords.y, safe_coords.z, 0, 1, 1, 0);
-					break;
-				}
-
-				Log::Write(Log::Type::Normal, "safe_coords.x = %f", safe_coords.x);
-				Log::Write(Log::Type::Normal, "safe_coords.y = %f", safe_coords.y);
-				Log::Write(Log::Type::Normal, "safe_coords.z = %f", safe_coords.z);
-				tries++;
-				WAIT(0);
-			}
-		}
-	);*/
-
-	/*menu_addItem_callback("Teleport to Blip",
-		[]
-		{
-			Blip blip = _0x3E593DF9C2962EC6(-515518185);
-			Vector3 coords = GET_BLIP_COORDS(blip);
-			SET_ENTITY_COORDS(PLAYER_PED_ID(), coords.x, coords.y, coords.z + 0.5f, 0, 1, 1, 0);
-		}
-	);*/
 
 	menu_addItem_callback("Detach",
 		[]
