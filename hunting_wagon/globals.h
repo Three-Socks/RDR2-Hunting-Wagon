@@ -79,6 +79,7 @@ extern int menu_item_highlighted_prompt[MAX_MENU_PROMPTS];
 
 extern CSimpleIniA ini;
 
+extern bool wagon_debug_menu_enabled, wagon_log_debug_info;
 extern int wagon_debug_menu;
 
 extern Hash wagon_vehicle_hash;
@@ -86,9 +87,9 @@ extern Vehicle wagon_spawned_vehicle;
 extern Vector3 wagon_spawn_camp_coords;
 extern Blip wagon_blip;
 extern float wagon_spawn_camp_heading;
-extern bool wagon_spawn_action, wagon_log_debug_info;
-extern Ped animal_holding;
-extern int wagon_spawn_action_mode, wagon_pickup_action_mode, wagon_bone, wagon_prompt, wagon_closest_camp;
+extern bool wagon_spawn_action, wagon_stow;
+extern Ped animal_holding, wagon_stow_entity;
+extern int wagon_spawn_action_mode, wagon_pickup_action_mode, wagon_bone, wagon_prompt, wagon_closest_camp, wagon_stow_time;
 
 extern int wagon_request_time;
 

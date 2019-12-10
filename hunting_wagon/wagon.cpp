@@ -103,7 +103,7 @@ void wagon_update()
 
 	// Donation box 0xF66C8B0E
 	// Shaving Mirror 0x63085BCC
-	Object closest_obj = GET_CLOSEST_OBJECT_OF_TYPE(player_coords.x, player_coords.y, player_coords.z, 200.0f, 0x63085BCC, 0, 0, 1);
+	Object closest_obj = GET_CLOSEST_OBJECT_OF_TYPE(player_coords.x, player_coords.y, player_coords.z, 500.0f, 0x63085BCC, 0, 0, 1);
 
 	// Find camp
 	if (wagon_closest_camp == -1 && DOES_ENTITY_EXIST(closest_obj))
@@ -200,9 +200,28 @@ void wagon_update()
 				wagon_prompt = 0;
 				Log::Write(Log::Type::Normal, "_PROMPT_DELETE");
 
+				wagon_stow = true;
+				wagon_stow_time = GET_GAME_TIMER();
+				wagon_stow_entity = animal_holding;
+
 				//ANIMPOSTFX_STOP("CamTransitionBlinkSlow");
 			}
 		}
+
+		if (wagon_stow)
+		{
+			if (wagon_time_taken(wagon_stow_time, 1000))
+			{
+				wagon_stow = false;
+
+				ACTIVATE_PHYSICS(wagon_stow_entity);
+				FORCE_ENTITY_AI_AND_ANIMATION_UPDATE(wagon_stow_entity, 1);
+
+				ACTIVATE_PHYSICS(wagon_spawned_vehicle);
+				FORCE_ENTITY_AI_AND_ANIMATION_UPDATE(wagon_spawned_vehicle, 1);
+			}
+		}
+
 	}
 	else if (!wagon_spawn_action)
 	{

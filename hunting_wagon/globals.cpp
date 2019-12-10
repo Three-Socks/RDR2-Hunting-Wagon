@@ -70,6 +70,7 @@ int menu_item_highlighted_prompt[MAX_MENU_PROMPTS];
 
 CSimpleIniA ini(false, false, false);
 
+bool wagon_debug_menu_enabled, wagon_log_debug_info;
 int wagon_debug_menu;
 
 Hash wagon_vehicle_hash;
@@ -77,9 +78,9 @@ Vehicle wagon_spawned_vehicle;
 Vector3 wagon_spawn_camp_coords;
 Blip wagon_blip;
 float wagon_spawn_camp_heading;
-bool wagon_spawn_action, wagon_log_debug_info;
-Ped animal_holding;
-int wagon_spawn_action_mode, wagon_pickup_action_mode, wagon_bone, wagon_prompt, wagon_closest_camp;
+bool wagon_spawn_action, wagon_stow;
+Ped animal_holding, wagon_stow_entity;
+int wagon_spawn_action_mode, wagon_pickup_action_mode, wagon_bone, wagon_prompt, wagon_closest_camp, wagon_stow_time;
 
 int wagon_request_time;
 

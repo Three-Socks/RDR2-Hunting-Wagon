@@ -9,24 +9,37 @@
 
 #include <Shlobj.h>
 
-bool wagon_load_pressed()
+bool wagon_debug_enable()
 {
-	if (!menu_action_mode && !IS_PAUSE_MENU_ACTIVE())
+	if (IsKeyJustUp(menu_keyboard_input))
 	{
-		if (IsKeyDown(menu_keyboard_input))
-		{
-			if (GET_GAME_TIMER() - menu_load_hold_pressed > 1000 && !menu_unload_hold_pressed)
-			{
-				menu_load_hold_pressed = GET_GAME_TIMER();
-				menu_unload_hold_pressed = 1;
-				return true;
-			}
-			else
-				return false;
-		}
+		wagon_debug_menu++;
 	}
+
+	if (wagon_debug_menu >= 3 && IsKeyDown(menu_keyboard_input))
+	{
+		if (GET_GAME_TIMER() - menu_load_hold_pressed > 3000 && !menu_unload_hold_pressed)
+		{
+			menu_load_hold_pressed = GET_GAME_TIMER();
+			menu_unload_hold_pressed = 1;
+			return true;
+		}
+		else
+			return false;
+	}
+
 	menu_unload_hold_pressed = false;
 	menu_load_hold_pressed = GET_GAME_TIMER();
+	return false;
+}
+
+bool wagon_load_pressed()
+{
+	if (!wagon_debug_menu_enabled && wagon_debug_enable())
+		wagon_debug_menu_enabled = true;
+	else if (IsKeyJustUp(menu_keyboard_input) && !menu_action_mode && !IS_PAUSE_MENU_ACTIVE())
+		return true;
+
 	return false;
 }
 
