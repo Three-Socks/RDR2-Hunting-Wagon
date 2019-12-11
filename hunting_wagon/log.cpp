@@ -20,6 +20,10 @@ char g_logFile[MAX_PATH];
 bool Log::s_bConsole;
 void Log::Init(bool createConsole)
 {
+	#ifndef LOGGING
+		return;
+	#endif // !LOGGING
+
 	FILE* file;
 	memset(g_logFile, 0, sizeof(g_logFile));
 
@@ -53,6 +57,10 @@ void Log::Init(bool createConsole)
 
 void Log::Write(Log::Type type, const char* format, ...)
 {
+	#ifndef LOGGING
+		return;
+	#endif // !LOGGING
+
 	FILE* file;
 	va_list message;
 	char timestamp[25], logType[15], logBuffer[4096], logMessage[4096];

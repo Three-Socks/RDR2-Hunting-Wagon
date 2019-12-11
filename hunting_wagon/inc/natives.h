@@ -4969,14 +4969,14 @@ static Blip GET_BLIP_FROM_ENTITY(Entity entity) { return invoke<Blip>(0x6D2C41A8
 static Blip GET_MAIN_PLAYER_BLIP_ID() { return invoke<Blip>(0x5CD2889B2B381D45); }
 static Blip _0x3E593DF9C2962EC6(Hash p0) { return invoke<Any>(0x3E593DF9C2962EC6, p0); }
 static Blip _0x554D9D53F696D002(Hash p0, float p1, float p2, float p3) { return invoke<Any>(0x554D9D53F696D002, p0, p1, p2, p3); }
-static Any _0x23F74C2FDA6E7C61(Any p0, Any p1) { return invoke<Any>(0x23F74C2FDA6E7C61, p0, p1); }
+static Blip _0x23F74C2FDA6E7C61(Hash p0, Entity p1) { return invoke<Blip>(0x23F74C2FDA6E7C61, p0, p1); }
 static Any _0xA486008892065FB9(Any p0, Any p1) { return invoke<Any>(0xA486008892065FB9, p0, p1); }
 static Any _0x45F13B7E0A15C880(Any p0, float p1, float p2, float p3, float p4) { return invoke<Any>(0x45F13B7E0A15C880, p0, p1, p2, p3, p4); }
 static Any _0xEC174ADBCB611ECC(Any p0, float p1, float p2, float p3, float p4, float p5, float p6, Any p7) { return invoke<Any>(0xEC174ADBCB611ECC, p0, p1, p2, p3, p4, p5, p6, p7); }
 static Any _0xA6EF0C54A3443E70(Any p0, Any p1) { return invoke<Any>(0xA6EF0C54A3443E70, p0, p1); }
 static BOOL _0xEDD964B7984AC291(Any p0, Any p1) { return invoke<BOOL>(0xEDD964B7984AC291, p0, p1); }
 static BOOL _0xBD62D98799A3DAF0(Any p0, Any p1) { return invoke<BOOL>(0xBD62D98799A3DAF0, p0, p1); }
-static BOOL _0x662D364ABF16DE2F(Any p0, Any p1) { return invoke<BOOL>(0x662D364ABF16DE2F, p0, p1); }
+static BOOL _0x662D364ABF16DE2F(Blip p0, int p1) { return invoke<BOOL>(0x662D364ABF16DE2F, p0, p1); }
 static BOOL _0xB059D7BD3D78C16F(Any p0, Any p1) { return invoke<BOOL>(0xB059D7BD3D78C16F, p0, p1); }
 static void _0x250C75EB1728CC0D(Any p0) { invoke<Void>(0x250C75EB1728CC0D, p0); }
 static void SET_BLIP_FLASH_TIMER(Blip blip, int duration, Any p2) { invoke<Void>(0x02FF4CF43B7209D1, blip, duration, p2); }

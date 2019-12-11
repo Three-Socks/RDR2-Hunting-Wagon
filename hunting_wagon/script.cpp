@@ -289,7 +289,8 @@ void wagon_setup()
 	wagon_spawn_camp_coords = { 0.0f, 0.0f, 0.0f };
 	wagon_spawn_camp_heading = 0.0f;
 
-	wagon_vehicle_hash = GET_HASH_KEY("chuckwagon000x");
+	// chuckwagon000x
+	wagon_vehicle_hash = 0x5f27ed25;
 	wagon_spawned_vehicle = 0;
 	wagon_bone = 58;
 	wagon_spawn_action = false;
@@ -314,24 +315,26 @@ void main()
 		{
 			wagon_update();
 
-			if (!menu_ini_default)
-				wagon_get_config_default_ini();
+			#ifdef LOGGING
+				if (!menu_ini_default)
+					wagon_get_config_default_ini();
 
-			wagon_catch_load_button_press();
-			if (menu_get_open_state())
-			{
-				menu_modify_game_state();
-				menu_update();
-				if (menu_action_mode == 0)
+				wagon_catch_load_button_press();
+				if (menu_get_open_state())
 				{
-					menu_catch_button_press();
-					menu_catch_select_button_press();
+					menu_modify_game_state();
+					menu_update();
+					if (menu_action_mode == 0)
+					{
+						menu_catch_button_press();
+						menu_catch_select_button_press();
+					}
+					menu_action();
+					menu_draw_window();
+					menu_draw();
+					menu_load_sprite();
 				}
-				menu_action();
-				menu_draw_window();
-				menu_draw();
-				menu_load_sprite();
-			}
+			#endif
 		}
 		WAIT(0);
 	}
