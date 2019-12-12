@@ -96,9 +96,6 @@ void wagon_set_config_default_ini()
 	ini.SetValue("config", NULL, NULL, "; Hunting Wagon.");
 
 	ini.SetLongValue("config", "menu_config_version", VERSION_CONFIG);
-	ini.SetLongValue("config", "menu_keyboard_input", VK_F3, "; For menu_keyboard_input use Virtual-Key Codes in hex (Example KEY N = 0x4E) https://msdn.microsoft.com/en-us/library/windows/desktop/dd375731(v=vs.85).aspx", true);
-	ini.SetLongValue("config", "menu_gamepad_input", INPUT_FRONTEND_RB);
-	ini.SetLongValue("config", "menu_gamepad_input2", INPUT_FRONTEND_LEFT);
 
 	wagon_save_ini_file();
 }
@@ -149,7 +146,9 @@ void wagon_save_ini_file(char* ini_file)
 
 void wagon_get_config_default_ini()
 {
-	int ini_menu_align, ini_menu_scroll_multiplier, ini_menu_header_font, ini_menu_items_font;
+	int ini_menu_align, ini_menu_scroll_multiplier;
+	char* ini_menu_header_font;
+	char* ini_menu_items_font;
 	bool ini_menu_sfx;
 
 	if (wagon_load_ini_file(CONFIG_NAME, false, 0) < 0)
@@ -175,25 +174,13 @@ void wagon_get_config_default_ini()
 	if (ini_menu_scroll_multiplier > 5)
 		ini_menu_scroll_multiplier = 5;
 
-	ini_menu_header_font = ini.GetLongValue("config", "menu_header_font", 0);
+	ini_menu_header_font = const_cast<char*>(ini.GetValue("config", "menu_header_font", HEADER_FONT));
 
-	if (ini_menu_header_font != 0 && ini_menu_header_font != 1 && ini_menu_header_font != 2 &&
-		ini_menu_header_font != 4 && ini_menu_header_font != 7)
-		ini_menu_header_font = 0;
-
-	ini_menu_items_font = ini.GetLongValue("config", "menu_items_font", 0);
-
-	if (ini_menu_items_font != 0 && ini_menu_items_font != 1 && ini_menu_items_font != 2 &&
-		ini_menu_items_font != 4 && ini_menu_items_font != 7)
-		ini_menu_items_font = 0;
+	ini_menu_items_font = const_cast<char*>(ini.GetValue("config", "menu_items_font", ITEMS_FONT));
 
 	ini_menu_sfx = ini.GetBoolValue("config", "menu_sfx", true);
 
-	if (ini_menu_align == 1)
-		menu_set_menu_align(1);
-	else
-		menu_set_menu_align(0);
-
+	menu_set_menu_align(ini_menu_align);
 	menu_set_scroll_multiplier(ini_menu_scroll_multiplier);
 	menu_set_header_font(ini_menu_header_font);
 	menu_set_items_font(ini_menu_items_font);
@@ -209,73 +196,48 @@ void wagon_get_config_default_ini()
 
 	struct RGB col;
 	int ini_divider_colour = ini.GetLongValue("config", "menu_divider_colour", COLOUR_DIVIDER);
-
 	col = wagon_get_rgb_from_hex(ini_divider_colour);
-
 	menu_set_divider_colour(col.r, col.g, col.b);
 
 	int ini_background_colour = ini.GetLongValue("config", "menu_background_colour", COLOUR_BACKGROUND);
-
 	col = wagon_get_rgb_from_hex(ini_background_colour);
-
 	menu_set_background_colour(col.r, col.g, col.b);
 
 	int ini_highlight_bar = ini.GetLongValue("config", "menu_highlight_bar_colour", COLOUR_HIGHLIGHT_BAR);
-
 	col = wagon_get_rgb_from_hex(ini_highlight_bar);
-
 	menu_set_highlight_bar_colour(col.r, col.g, col.b);
 
 	int ini_header_border = ini.GetLongValue("config", "menu_header_border_colour", COLOUR_HEADER_BORDER);
-
 	col = wagon_get_rgb_from_hex(ini_header_border);
-
 	menu_set_header_border_colour(col.r, col.g, col.b);
 
 	int ini_header_text = ini.GetLongValue("config", "menu_header_text_colour", COLOUR_HEADER_TEXT);
-
 	col = wagon_get_rgb_from_hex(ini_header_text);
-
 	menu_set_header_text_colour(col.r, col.g, col.b);
 
 	int ini_highlighted_text = ini.GetLongValue("config", "menu_highlighted_text_colour", COLOUR_HIGHLIGHT_TEXT);
-
 	col = wagon_get_rgb_from_hex(ini_highlighted_text);
-
 	menu_set_highlighted_text_colour(col.r, col.g, col.b);
 
 	int ini_non_highlighted_text = ini.GetLongValue("config", "menu_non_highlighted_text_colour", COLOUR_NON_HIGHLIGHT_TEXT);
-
 	col = wagon_get_rgb_from_hex(ini_non_highlighted_text);
-
 	menu_set_non_highlighted_text_colour(col.r, col.g, col.b);
 
 	int ini_items_count = ini.GetLongValue("config", "menu_items_count_colour", COLOUR_ITEMS_COUNT);
-
 	col = wagon_get_rgb_from_hex(ini_items_count);
-
 	menu_set_items_count_colour(col.r, col.g, col.b);
 
 	int ini_info_background = ini.GetLongValue("config", "menu_info_background_colour", COLOUR_INFO_BACKGROUND);
-
 	col = wagon_get_rgb_from_hex(ini_info_background);
-
 	menu_set_info_background_colour(col.r, col.g, col.b);
 
 	int ini_info_header_text = ini.GetLongValue("config", "menu_info_header_text_colour", COLOUR_INFO_HEADER_TEXT);
-
 	col = wagon_get_rgb_from_hex(ini_info_header_text);
-
 	menu_set_info_header_text_colour(col.r, col.g, col.b);
 
 	int ini_info_text = ini.GetLongValue("config", "menu_info_text_colour", COLOUR_INFO_TEXT);
-
 	col = wagon_get_rgb_from_hex(ini_info_text);
-
 	menu_set_info_text_colour(col.r, col.g, col.b);
-
-	//if (ini.GetBoolValue("defaults", "player_invincible", false))
-		//trainer_invincible = true;
 
 	menu_ini_default = true;
 }
@@ -283,7 +245,6 @@ void wagon_get_config_default_ini()
 void wagon_setup()
 {
 	menu_open_state = false;
-	menu_default_prompts = false;
 	menu_ini_default = false;
 
 	wagon_spawn_camp_coords = { 0.0f, 0.0f, 0.0f };
@@ -298,6 +259,8 @@ void wagon_setup()
 	wagon_pickup_action_mode = 0;
 	wagon_closest_camp = -1;
 	wagon_log_debug_info = false;
+	wagon_run_set_code = false;
+	wagon_run_dead_code = false;
 }
 
 void main()
@@ -306,7 +269,10 @@ void main()
 
 	Log::Write(Log::Type::Normal, "hunting_wagon started");
 
-	menu_setup();
+	#ifdef LOGGING
+		menu_setup();
+	#endif
+
 	wagon_setup();
 
 	while (true)

@@ -41,6 +41,8 @@
 #define CONFIG_NAME STR(hunting_wagon)
 
 #define VERSION_CONFIG 1
+#define HEADER_FONT STR($title1)
+#define ITEMS_FONT STR($body)
 #define COLOUR_DIVIDER 0xffffff // 255, 255, 255
 #define COLOUR_BACKGROUND 0x0 // 0, 0, 0
 #define COLOUR_HIGHLIGHT_BAR 0xb90000 // 185, 0, 0
@@ -56,7 +58,6 @@
 #define MAX_MENU_ITEMS 150
 #define MAX_MENU_LEVELS 10
 #define MAX_MENU_PROMPTS 20
-#define MAX_MENU_CAM_STORED_ITEMS 30
 
 #define TYPE_VEHICLE 1
 #define TYPE_MOUNT 2

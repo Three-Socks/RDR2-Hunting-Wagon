@@ -5,8 +5,6 @@ enum menu_item_types
 	MENU_ITEM_TYPE_EMPTY,
 	MENU_ITEM_TYPE_NUMBER,
 	MENU_ITEM_TYPE_GXT_NUMBER,
-	MENU_ITEM_TYPE_NUMBER_FORMAT,
-	MENU_ITEM_TYPE_KB_NUMBER_FORMAT,
 	MENU_ITEM_TYPE_FLOAT,
 	MENU_ITEM_TYPE_KB_FLOAT,
 	MENU_ITEM_TYPE_BOOL,
@@ -15,6 +13,7 @@ enum menu_item_types
 	MENU_ITEM_TYPE_KB_NUMBER,
 	MENU_ITEM_TYPE_STRING_SELECT,
 	MENU_ITEM_TYPE_STRING_SELECT_2,
+	MENU_ITEM_TYPE_MODEL_FAVOURITE,
 };
 
 bool menu_get_open_state();
@@ -46,8 +45,10 @@ void menu_set_stored_string_data_2(int menu_item, char* store_string_data);
 void menu_clean_stored_string_data_2();
 void menu_set_title(char* menu_title);
 void menu_set_bool_strings(char* bool_string_off, char* bool_string_on);
-void menu_set_header_font(int font);
-void menu_set_items_font(int font);
+void menu_set_bool_sprites(char* bool_sprite_txd, char* bool_sprite_on, char* bool_sprite_off);
+void menu_set_items_selected_sprites(char* items_sprite_txd, char* items_sprite);
+void menu_set_header_font(char* font);
+void menu_set_items_font(char* font);
 void menu_set_menu_align(int align);
 void menu_set_scroll_multiplier(int mult);
 void menu_set_sfx(bool state);
@@ -72,7 +73,11 @@ void menu_onBack(funcptr callback_func);
 int menu_addPrompt(char* menu_prompt_string, int button_id, int button_id_2 = 0, bool visible = true);
 int menu_addDefaultPrompt(char* menu_prompt_string, int button_id, int button_id_2 = 0, bool visible = true);
 int menu_get_prompt_handle(int prompt_id);
+char* menu_get_prompt_string(int prompt_id);
+void menu_set_prompt_string(int prompt_id, char* menu_prompt_string);
 int menu_get_default_prompt_handle(int prompt_id);
+char* menu_get_default_prompt_string(int prompt_id);
+void menu_set_default_prompt_string(int prompt_id, char* menu_prompt_string);
 void menu_addItem(char* menu_item_string, funcptr callback_func = 0);
 void menu_add_callback_all(funcptr callback_func);
 void menu_addItem_gxt_number(char* gxt, int num_val);
@@ -137,6 +142,7 @@ int menu_get_extra(int menu_item);
 void menu_addItem_callback(char* menu_item_string, funcptr action_func = 0, bool update_on_button_press = false);
 void menu_add_callback_action(funcptr action_func);
 void menu_add_callback_action_all(funcptr action_func);
+void menu_addItem_favourite();
 void menu_setup();
 void menu_modify_game_state();
 void menu_update();
@@ -159,6 +165,7 @@ void menu_refresh();
 void menu_clean();
 void menu_clean_prompts();
 void menu_clean_txd(char* txd_string);
+void menu_request_txd(char* txd_string);
 void menu_draw_window();
 void menu_draw_rect(float rect_x, float rect_y, float rect_size_x, float rect_size_y, int rect_r, int rect_g, int rect_b, int rect_a);
 void menu_do_hold_pressed(int button_id);
@@ -174,6 +181,8 @@ bool menu_is_item_bool(int item_index);
 bool menu_is_item_string_select(int item_index);
 bool menu_is_item_string(int item_index);
 void menu_load_sprite();
+void menu_set_added_prompt_visible(int prompt_id, bool state);
+void menu_set_added_prompt_text(int prompt_id, char* prompt_string);
 void menu_set_prompts();
 void menu_draw_prompts();
 void menu_register_prompts(menu_prompt(&prompt)[MAX_MENU_PROMPTS], int prompt_count);
@@ -188,4 +197,4 @@ void start_html_font(std::ostream& ss, std::string face, float size);
 void end_html_font(std::ostream& ss);
 void start_html_align(std::ostream& ss, float percent_right = 0, std::string align = "");
 void end_html_align(std::ostream& ss);
-void set_up_draw(int font, float scale1, float scale2, int r, int g, int b, bool centre);
+void set_up_draw(float scale1, float scale2, int r, int g, int b, bool centre);

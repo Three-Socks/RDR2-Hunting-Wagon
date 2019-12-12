@@ -39,8 +39,7 @@ void menu_set_stored_data(int menu_item, int store_data)
 
 void menu_clean_stored_data()
 {
-	int clean_stored_index;
-	for (clean_stored_index = 0; clean_stored_index < MAX_MENU_ITEMS - 1; clean_stored_index++)
+	for (int clean_stored_index = 0; clean_stored_index < MAX_MENU_ITEMS - 1; clean_stored_index++)
 		menu_stored_data[clean_stored_index] = 0;
 }
 
@@ -62,8 +61,7 @@ void menu_set_stored_data_2(int menu_item, int store_data)
 
 void menu_clean_stored_data_2()
 {
-	int clean_stored_index;
-	for (clean_stored_index = 0; clean_stored_index < MAX_MENU_ITEMS - 1; clean_stored_index++)
+	for (int clean_stored_index = 0; clean_stored_index < MAX_MENU_ITEMS - 1; clean_stored_index++)
 		menu_stored_data_2[clean_stored_index] = 0;
 }
 
@@ -85,8 +83,7 @@ void menu_set_stored_float_data(int menu_item, float store_data)
 
 void menu_clean_stored_float_data()
 {
-	int clean_stored_index;
-	for (clean_stored_index = 0; clean_stored_index < MAX_MENU_ITEMS - 1; clean_stored_index++)
+	for (int clean_stored_index = 0; clean_stored_index < MAX_MENU_ITEMS - 1; clean_stored_index++)
 		menu_stored_float_data[clean_stored_index] = 0.0f;
 }
 
@@ -108,8 +105,7 @@ void menu_set_stored_float_data_2(int menu_item, float store_data)
 
 void menu_clean_stored_float_data_2()
 {
-	int clean_stored_index;
-	for (clean_stored_index = 0; clean_stored_index < MAX_MENU_ITEMS - 1; clean_stored_index++)
+	for (int clean_stored_index = 0; clean_stored_index < MAX_MENU_ITEMS - 1; clean_stored_index++)
 		menu_stored_float_data_2[clean_stored_index] = 0.0f;
 }
 
@@ -131,8 +127,7 @@ void menu_set_stored_string_data(int menu_item, char* store_string_data)
 
 void menu_clean_stored_string_data()
 {
-	int clean_stored_index;
-	for (clean_stored_index = 0; clean_stored_index < MAX_MENU_ITEMS - 1; clean_stored_index++)
+	for (int clean_stored_index = 0; clean_stored_index < MAX_MENU_ITEMS - 1; clean_stored_index++)
 		menu_stored_string_data[clean_stored_index] = NULL;
 }
 
@@ -154,8 +149,7 @@ void menu_set_stored_string_data_2(int menu_item, char* store_string_data)
 
 void menu_clean_stored_string_data_2()
 {
-	int clean_stored_index;
-	for (clean_stored_index = 0; clean_stored_index < MAX_MENU_ITEMS - 1; clean_stored_index++)
+	for (int clean_stored_index = 0; clean_stored_index < MAX_MENU_ITEMS - 1; clean_stored_index++)
 		menu_stored_string_data_2[clean_stored_index] = NULL;
 }
 
@@ -170,12 +164,25 @@ void menu_set_bool_strings(char* bool_string_off, char* bool_string_on)
 	custom_bool_string_on = bool_string_on;
 }
 
-void menu_set_header_font(int font)
+void menu_set_bool_sprites(char* bool_sprite_txd, char* bool_sprite_on, char* bool_sprite_off)
+{
+	custom_bool_sprite_txd = bool_sprite_txd;
+	custom_bool_sprite_on = bool_sprite_on;
+	custom_bool_sprite_off = bool_sprite_off;
+}
+
+void menu_set_items_selected_sprites(char* items_sprite_txd, char* items_sprite)
+{
+	menu_selected_sprite_txd = items_sprite_txd;
+	menu_selected_sprite = items_sprite;
+}
+
+void menu_set_header_font(char* font)
 {
 	menu_header_font = font;
 }
 
-void menu_set_items_font(int font)
+void menu_set_items_font(char* font)
 {
 	menu_items_font = font;
 }
@@ -370,9 +377,29 @@ int menu_get_prompt_handle(int prompt_id)
 	return menu_added_prompts[prompt_id].handle;
 }
 
+char* menu_get_prompt_string(int prompt_id)
+{
+	return menu_added_prompts[prompt_id].string;
+}
+
+void menu_set_prompt_string(int prompt_id, char* menu_prompt_string)
+{
+	menu_added_prompts[prompt_id].string = menu_prompt_string;
+}
+
 int menu_get_default_prompt_handle(int prompt_id)
 {
 	return menu_prompts[prompt_id].handle;
+}
+
+char* menu_get_default_prompt_string(int prompt_id)
+{
+	return menu_prompts[prompt_id].string;
+}
+
+void menu_set_default_prompt_string(int prompt_id, char* menu_prompt_string)
+{
+	menu_prompts[prompt_id].string = menu_prompt_string;
 }
 
 void menu_addItem(char* menu_item_string, funcptr callback_func)
@@ -757,6 +784,11 @@ void menu_add_callback_action_all(funcptr action_func)
 		menu_items_action[callback_all_index] = action_func;
 }
 
+void menu_addItem_favourite()
+{
+	menu_items_type[menu_count] = MENU_ITEM_TYPE_MODEL_FAVOURITE;
+}
+
 void menu_setup()
 {
 	menu_keyboard_input = 0x4E;
@@ -790,6 +822,9 @@ void menu_setup()
 	menu_sound_id = -1;
 
 	menu_set_bool_strings("Off", "On");
+	menu_use_bool_sprite = false;
+	menu_selected_sprite_txd = NULL;
+	menu_selected_sprite = NULL;
 
 	menu_keyboard_active = false;
 	menu_default_prompts = true;
@@ -797,7 +832,7 @@ void menu_setup()
 	menu_adjust = false;
 
 	menu_prompt_extra = 0, menu_prompt_lb_rb = 0, menu_prompt_left_right = 0,
-	menu_prompt_cancel = 0, menu_prompt_accept = 0;
+	menu_prompt_cancel = 0, menu_prompt_accept = 0, menu_prompt_disable_whistle = 0;
 
 	for (int i = 0; i < MAX_MENU_PROMPTS - 1; i++)
 		menu_item_highlighted_prompt[i] = 0;
@@ -810,22 +845,26 @@ void menu_modify_game_state()
 	// Disable player model auto switching
 	if (version > VER_UNK&& version < VER_1_0_1207_73_RGS) // Game Ver 1.0.1207.58/60/69 - global_1835009
 		*getGlobalPtr(1835009) = 1;
-	else if (version > VER_1_0_1207_69_RGS) // Game Ver 1.0.1207.73/77 - global_1835011
+	else if (version > VER_1_0_1207_69_RGS) // Game Ver 1.0.1207.73/77/80 - global_1835011
 		*getGlobalPtr(1835011) = 1;
 
-	SET_INPUT_EXCLUSIVE(2, INPUT_GAME_MENU_TAB_RIGHT);
-	SET_INPUT_EXCLUSIVE(2, INPUT_GAME_MENU_TAB_LEFT);
 	SET_INPUT_EXCLUSIVE(2, INPUT_FRONTEND_LT);
 	SET_INPUT_EXCLUSIVE(2, INPUT_FRONTEND_RT);
 	SET_INPUT_EXCLUSIVE(2, INPUT_FRONTEND_LB);
 	SET_INPUT_EXCLUSIVE(2, INPUT_FRONTEND_RB);
+	SET_INPUT_EXCLUSIVE(2, INPUT_GAME_MENU_TAB_RIGHT);
+	SET_INPUT_EXCLUSIVE(2, INPUT_GAME_MENU_TAB_LEFT);
 	SET_INPUT_EXCLUSIVE(2, INPUT_GAME_MENU_ACCEPT);
 	SET_INPUT_EXCLUSIVE(2, INPUT_GAME_MENU_CANCEL);
+	SET_INPUT_EXCLUSIVE(2, INPUT_GAME_MENU_UP);
+	SET_INPUT_EXCLUSIVE(2, INPUT_GAME_MENU_DOWN);
+	SET_INPUT_EXCLUSIVE(2, INPUT_GAME_MENU_LEFT);
+	SET_INPUT_EXCLUSIVE(2, INPUT_GAME_MENU_RIGHT);
 
-	ENABLE_CONTROL_ACTION(0, INPUT_FRONTEND_UP, true);
-	ENABLE_CONTROL_ACTION(0, INPUT_FRONTEND_DOWN, true);
-	ENABLE_CONTROL_ACTION(0, INPUT_FRONTEND_LEFT, true);
-	ENABLE_CONTROL_ACTION(0, INPUT_FRONTEND_RIGHT, true);
+	//ENABLE_CONTROL_ACTION(0, INPUT_FRONTEND_UP, true);
+	//ENABLE_CONTROL_ACTION(0, INPUT_FRONTEND_DOWN, true);
+	//ENABLE_CONTROL_ACTION(0, INPUT_FRONTEND_LEFT, true);
+	//ENABLE_CONTROL_ACTION(0, INPUT_FRONTEND_RIGHT, true);
 
 	DISABLE_CONTROL_ACTION(0, INPUT_ATTACK2, false);
 	DISABLE_CONTROL_ACTION(0, INPUT_CHARACTER_WHEEL, false);
@@ -1013,8 +1052,7 @@ void menu_shutdown()
 {
 	menu_texture_loaded = false;
 	menu_clean_txd("menu_textures");
-	menu_clean_txd("boot_flow");
-	menu_clean_txd("pausemenu_textures");
+	menu_clean_txd("generic_textures");
 	menu_set_open_state(false);
 }
 
@@ -1111,9 +1149,9 @@ void menu_catch_button_press()
 				float_change = 0.01f;
 				if (menu_items_int[menu_item_highlighted] >= 3)
 				{
-					if (IS_CONTROL_PRESSED(2, INPUT_FRONTEND_LB) || IS_DISABLED_CONTROL_PRESSED(2, INPUT_FRONTEND_LB))
+					if (IS_CONTROL_PRESSED(2, INPUT_GAME_MENU_TAB_LEFT) || IS_DISABLED_CONTROL_PRESSED(2, INPUT_GAME_MENU_TAB_LEFT))
 						float_change = 0.001f;
-					else if (IS_CONTROL_PRESSED(2, INPUT_FRONTEND_RB) || IS_DISABLED_CONTROL_PRESSED(2, INPUT_FRONTEND_RB))
+					else if (IS_CONTROL_PRESSED(2, INPUT_GAME_MENU_TAB_RIGHT) || IS_DISABLED_CONTROL_PRESSED(2, INPUT_GAME_MENU_TAB_RIGHT))
 						float_change = 0.1f;
 				}
 			}
@@ -1169,9 +1207,9 @@ void menu_catch_button_press()
 				float_change = 0.010f;
 				if (menu_items_int[menu_item_highlighted] >= 3)
 				{
-					if (IS_CONTROL_PRESSED(2, INPUT_FRONTEND_LB) || IS_DISABLED_CONTROL_PRESSED(2, INPUT_FRONTEND_LB))
+					if (IS_CONTROL_PRESSED(2, INPUT_GAME_MENU_TAB_LEFT) || IS_DISABLED_CONTROL_PRESSED(2, INPUT_GAME_MENU_TAB_LEFT))
 						float_change = 0.001f;
-					else if (IS_CONTROL_PRESSED(2, INPUT_FRONTEND_RB) || IS_DISABLED_CONTROL_PRESSED(2, INPUT_FRONTEND_RB))
+					else if (IS_CONTROL_PRESSED(2, INPUT_GAME_MENU_TAB_RIGHT) || IS_DISABLED_CONTROL_PRESSED(2, INPUT_GAME_MENU_TAB_RIGHT))
 						float_change = 0.100f;
 				}
 			}
@@ -1534,7 +1572,6 @@ void menu_clean()
 	{
 		menu_items_name[clean_index] = NULL;
 		menu_items_type[clean_index] = 0;
-		menu_items_type_2[clean_index] = 0;
 		menu_items_extra_int[clean_index] = 0;
 		menu_items_update_callback[clean_index] = 0;
 		menu_items_callback[clean_index] = 0;
@@ -1565,7 +1602,10 @@ void menu_clean()
 	menu_sub_action_mode = 0;
 	menu_keyboard_update = 0;
 	menu_item_selected = -1;
+	menu_set_items_selected_sprites(NULL, NULL);
 	menu_notifications_request = 0;
+	menu_use_bool_sprite = false;
+	menu_set_bool_sprites(NULL, NULL, NULL);
 }
 
 void menu_clean_txd(char* txd_string)
@@ -1577,53 +1617,13 @@ void menu_clean_txd(char* txd_string)
 	}
 }
 
-void menu_draw_window()
+void menu_request_txd(char* txd_string)
 {
-	int win_menu_count, win_item_highlighted;
-	float win_pos_x, win_pos_y, win_size_x, win_size_y;
-
-	if (menu_count > menu_consts_max)
-		win_menu_count = menu_consts_max + 1;
-	else
-		win_menu_count = menu_count + 1;
-
-	if (menu_item_highlighted > menu_consts_max)
-		win_item_highlighted = menu_consts_max;
-	else
-		win_item_highlighted = menu_item_highlighted;
-
-	win_pos_x = menu_x - menu_x_offset;
-	win_pos_y = menu_y - 0.003f - 0.060f;
-
-	win_size_x = 0.225f;
-
-	win_size_y = (menu_spacing * (float)(win_menu_count)) + menu_spacing;
-
-	float win_bg_size_y;
-	if (menu_count > menu_consts_max)
-		win_bg_size_y = win_size_y + menu_spacing + 0.075f;
-	else
-		win_bg_size_y = win_size_y + 0.1f;
-
-	DRAW_SPRITE("generic_textures", "inkroller_1a", win_pos_x + (win_size_x * 0.5f) + 0.001f, win_pos_y + (win_bg_size_y * 0.5f), win_size_x + 0.045f, win_bg_size_y, 0.0f, background_r, background_g, background_b, 255, true);
-
-	DRAW_SPRITE("generic_textures", "menu_header_1a", win_pos_x + (win_size_x * 0.5f), (win_pos_y + menu_header_y - 0.030f) + (menu_spacing * 0.5f), 0.220f, 0.060f, 0.0f, header_border_r, header_border_g, header_border_b, 255, true);
-
-	DRAW_SPRITE("menu_textures", "divider_line", win_pos_x + (win_size_x * 0.5f), (win_pos_y + menu_header_y + 0.015f) + (menu_spacing * 0.5f), 0.220f, 0.004f, 0.0f, divider_r, divider_g, divider_b, 255, true);
-
-	if (menu_count > menu_consts_max && menu_item_highlighted != menu_count)
+	if (!IS_STRING_NULL_OR_EMPTY(txd_string))
 	{
-		DRAW_SPRITE("menu_textures", "scroller_left_bottom", win_pos_x + (win_size_x * 0.5f) - 0.030f - 0.03f, win_size_y + (win_pos_y + menu_header_y - 0.043f) + menu_spacing, 0.100f, 0.02f, 0.0f, divider_r, divider_g, divider_b, 255, true);
-		DRAW_SPRITE("menu_textures", "scroller_arrow_bottom", win_pos_x + (win_size_x * 0.5f), win_size_y + (win_pos_y + menu_header_y - 0.043f) + menu_spacing, 0.02f, 0.02f, 0.0f, divider_r, divider_g, divider_b, 255, true);
-		DRAW_SPRITE("menu_textures", "scroller_right_bottom", win_pos_x + (win_size_x * 0.5f) + 0.030f + 0.03f, win_size_y + (win_pos_y + menu_header_y - 0.043f) + menu_spacing, 0.100f, 0.02f, 0.0f, divider_r, divider_g, divider_b, 255, true);
+		if (!HAS_STREAMED_TEXTURE_DICT_LOADED(txd_string))
+			REQUEST_STREAMED_TEXTURE_DICT(txd_string, 0);
 	}
-	else
-		DRAW_SPRITE("menu_textures", "divider_line", win_pos_x + (win_size_x * 0.5f), win_size_y + (win_pos_y + menu_header_y - 0.052f) + menu_spacing, 0.220f, 0.004f, 0.0f, divider_r, divider_g, divider_b, 255, true);
-}
-
-void menu_draw_rect(float rect_x, float rect_y, float rect_size_x, float rect_size_y, int rect_r, int rect_g, int rect_b, int rect_a)
-{
-	DRAW_RECT(rect_x + rect_size_x * 0.5f, rect_y + rect_size_y * 0.5f, rect_size_x, rect_size_y, rect_r, rect_g, rect_b, rect_a, 0, 0);
 }
 
 void menu_do_hold_pressed(int button_id)
@@ -1646,78 +1646,73 @@ void menu_do_hold_pressed(int button_id)
 
 bool menu_up_pressed()
 {
-	if (IS_CONTROL_JUST_PRESSED(2, INPUT_FRONTEND_UP) || (IS_CONTROL_PRESSED(2, INPUT_FRONTEND_UP) &&
+	if (IS_CONTROL_JUST_PRESSED(2, INPUT_GAME_MENU_UP) || (IS_CONTROL_PRESSED(2, INPUT_GAME_MENU_UP) &&
 		GET_GAME_TIMER() - press_time > press_delay - (menu_scroll_multiplier * 10)))
 	{
 		press_time = GET_GAME_TIMER();
 		menu_up = true;
 		return true;
 	}
-	menu_do_hold_pressed(INPUT_FRONTEND_UP);
+	menu_do_hold_pressed(INPUT_GAME_MENU_UP);
 
 	return false;
 }
 
 bool menu_down_pressed()
 {
-	if (IS_CONTROL_JUST_PRESSED(2, INPUT_FRONTEND_DOWN) || (IS_CONTROL_PRESSED(2, INPUT_FRONTEND_DOWN) &&
+	if (IS_CONTROL_JUST_PRESSED(2, INPUT_GAME_MENU_DOWN) || (IS_CONTROL_PRESSED(2, INPUT_GAME_MENU_DOWN) &&
 		GET_GAME_TIMER() - press_time > press_delay - (menu_scroll_multiplier * 10)))
 	{
 		press_time = GET_GAME_TIMER();
 		menu_down = true;
 		return true;
 	}
-	menu_do_hold_pressed(INPUT_FRONTEND_DOWN);
+	menu_do_hold_pressed(INPUT_GAME_MENU_DOWN);
 
 	return false;
 }
 
 bool menu_left_pressed()
 {
-	if (IS_CONTROL_JUST_PRESSED(2, INPUT_FRONTEND_LEFT) || (IS_CONTROL_PRESSED(2, INPUT_FRONTEND_LEFT) &&
+	if (IS_CONTROL_JUST_PRESSED(2, INPUT_GAME_MENU_LEFT) || (IS_CONTROL_PRESSED(2, INPUT_GAME_MENU_LEFT) &&
 		GET_GAME_TIMER() - press_time > press_delay))
 	{
 		press_time = GET_GAME_TIMER();
 		menu_left = true;
 		return true;
 	}
-	menu_do_hold_pressed(INPUT_FRONTEND_LEFT);
+	menu_do_hold_pressed(INPUT_GAME_MENU_LEFT);
 
 	return false;
 }
 
 bool menu_right_pressed()
 {
-	if (IS_CONTROL_JUST_PRESSED(2, INPUT_FRONTEND_RIGHT) || (IS_CONTROL_PRESSED(2, INPUT_FRONTEND_RIGHT) &&
+	if (IS_CONTROL_JUST_PRESSED(2, INPUT_GAME_MENU_RIGHT) || (IS_CONTROL_PRESSED(2, INPUT_GAME_MENU_RIGHT) &&
 		GET_GAME_TIMER() - press_time > press_delay))
 	{
 		press_time = GET_GAME_TIMER();
 		menu_right = true;
 		return true;
 	}
-	menu_do_hold_pressed(INPUT_FRONTEND_RIGHT);
+	menu_do_hold_pressed(INPUT_GAME_MENU_RIGHT);
 
 	return false;
 }
 
 bool menu_accept_pressed()
 {
-	if (IS_CONTROL_JUST_PRESSED(2, INPUT_GAME_MENU_ACCEPT)/* || (IS_CONTROL_PRESSED(2, INPUT_GAME_MENU_ACCEPT) &&
-		GET_GAME_TIMER() - press_time > press_delay)*/)
+	if (IS_CONTROL_JUST_PRESSED(2, INPUT_GAME_MENU_ACCEPT))
 	{
-		//press_time = GET_GAME_TIMER();
-		menu_right = true;
 		return true;
 	}
-	//menu_do_hold_pressed(INPUT_GAME_MENU_ACCEPT);
 
 	return false;
 }
 
 bool menu_is_item_number(int item_index)
 {
-	if (menu_items_type[item_index] == MENU_ITEM_TYPE_NUMBER || menu_items_type[item_index] == MENU_ITEM_TYPE_KB_NUMBER ||
-		menu_items_type[item_index] == MENU_ITEM_TYPE_NUMBER_FORMAT)
+	if (menu_items_type[item_index] == MENU_ITEM_TYPE_NUMBER || menu_items_type[item_index] == MENU_ITEM_TYPE_KB_NUMBER)
 		return true;
 	else
 		return false;
@@ -1726,7 +1721,7 @@ bool menu_is_item_number(int item_index)
 bool menu_is_item_keyboard(int item_index)
 {
 	if (menu_items_type[item_index] == MENU_ITEM_TYPE_KB_STRING || menu_items_type[item_index] == MENU_ITEM_TYPE_KB_NUMBER ||
-		menu_items_type[item_index] == MENU_ITEM_TYPE_KB_FLOAT || menu_items_type[item_index] == MENU_ITEM_TYPE_KB_NUMBER_FORMAT)
+		menu_items_type[item_index] == MENU_ITEM_TYPE_KB_FLOAT)
 		return true;
 	else
 		return false;
@@ -1768,22 +1763,28 @@ void menu_load_sprite()
 {
 	if (!menu_texture_loaded)
 	{
-		REQUEST_STREAMED_TEXTURE_DICT("menu_textures", 0);
-		REQUEST_STREAMED_TEXTURE_DICT("boot_flow", 0);
-		REQUEST_STREAMED_TEXTURE_DICT("pausemenu_textures", 0);
-		if (HAS_STREAMED_TEXTURE_DICT_LOADED("menu_textures") && HAS_STREAMED_TEXTURE_DICT_LOADED("boot_flow") && HAS_STREAMED_TEXTURE_DICT_LOADED("pausemenu_textures"))
+		menu_request_txd("menu_textures");
+		menu_request_txd("generic_textures");
+		if (HAS_STREAMED_TEXTURE_DICT_LOADED("menu_textures") && HAS_STREAMED_TEXTURE_DICT_LOADED("generic_textures"))
 			menu_texture_loaded = true;
 	}
 }
 
-void menu_set_up_texture(float& tex_x, float& tex_y)
+void menu_set_added_prompt_visible(int prompt_id, bool state)
 {
-	const float height = 1080.0f;
-	float ratio = 16.0f / 9.0f;
-	float width = height * ratio;
+	if (_PROMPT_IS_VALID(menu_get_prompt_handle(prompt_id)))
+		_PROMPT_SET_VISIBLE(menu_get_prompt_handle(prompt_id), state);
+}
 
-	tex_x = tex_x / width * 1000;
-	tex_x = tex_x / height * 1000;
+void menu_set_added_prompt_text(int prompt_id, char* prompt_string)
+{
+	if (menu_get_prompt_string(prompt_id) != prompt_string)
+	{
+		menu_set_prompt_string(prompt_id, prompt_string);
+		char* var_string = CREATE_STRING(10, "LITERAL_STRING", menu_get_prompt_string(prompt_id));
+		if (_PROMPT_IS_VALID(menu_get_prompt_handle(prompt_id)))
+			_PROMPT_SET_TEXT(menu_get_prompt_handle(prompt_id), var_string);
+	}
 }
 
 void menu_set_prompts()
@@ -1804,6 +1805,8 @@ void menu_set_prompts()
 				menu_prompt_cancel = menu_addDefaultPrompt("Back", INPUT_GAME_MENU_CANCEL);
 
 			menu_prompt_accept = menu_addDefaultPrompt("Enter", INPUT_GAME_MENU_ACCEPT);
+
+			menu_prompt_disable_whistle = menu_addDefaultPrompt("", INPUT_GAME_MENU_UP, 0, false);
 		}
 
 		menu_register_prompts(menu_prompts, menu_prompts_count);
@@ -1874,6 +1877,55 @@ void menu_clean_prompts()
 	menu_added_prompts_count = -1;
 }
 
+void menu_draw_window()
+{
+	int win_menu_count, win_item_highlighted;
+	float win_pos_x, win_pos_y, win_size_x, win_size_y;
+
+	if (menu_count > menu_consts_max)
+		win_menu_count = menu_consts_max + 1;
+	else
+		win_menu_count = menu_count + 1;
+
+	if (menu_item_highlighted > menu_consts_max)
+		win_item_highlighted = menu_consts_max;
+	else
+		win_item_highlighted = menu_item_highlighted;
+
+	win_pos_x = menu_x - menu_x_offset;
+	win_pos_y = menu_y - 0.003f - 0.060f;
+
+	win_size_x = 0.225f;
+
+	win_size_y = (menu_spacing * (float)(win_menu_count)) + menu_spacing;
+
+	float win_bg_size_y;
+	if (menu_count > menu_consts_max)
+		win_bg_size_y = win_size_y + menu_spacing + 0.075f;
+	else
+		win_bg_size_y = win_size_y + 0.1f;
+
+	DRAW_SPRITE("generic_textures", "inkroller_1a", win_pos_x + (win_size_x * 0.5f) + 0.001f, win_pos_y + (win_bg_size_y * 0.5f), win_size_x + 0.045f, win_bg_size_y, 0.0f, background_r, background_g, background_b, 255, true);
+
+	DRAW_SPRITE("generic_textures", "menu_header_1a", win_pos_x + (win_size_x * 0.5f), (win_pos_y + menu_header_y - 0.030f) + (menu_spacing * 0.5f), 0.220f, 0.060f, 0.0f, header_border_r, header_border_g, header_border_b, 255, true);
+
+	DRAW_SPRITE("menu_textures", "divider_line", win_pos_x + (win_size_x * 0.5f), (win_pos_y + menu_header_y + 0.015f) + (menu_spacing * 0.5f), 0.220f, 0.004f, 0.0f, divider_r, divider_g, divider_b, 255, true);
+
+	if (menu_count > menu_consts_max&& menu_item_highlighted != menu_count)
+	{
+		DRAW_SPRITE("menu_textures", "scroller_left_bottom", win_pos_x + (win_size_x * 0.5f) - 0.030f - 0.03f, win_size_y + (win_pos_y + menu_header_y - 0.043f) + menu_spacing, 0.100f, 0.02f, 0.0f, divider_r, divider_g, divider_b, 255, true);
+		DRAW_SPRITE("menu_textures", "scroller_arrow_bottom", win_pos_x + (win_size_x * 0.5f), win_size_y + (win_pos_y + menu_header_y - 0.043f) + menu_spacing, 0.02f, 0.02f, 0.0f, divider_r, divider_g, divider_b, 255, true);
+		DRAW_SPRITE("menu_textures", "scroller_right_bottom", win_pos_x + (win_size_x * 0.5f) + 0.030f + 0.03f, win_size_y + (win_pos_y + menu_header_y - 0.043f) + menu_spacing, 0.100f, 0.02f, 0.0f, divider_r, divider_g, divider_b, 255, true);
+	}
+	else
+		DRAW_SPRITE("menu_textures", "divider_line", win_pos_x + (win_size_x * 0.5f), win_size_y + (win_pos_y + menu_header_y - 0.052f) + menu_spacing, 0.220f, 0.004f, 0.0f, divider_r, divider_g, divider_b, 255, true);
+}
+
+void menu_draw_rect(float rect_x, float rect_y, float rect_size_x, float rect_size_y, int rect_r, int rect_g, int rect_b, int rect_a)
+{
+	DRAW_RECT(rect_x + rect_size_x * 0.5f, rect_y + rect_size_y * 0.5f, rect_size_x, rect_size_y, rect_r, rect_g, rect_b, rect_a, 0, 0);
+}
+
 void GetScreenResolution(int& horizontal, int& vertical)
 {
 	RECT desktop;
@@ -1917,7 +1969,7 @@ void menu_draw()
 
 	std::ostringstream ss;
 
-	start_html_font(ss, "$title1", 1.45f);
+	start_html_font(ss, menu_header_font, 1.45f);
 
 	ss << menu_header;
 
@@ -1925,7 +1977,7 @@ void menu_draw()
 
 	string_menu_header = ss.str();
 
-	set_up_draw(menu_header_font, 0.0f, 0.33f, header_text_r, header_text_g, header_text_b, 1);
+	set_up_draw(0.0f, 0.33f, header_text_r, header_text_g, header_text_b, 1);
 	draw_string_2(string_menu_header, menu_x + win_size_x - menu_x_offset - (win_size_x * 0.5f), menu_y - 0.020f);
 
 	for (item_index = 0; item_index < menu_count + 1; item_index++)
@@ -1955,20 +2007,28 @@ void menu_draw()
 
 				if ((menu_action_confirm || menu_notifications_request != 0) && item_index == menu_notification_item)
 				{
+					std::ostringstream ss;
+
 					int notification_len = GET_LENGTH_OF_LITERAL_STRING(menu_notification_text) + 2;
 
 					float notification_size_x = notification_len * (0.06f * (float) menu_res_x / (float) menu_res_x) / 10;
 
 					DRAW_SPRITE("generic_textures", "selection_box_bg_1d", menu_x - menu_x_offset + (notification_size_x * 0.5f) + win_size_x + 0.020f, win_pos_y + item_visible_y - 0.0360f, notification_size_x, menu_spacing, 0.0f, background_r, background_g, background_b, 155, true);
 
-					set_up_draw(menu_items_font, 0.0f, 0.33f, non_highlighted_text_r, non_highlighted_text_g, non_highlighted_text_b, 0);
-					draw_string(menu_notification_text, menu_x + win_size_x + 0.020f, item_y - item_y_offset);
+					start_html_font(ss, menu_items_font, 1.1f);
+
+					ss << menu_notification_text;
+
+					end_html_font(ss);
+
+					set_up_draw(0.0f, 0.33f, non_highlighted_text_r, non_highlighted_text_g, non_highlighted_text_b, 0);
+					draw_string_2(ss.str(), menu_x + win_size_x + 0.022f, item_y - item_y_offset);
 				}
 
 				std::ostringstream ss;
 
 				start_html_align(ss);
-				start_html_font(ss, "$body", 1.1f);
+				start_html_font(ss, menu_items_font, 1.1f);
 
 				ss << menu_items_name[item_index];
 
@@ -1977,16 +2037,15 @@ void menu_draw()
 
 				string_left = ss.str();
 
-				set_up_draw(menu_items_font, 0.0f, 0.33f, item_r, item_g, item_b, 0);
+				set_up_draw(0.0f, 0.33f, item_r, item_g, item_b, 0);
 				draw_string_2(string_left, menu_x + menu_x_offset, item_y - item_y_offset);
-
-				if (menu_is_item_number(item_index) || menu_is_item_float(item_index) || menu_is_item_string_select(item_index) || menu_is_item_bool(item_index))
+				if (menu_is_item_number(item_index) || menu_is_item_float(item_index) || menu_is_item_string_select(item_index) || (menu_is_item_bool(item_index) && !menu_use_bool_sprite))
 				{
 					std::ostringstream ss;
 					bool show_arrow_sprite = false;
 
 					start_html_align(ss, html_menu_align, "right");
-					start_html_font(ss, "$body", 1.1f);
+					start_html_font(ss, menu_items_font, 1.1f);
 
 					if (menu_texture_loaded && menu_item_highlighted == item_index)
 					{
@@ -2038,7 +2097,7 @@ void menu_draw()
 
 					string_right = ss.str();
 
-					set_up_draw(menu_items_font, 0.0f, 0.33f, item_r, item_g, item_b, 0);
+					set_up_draw(0.0f, 0.33f, item_r, item_g, item_b, 0);
 					draw_string_2(string_right, 0.0f, item_y - item_y_offset);
 				}
 				else if (menu_is_item_string(item_index))
@@ -2046,7 +2105,7 @@ void menu_draw()
 					std::ostringstream ss;
 
 					start_html_align(ss, html_menu_align, "right");
-					start_html_font(ss, "$body", 1.1f);
+					start_html_font(ss, menu_items_font, 1.1f);
 
 					if (menu_items_string[item_index] != NULL)
 						ss << menu_items_string[item_index];
@@ -2056,8 +2115,39 @@ void menu_draw()
 
 					string_right = ss.str();
 
-					set_up_draw(menu_items_font, 0.0f, 0.33f, item_r, item_g, item_b, 0);
+					set_up_draw(0.0f, 0.33f, item_r, item_g, item_b, 0);
 					draw_string_2(string_right, menu_x, item_y - item_y_offset);
+				}
+				else if (menu_is_item_bool(item_index))
+				{
+					if (menu_use_bool_sprite)
+					{
+						float tex_x = menu_x + win_size_x - 0.017f;
+						float tex_size_y = 0.021f;
+						float tex_size_x = (tex_size_y / 100) * 60;
+
+						if (menu_items_extra_int[item_index] == 1)
+						{
+							if (!IS_STRING_NULL_OR_EMPTY(custom_bool_sprite_on))
+								DRAW_SPRITE(custom_bool_sprite_txd, custom_bool_sprite_on, tex_x, (item_y - 0.007f) + (menu_spacing * 0.5f), tex_size_x, tex_size_y, 0.0f, item_r, item_g, item_b, 255, true);
+						}
+						else
+						{
+							if (!IS_STRING_NULL_OR_EMPTY(custom_bool_sprite_off))
+								DRAW_SPRITE(custom_bool_sprite_txd, custom_bool_sprite_off, tex_x, (item_y - 0.007f) + (menu_spacing * 0.5f), tex_size_x, tex_size_y, 0.0f, item_r, item_g, item_b, 255, true);
+						}
+					}
+				}
+				else if (menu_texture_loaded && item_index == menu_item_selected || menu_texture_loaded && item_index == menu_items_selected[item_index])
+				{
+					float tex_x = menu_x + win_size_x - 0.017f;
+					float tex_size_y = 0.021f;
+					float tex_size_x = (tex_size_y / 100) * 60;
+
+					if (!IS_STRING_NULL_OR_EMPTY(menu_selected_sprite))
+						DRAW_SPRITE(menu_selected_sprite_txd, menu_selected_sprite, tex_x, (item_y - 0.007f) + (menu_spacing * 0.5f), tex_size_x, tex_size_y, 0.0f, item_r, item_g, item_b, 255, true);
+					else
+						DRAW_SPRITE("menu_textures", "menu_icon_tick", tex_x, (item_y - 0.007f) + (menu_spacing * 0.5f), tex_size_x, tex_size_y, 0.0f, item_r, item_g, item_b, 255, true);
 				}
 			}
 		}
@@ -2077,7 +2167,7 @@ void menu_draw()
 
 		string_item_count = ss.str();
 
-		set_up_draw(menu_items_font, 0.0f, 0.33f, items_count_r, items_count_g, items_count_b, 0);
+		set_up_draw(0.0f, 0.33f, items_count_r, items_count_g, items_count_b, 0);
 		draw_string_2(string_item_count, 0.0f, (arrow_ud_y + menu_y - 0.020f) + (menu_spacing * 0.5f));
 	}
 }
@@ -2153,7 +2243,7 @@ void end_html_align(std::ostream& ss)
 	ss << "</p></textformat>";
 }
 
-void set_up_draw(int font, float scale1, float scale2, int r, int g, int b, bool centre)
+void set_up_draw(float scale1, float scale2, int r, int g, int b, bool centre)
 {
 	SET_TEXT_SCALE(scale1, scale2);
 	SET_TEXT_COLOR_RGBA(r, g, b, 255);
