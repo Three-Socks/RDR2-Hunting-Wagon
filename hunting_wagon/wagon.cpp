@@ -107,7 +107,8 @@ void wagon_get_camp(Vector3 player_coords)
 	{
 		// Donation box 0xF66C8B0E
 		// Shaving Mirror 0x63085BCC
-		Object closest_obj = GET_CLOSEST_OBJECT_OF_TYPE(player_coords.x, player_coords.y, player_coords.z, 500.0f, 0x63085BCC, 0, 0, 1);
+		// Chest 0x62C3DE15
+		Object closest_obj = GET_CLOSEST_OBJECT_OF_TYPE(player_coords.x, player_coords.y, player_coords.z, 500.0f, 0x62C3DE15, 0, 0, 1);
 
 		if (wagon_log_debug_info)
 		{
@@ -120,9 +121,9 @@ void wagon_get_camp(Vector3 player_coords)
 			float closest_distance = 0.0f;
 
 			Vector3 obj_coords = GET_ENTITY_COORDS(closest_obj, 0, 0);
-			/*Log::Write(Log::Type::Normal, "obj_coords.x = %f", obj_coords.x);
+			Log::Write(Log::Type::Normal, "obj_coords.x = %f", obj_coords.x);
 			Log::Write(Log::Type::Normal, "obj_coords.y = %f", obj_coords.y);
-			Log::Write(Log::Type::Normal, "obj_coords.z = %f", obj_coords.z);*/
+			Log::Write(Log::Type::Normal, "obj_coords.z = %f", obj_coords.z);
 
 			for (int i = 0; i <= 8; i++)
 			{
@@ -146,10 +147,10 @@ void wagon_get_camp(Vector3 player_coords)
 				{
 					closest_distance = camp_distance;
 					wagon_closest_camp = i;
-					//Log::Write(Log::Type::Normal, "new closest_distance = %f", closest_distance);
+					Log::Write(Log::Type::Normal, "new closest_distance = %f", closest_distance);
 				}
 
-				//Log::Write(Log::Type::Normal, "\n");
+				Log::Write(Log::Type::Normal, "\n");
 			}
 
 			//Log::Write(Log::Type::Normal, "wagon_closest_camp = %i", wagon_closest_camp);
@@ -166,7 +167,7 @@ void wagon_get_camp(Vector3 player_coords)
 			}
 
 			//Log::Write(Log::Type::Normal, "closest_distance = %f", closest_distance);
-			//Log::Write(Log::Type::Normal, "wagon_closest_camp = %i", wagon_closest_camp);
+			Log::Write(Log::Type::Normal, "wagon_closest_camp = %i", wagon_closest_camp);
 		}
 	}
 }
@@ -210,8 +211,6 @@ void wagon_process_vehicle()
 				wagon_stow = true;
 				wagon_stow_time = GET_GAME_TIMER();
 				wagon_stow_entity = animal_holding;
-
-				//ANIMPOSTFX_STOP("CamTransitionBlinkSlow");
 			}
 		}
 

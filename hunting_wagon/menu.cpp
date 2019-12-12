@@ -152,6 +152,18 @@ void menu_set()
 		}
 	);
 
+	menu_addItem_callback("Set Closest Obj",
+		[]
+		{
+			Vector3 player_coords = GET_ENTITY_COORDS(PLAYER_PED_ID(), true, 0);
+			Object closest_obj = GET_CLOSEST_OBJECT_OF_TYPE(player_coords.x, player_coords.y, player_coords.z, 500.0f, 0x62C3DE15, 0, 0, 1);
+
+			SET_ENTITY_VISIBLE(closest_obj, menu_get_current_bool());
+			menu_toggle_current_bool();
+		}
+	);
+	menu_addItem_bool(0);
+
 	menu_addItem_callback("Log Debug Info",
 		[]
 		{
