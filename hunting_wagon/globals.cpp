@@ -1,5 +1,8 @@
 #include "script.h"
 
+int test_global = 40;
+int test_global2 = 4283;
+
 int menu_keyboard_input, menu_gamepad_input, menu_gamepad_input2, menu_count, menu_item_highlighted, menu_item_selected,
 menu_action_mode, menu_load_hold_pressed, menu_level, press_time, hold_time, press_delay, press_id, menu_sound_id, menu_res_x, menu_res_y,
 menu_max, menu_consts_max, menu_start_scrolling, menu_sub_action_mode,
@@ -83,7 +86,7 @@ Vehicle wagon_spawned_vehicle;
 Vector3 wagon_spawn_camp_coords;
 Blip wagon_blip;
 float wagon_spawn_camp_heading;
-bool wagon_spawn_action, wagon_stow, wagon_run_set_code, wagon_run_dead_code;
+bool wagon_camp_global, wagon_spawn_action, wagon_stow, wagon_run_set_code, wagon_run_dead_code;
 Ped animal_holding, wagon_stow_entity;
 int wagon_spawn_action_mode, wagon_pickup_action_mode, wagon_bone, wagon_prompt, wagon_closest_camp, wagon_stow_time;
 

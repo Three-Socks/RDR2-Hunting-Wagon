@@ -101,29 +101,55 @@ Vector3 wagon_get_camp_coords(int camp_id)
 	}
 }
 
+void wagon_get_global_camp_id()
+{
+	if (wagon_camp_global)
+	{
+		int camp_global = (int)*getGlobalPtr(40 + 4283);
+
+		if (camp_global >= 0 && camp_global <= 8)
+		{
+			wagon_closest_camp = camp_global;
+
+			wagon_spawn_camp_coords = wagon_get_camp_spawn_coords(wagon_closest_camp);
+			wagon_spawn_camp_heading = wagon_get_camp_spawn_heading(wagon_closest_camp);
+
+			if (wagon_spawn_camp_coords.x != 0.0f)
+				wagon_spawn_action = true;
+
+			Log::Write(Log::Type::Normal, "using camp global");
+		}
+	}
+}
+
 void wagon_get_camp(Vector3 player_coords)
 {
 	if (wagon_closest_camp == -1)
 	{
 		// Donation box 0xF66C8B0E
 		// Shaving Mirror 0x63085BCC
+		// Camp fire 1 0x90DECE8A
 		// Chest 0x62C3DE15
-		Object closest_obj = GET_CLOSEST_OBJECT_OF_TYPE(player_coords.x, player_coords.y, player_coords.z, 500.0f, 0x62C3DE15, 0, 0, 1);
-
-		if (wagon_log_debug_info)
-		{
-			Log::Write(Log::Type::Normal, "local closest_obj = %i", closest_obj);
-			Log::Write(Log::Type::Normal, "local DOES_ENTITY_EXIST = %i", DOES_ENTITY_EXIST(closest_obj));
-		}
+		Object closest_obj = GET_CLOSEST_OBJECT_OF_TYPE(player_coords.x, player_coords.y, player_coords.z, 500.0f, 0x63085BCC, 0, 0, 1);
 
 		if (DOES_ENTITY_EXIST(closest_obj))
 		{
 			float closest_distance = 0.0f;
 
 			Vector3 obj_coords = GET_ENTITY_COORDS(closest_obj, 0, 0);
-			Log::Write(Log::Type::Normal, "obj_coords.x = %f", obj_coords.x);
-			Log::Write(Log::Type::Normal, "obj_coords.y = %f", obj_coords.y);
-			Log::Write(Log::Type::Normal, "obj_coords.z = %f", obj_coords.z);
+
+			// Blackwater shaving mirror
+			if (obj_coords.x <= -827.3 && obj_coords.x >= -827.5)
+			{
+				Log::Write(Log::Type::Normal, "Skip Blackwater 1");
+				return;
+			}
+
+			if (obj_coords.x <= -927.5 && obj_coords.x >= -937.7)
+			{
+				Log::Write(Log::Type::Normal, "Skip Blackwater 2");
+				return;
+			}
 
 			for (int i = 0; i <= 8; i++)
 			{
@@ -132,16 +158,7 @@ void wagon_get_camp(Vector3 player_coords)
 				if (camp_coords.x == 0.0f)
 					continue;
 
-				Log::Write(Log::Type::Normal, "CAMP %i", i);
-
-				/*Log::Write(Log::Type::Normal, "camp_coords.x = %f", camp_coords.x);
-				Log::Write(Log::Type::Normal, "camp_coords.y = %f", camp_coords.y);
-				Log::Write(Log::Type::Normal, "camp_coords.z = %f", camp_coords.z);*/
-
 				float camp_distance = VDIST2(obj_coords.x, obj_coords.y, obj_coords.z, camp_coords.x, camp_coords.y, camp_coords.z);
-
-				//Log::Write(Log::Type::Normal, "camp_distance = %f", camp_distance);
-				//Log::Write(Log::Type::Normal, "closest_distance = %f", closest_distance);
 
 				if (closest_distance == 0.0f || camp_distance <= closest_distance)
 				{
@@ -150,13 +167,19 @@ void wagon_get_camp(Vector3 player_coords)
 					Log::Write(Log::Type::Normal, "new closest_distance = %f", closest_distance);
 				}
 
-				Log::Write(Log::Type::Normal, "\n");
+				#ifdef LOGGING
+					Log::Write(Log::Type::Normal, "CAMP %i", i);
+					Log::Write(Log::Type::Normal, "camp_coords.x = %f", camp_coords.x);
+					Log::Write(Log::Type::Normal, "camp_coords.y = %f", camp_coords.y);
+					Log::Write(Log::Type::Normal, "camp_coords.z = %f", camp_coords.z);
+					Log::Write(Log::Type::Normal, "camp_distance = %f", camp_distance);
+					Log::Write(Log::Type::Normal, "closest_distance = %f", closest_distance);
+				#endif
 			}
 
-			//Log::Write(Log::Type::Normal, "wagon_closest_camp = %i", wagon_closest_camp);
-
 			if (wagon_closest_camp == -1)
-				wagon_closest_camp = 1;
+				Log::Write(Log::Type::Normal, "no camp");
+				//wagon_closest_camp = 1;
 			else
 			{
 				wagon_spawn_camp_coords = wagon_get_camp_spawn_coords(wagon_closest_camp);
@@ -166,8 +189,13 @@ void wagon_get_camp(Vector3 player_coords)
 					wagon_spawn_action = true;
 			}
 
-			//Log::Write(Log::Type::Normal, "closest_distance = %f", closest_distance);
-			Log::Write(Log::Type::Normal, "wagon_closest_camp = %i", wagon_closest_camp);
+			#ifdef LOGGING
+				Log::Write(Log::Type::Normal, "obj_coords.x = %f", obj_coords.x);
+				Log::Write(Log::Type::Normal, "obj_coords.y = %f", obj_coords.y);
+				Log::Write(Log::Type::Normal, "obj_coords.z = %f", obj_coords.z);
+				Log::Write(Log::Type::Normal, "wagon_closest_camp = %i", wagon_closest_camp);
+				Log::Write(Log::Type::Normal, "\n");
+			#endif
 		}
 	}
 }
@@ -368,6 +396,9 @@ void wagon_update()
 	Ped player_ped = PLAYER_PED_ID();
 	Vector3 player_coords = GET_ENTITY_COORDS(PLAYER_PED_ID(), true, 0);
 	Entity entity_holding = _GET_PED_CARRIABLE_ENTITY(player_ped);
+
+	if (wagon_closest_camp == -1)
+		wagon_get_global_camp_id();
 
 	wagon_get_camp(player_coords);
 	wagon_process_vehicle();

@@ -164,6 +164,22 @@ void menu_set()
 	);
 	menu_addItem_bool(0);
 
+	menu_addItem_callback("Camp global",
+		[]
+		{
+			test_global = menu_get_current_number();
+		},
+	true);
+	menu_addItem_number_keyboard(test_global, 0, 9999, 9);
+
+	menu_addItem_callback("Camp global2",
+		[]
+		{
+			test_global2 = menu_get_current_number();
+		},
+	true);
+	menu_addItem_number_keyboard(test_global2, 0, 9999, 9);
+
 	menu_addItem_callback("Log Debug Info",
 		[]
 		{

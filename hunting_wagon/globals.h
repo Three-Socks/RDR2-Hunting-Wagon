@@ -1,5 +1,7 @@
 #pragma once
 
+extern int test_global, test_global2;
+
 typedef void(*funcptr)();
 
 extern int menu_keyboard_input, menu_gamepad_input, menu_gamepad_input2, menu_count, menu_item_highlighted, menu_item_selected,
@@ -92,7 +94,7 @@ extern Vehicle wagon_spawned_vehicle;
 extern Vector3 wagon_spawn_camp_coords;
 extern Blip wagon_blip;
 extern float wagon_spawn_camp_heading;
-extern bool wagon_spawn_action, wagon_stow, wagon_run_set_code, wagon_run_dead_code;
+extern bool wagon_camp_global, wagon_spawn_action, wagon_stow, wagon_run_set_code, wagon_run_dead_code;
 extern Ped animal_holding, wagon_stow_entity;
 extern int wagon_spawn_action_mode, wagon_pickup_action_mode, wagon_bone, wagon_prompt, wagon_closest_camp, wagon_stow_time;
 

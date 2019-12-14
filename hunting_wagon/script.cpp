@@ -247,6 +247,15 @@ void wagon_setup()
 	menu_open_state = false;
 	menu_ini_default = false;
 
+	char* game_version = _GET_GAME_BUILD_STRING();
+
+	Log::Write(Log::Type::Normal, "game_version = %s", game_version);
+
+	if (strstr(game_version, "1207.81"))
+		wagon_camp_global = true;
+	else
+		wagon_camp_global = false;
+
 	wagon_spawn_camp_coords = { 0.0f, 0.0f, 0.0f };
 	wagon_spawn_camp_heading = 0.0f;
 
