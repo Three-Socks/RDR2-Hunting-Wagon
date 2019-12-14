@@ -251,10 +251,21 @@ void wagon_setup()
 
 	Log::Write(Log::Type::Normal, "game_version = %s", game_version);
 
-	if (strstr(game_version, "1207.81"))
-		wagon_camp_global = true;
-	else
-		wagon_camp_global = false;
+	wagon_using_global = false;
+
+	wagon_camp_global_var = 40;
+	wagon_camp_global_member = 4283;
+
+	int camp_global_check_member = 39;
+
+	//if (strstr(game_version, "1207.80"))
+	if ((int)*getGlobalPtr(wagon_camp_global_var + camp_global_check_member) == GET_HASH_KEY("Player_Zero") || (int)*getGlobalPtr(wagon_camp_global_var + camp_global_check_member) == GET_HASH_KEY("Player_Three"))
+	{
+		int camp_global = (int)*getGlobalPtr(wagon_camp_global_var + wagon_camp_global_member);
+
+		if (camp_global >= 1 && camp_global <= 8)
+			wagon_using_global = true;
+	}
 
 	wagon_spawn_camp_coords = { 0.0f, 0.0f, 0.0f };
 	wagon_spawn_camp_heading = 0.0f;

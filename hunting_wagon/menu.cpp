@@ -167,18 +167,32 @@ void menu_set()
 	menu_addItem_callback("Camp global",
 		[]
 		{
-			test_global = menu_get_current_number();
+			wagon_camp_global_var = menu_get_current_number();
 		},
 	true);
-	menu_addItem_number_keyboard(test_global, 0, 9999, 9);
+	menu_addItem_number_keyboard(wagon_camp_global_var, 0, 9999, 9);
 
 	menu_addItem_callback("Camp global2",
 		[]
 		{
-			test_global2 = menu_get_current_number();
+			wagon_camp_global_member = menu_get_current_number();
 		},
 	true);
-	menu_addItem_number_keyboard(test_global2, 0, 9999, 9);
+	menu_addItem_number_keyboard(wagon_camp_global_member, 0, 9999, 9);
+
+	menu_addItem_callback("bone dump",
+		[]
+		{
+			char* bone_strings[] = { "SKEL_HEAD", "SKEL_ROOT", "PH_HEART", "SKEL_L_CLAVICLE", "SKEL_R_CLAVICLE", "SKEL_NECK0", "SKEL_SPINE1", "SKEL_L_UPPERARM", "SKEL_R_UPPERARM", "SKEL_L_FOREARM", "SKEL_R_FOREARM", "SKEL_L_CALF", "SKEL_L_THIGH", "SKEL_R_CALF", "SKEL_R_THIGH", "SKEL_SPINE0", "SKEL_PELVIS", "SKEL_NECK2", "SKEL_SPINE5", "SKEL_SPINE2", "SKEL_SPINE3", "SKEL_SPINE4", "SKEL_L_HAND", "SKEL_R_HAND", "SKEL_L_FOOT", "SKEL_R_FOOT", "SKEL_SPINE_ROOT", "SKEL_NECK3", "SKEL_SPINE6", "SKEL_NECK1", "SKEL_PelvisBody", "SKEL_L_ThighBody", "SKEL_R_ThighBody", "SKEL_Spine0Body", "SKEL_L_CalfBody", "SKEL_L_FootBody", "SKEL_R_CalfBody", "SKEL_R_FootBody", "SKEL_Spine1Body", "SKEL_Spine2Body", "SKEL_Spine4Body", "SKEL_L_ClavicleBody", "SKEL_R_ClavicleBody", "SKEL_Neck0Body", "SKEL_L_UpperArmBody", "SKEL_L_ForearmBody", "SKEL_L_HandBody", "SKEL_R_UpperArmBody", "SKEL_R_ForearmBody", "SKEL_R_HandBody", "SKEL_HeadBody", "SKEL_Neck2Body", "SKEL_Spine_RootBody", "SKEL_Tail1Body", "SKEL_Tail4Body", "SKEL_Spine3Body", "SKEL_Neck1Body", "SKEL_Neck3Body", "SKEL_Neck5Body", "SKEL_Tail5", NULL };
+
+			for (char** iList = bone_strings; *iList != NULL; ++iList)
+			{
+				Log::Write(Log::Type::Normal, "%s = %i", *iList, GET_ENTITY_BONE_INDEX_BY_NAME(PLAYER_PED_ID(), *iList));
+				
+			}
+
+		}
+	);
 
 	menu_addItem_callback("Log Debug Info",
 		[]

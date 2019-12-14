@@ -26,7 +26,7 @@ Vector3 wagon_get_camp_spawn_coords(int camp_id)
 		
 		// Pronghorn Ranch
 		case 7:
-			return { -2584.8486f, 475.0491f, 145.3142f };
+			return { -2584.8486f, 475.0491f, 145.3300f };
 		
 		// Beechers Hope
 		case 8:
@@ -103,22 +103,18 @@ Vector3 wagon_get_camp_coords(int camp_id)
 
 void wagon_get_global_camp_id()
 {
-	if (wagon_camp_global)
+	if (wagon_using_global)
 	{
-		int camp_global = (int)*getGlobalPtr(40 + 4283);
+		wagon_closest_camp = (int)*getGlobalPtr(wagon_camp_global_var + wagon_camp_global_member);
 
-		if (camp_global >= 0 && camp_global <= 8)
-		{
-			wagon_closest_camp = camp_global;
+		wagon_spawn_camp_coords = wagon_get_camp_spawn_coords(wagon_closest_camp);
+		wagon_spawn_camp_heading = wagon_get_camp_spawn_heading(wagon_closest_camp);
 
-			wagon_spawn_camp_coords = wagon_get_camp_spawn_coords(wagon_closest_camp);
-			wagon_spawn_camp_heading = wagon_get_camp_spawn_heading(wagon_closest_camp);
+		if (wagon_spawn_camp_coords.x != 0.0f)
+			wagon_spawn_action = true;
 
-			if (wagon_spawn_camp_coords.x != 0.0f)
-				wagon_spawn_action = true;
-
-			Log::Write(Log::Type::Normal, "using camp global");
-		}
+		Log::Write(Log::Type::Normal, "using camp global");
+		Log::Write(Log::Type::Normal, "wagon_closest_camp = %i", wagon_closest_camp);
 	}
 }
 
@@ -265,28 +261,33 @@ void wagon_set_vehicle(Vector3 player_coords)
 
 	float spawn_distance = VDIST2(player_coords.x, player_coords.y, player_coords.z, spawn_vehicle_coords.x, spawn_vehicle_coords.y, spawn_vehicle_coords.z);
 
-	if (spawn_distance < 15000.0f && !wagon_spawn_action && wagon_run_set_code)
+	if (IS_SPHERE_VISIBLE(spawn_vehicle_coords.x, spawn_vehicle_coords.y, spawn_vehicle_coords.z, 10.0f) && spawn_distance < 15000.0f && !wagon_spawn_action && wagon_run_set_code)
 	{
 		if (DOES_ENTITY_EXIST(wagon_spawned_vehicle))
 		{
 			wagon_run_set_code = false;
 			Log::Write(Log::Type::Normal, "wagon_run_set_code");
-			float ground_z = spawn_vehicle_coords.z;
+
+			float old_ground_z = spawn_vehicle_coords.z;
+			float ground_z;
 			int ground_index = 0;
 			bool ground_found = false;
 
 			REQUEST_COLLISION_AT_COORD(spawn_vehicle_coords.x, spawn_vehicle_coords.y, spawn_vehicle_coords.z);
 			while (!GET_GROUND_Z_FOR_3D_COORD(spawn_vehicle_coords.x, spawn_vehicle_coords.y, spawn_vehicle_coords.z, &ground_z, 0) && !ground_found)
 			{
-				if (ground_index < 10)
+				if (ground_index < 20)
 				{
 					ground_index++;
-					spawn_vehicle_coords.z = spawn_vehicle_coords.z + 10.0f;
+					spawn_vehicle_coords.z = spawn_vehicle_coords.z + 1.0f;
 					REQUEST_COLLISION_AT_COORD(spawn_vehicle_coords.x, spawn_vehicle_coords.y, spawn_vehicle_coords.z);
 					Log::Write(Log::Type::Normal, "GET_GROUND_Z_FOR_3D_COORD");
 				}
 				else
+				{
+					ground_z = old_ground_z;
 					ground_found = true;
+				}
 			}
 
 			SET_ENTITY_COORDS(wagon_spawned_vehicle, spawn_vehicle_coords.x, spawn_vehicle_coords.y, ground_z, 1, 0, 1, 1);
@@ -494,7 +495,7 @@ void wagon_vehicle_spawn_action(Hash vehicle_hash, Vector3 spawn_vehicle_coordss
 
 		// BLIP_STYLE_PLAYER_COACH
 		wagon_blip = _0x23F74C2FDA6E7C61(0x25AB0484, wagon_spawned_vehicle);
-		_0x662D364ABF16DE2F(wagon_blip, -401963276);
+		//_0x662D364ABF16DE2F(wagon_blip, -401963276);
 
 		wagon_run_set_code = true;
 		wagon_run_dead_code = true;
@@ -515,14 +516,15 @@ void wagon_spawn_vehicle(Hash vehicle_hash, Vector3 spawn_vehicle_coords, float 
 		DELETE_VEHICLE(&wagon_spawned_vehicle);
 	}
 
-	float ground_z = spawn_vehicle_coords.z;
+	float old_ground_z = spawn_vehicle_coords.z;
+	float ground_z;
 	int ground_index = 0;
 	bool ground_found = false;
 
 	REQUEST_COLLISION_AT_COORD(spawn_vehicle_coords.x, spawn_vehicle_coords.y, spawn_vehicle_coords.z);
 	while (!GET_GROUND_Z_FOR_3D_COORD(spawn_vehicle_coords.x, spawn_vehicle_coords.y, spawn_vehicle_coords.z, &ground_z, 0) && !ground_found)
 	{
-		if (ground_index < 50)
+		if (ground_index < 20)
 		{
 			ground_index++;
 			spawn_vehicle_coords.z = spawn_vehicle_coords.z + 10.0f;
@@ -530,7 +532,10 @@ void wagon_spawn_vehicle(Hash vehicle_hash, Vector3 spawn_vehicle_coords, float 
 			Log::Write(Log::Type::Normal, "GET_GROUND_Z_FOR_3D_COORD");
 		}
 		else
+		{
+			ground_z = old_ground_z;
 			ground_found = true;
+		}
 	}
 
 	wagon_spawned_vehicle = CREATE_VEHICLE(vehicle_hash, spawn_vehicle_coords.x, spawn_vehicle_coords.y, ground_z, spawn_vehicle_heading, 1, 1, 0, 0);
