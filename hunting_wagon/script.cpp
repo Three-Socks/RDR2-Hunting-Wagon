@@ -1,9 +1,3 @@
-/*
-	THIS FILE IS A PART OF RDR 2 SCRIPT HOOK SDK
-				http://dev-c.com
-			(C) Alexander Blade 2019
-*/
-
 #include "script.h"
 #include "keyboard.h"
 
@@ -37,7 +31,7 @@ bool wagon_load_pressed()
 {
 	if (!wagon_debug_menu_enabled && wagon_debug_enable())
 		wagon_debug_menu_enabled = true;
-	else if (IsKeyJustUp(menu_keyboard_input) && !menu_action_mode && !IS_PAUSE_MENU_ACTIVE())
+	else if ((IsKeyJustUp(menu_keyboard_input) || (_PROMPT_IS_VALID(wagon_menu_prompt) && _PROMPT_IS_JUST_RELEASED(wagon_menu_prompt)) && !menu_action_mode && !IS_PAUSE_MENU_ACTIVE())
 		return true;
 
 	return false;
@@ -94,8 +88,13 @@ void wagon_set_config_default_ini()
 	ini.Delete("config", NULL);
 
 	ini.SetValue("config", NULL, NULL, "; Hunting Wagon.");
-
 	ini.SetLongValue("config", "menu_config_version", VERSION_CONFIG);
+
+	ini.Delete(WAGON_CHUCK, NULL);
+	ini.Delete(WAGON_SUPPLY, NULL);
+
+	ini.SetValue(WAGON_CHUCK, NULL, NULL);
+	ini.SetValue(WAGON_SUPPLY, NULL, NULL);
 
 	wagon_save_ini_file();
 }
@@ -270,8 +269,7 @@ void wagon_setup()
 	wagon_spawn_camp_coords = { 0.0f, 0.0f, 0.0f };
 	wagon_spawn_camp_heading = 0.0f;
 
-	// chuckwagon000x
-	wagon_vehicle_hash = 0x5f27ed25;
+	wagon_vehicle_hash = HUNTING_WAGON_1;
 	wagon_spawned_vehicle = 0;
 	wagon_bone = 58;
 	wagon_spawn_action = false;

@@ -20,10 +20,174 @@ void wagon_door(int door, bool state)
 	}
 }
 
+char* wagon_get_string(char* wagon_string)
+{
+	switch(wagon_string)
+	{
+		case: WAGON_CHUCK
+			return "Chuck Wagon";
+
+		case: WAGON_SUPPLY
+			return "Supply Wagon";
+
+		default:
+			return wagon_string;
+	}
+}
+
+int wagon_get_cost(char* wagon_string)
+{
+	switch(wagon_string)
+	{
+		case: WAGON_CHUCK
+			return 0;
+
+		case: WAGON_SUPPLY
+			return 100;
+	}
+}
+
+void menu_addItem_wagon(char* wagon_string)
+{
+	char* wagon_name = wagon_get_string(wagon_string);
+	int wagon_cost = wagon_get_cost(wagon_string);
+
+	menu_addItem(wagon_name);
+	menu_add_extra_string(GET_HASH_KEY(wagon_string));
+
+	char wagon_cost_string[100];
+	snprintf_s(wagon_cost_string, _TRUNCATE, "$%i", wagon_cost);
+
+	menu_addItem_string(wagon_cost_string);
+}
+
+void wagon_menu_wagons()
+{
+	menu_set_title("Wagons");
+
+	CSimpleIniA::TNamesDepend sections;
+	ini.GetAllSections(sections);
+
+    CSimpleIniA::TNamesDepend::const_iterator i;
+    for (i = sections.begin(); i != sections.end(); ++i)
+	{
+		Log::Write(Log::Type::Normal, "sections = '%s'", *i);
+
+		if (*i == "config")
+			continue;
+
+		Hash wagon_hash = GET_HASH_KEY(*i);
+
+		if (!IS_MODEL_VALID(wagon_hash))
+			continue;
+
+		if (!IS_MODEL_IN_CDIMAGE(wagon_hash))
+			continue;
+
+		if (!IS_MODEL_A_VEHICLE(wagon_hash))
+			continue;
+
+		menu_addItem_wagon(*i);
+    }
+
+	menu_add_callback_action_all(
+		[]
+		{
+			char* wagon_name = menu_get_current_extra_string();
+
+			ini.SetBoolValue(wagon_name, "owned", true);
+
+			menu_set_items_selected(menu_item_highlighted);
+			wagon_vehicle_hash = GET_HASH_KEY(wagon_name);
+		}
+	);
+
+	menu_addItem_callback("Deliver to Camp"
+		[]
+		{
+			if (menu_confirm("You won't be able to stow any more on your current Hunting Wagon. Are you sure?"))
+			{
+				//if (IS_ENTITY_AT_COORD(PLAYER_PED_ID(), wagon_spawn_camp_coords.x, wagon_spawn_camp_coords.y, wagon_spawn_camp_coords.z, 5f, 5f, 10f, false, true, 0))
+
+				wagon_closest_camp = -1;
+
+				if (!wagon_using_global)
+				{
+					wagon_get_camp(GET_ENTITY_COORDS(PLAYER_PED_ID(), true, 0));
+
+					if (wagon_closest_camp == -1)
+						menu_error("Not close enough to a camp (Unsupported game version).", 0)
+				}
+			}
+		}
+	);
+}
+
+void wagon_menu_modify()
+{
+	menu_set_title("Style");
+
+	//if (GET_ENTITY_MODEL(wagon_spawned_vehicle) == GET_HASH_KEY(WAGON_CHUCK))
+	if (true)
+	{
+		menu_addItem_callback("Covered",
+			[]
+			{
+				SET_VEHICLE_EXTRA(wagon_spawned_vehicle, 1, IS_VEHICLE_EXTRA_TURNED_ON(wagon_spawned_vehicle, 1));
+			}
+		);
+
+		menu_addItem_callback("Uncovered",
+			[]
+			{
+				SET_VEHICLE_EXTRA(wagon_spawned_vehicle, 3, IS_VEHICLE_EXTRA_TURNED_ON(wagon_spawned_vehicle, 3));
+			}
+		);
+
+		menu_addItem_callback("Frame",
+			[]
+			{
+				SET_VEHICLE_EXTRA(wagon_spawned_vehicle, 2, IS_VEHICLE_EXTRA_TURNED_ON(wagon_spawned_vehicle, 2));
+			}
+		);
+	}
+	else
+	{
+		menu_error("Vehicle not supported.", 1);
+	}
+}
+
 void menu_set()
 {
-	menu_set_title("Hunting Wagon DEBUG MENU");
+	menu_set_title("Hunting Wagon");
 
+	if (!wagon_using_global)
+		print_msg_bottom_screen("Hunting Wagon: Unsupported game version some features may be missing.");
+
+	menu_addItem("Wagons", &wagon_menu_wagons);
+	menu_addItem("Style", &wagon_menu_modify);
+	menu_addItem_callback("Repair",
+		[]
+		{
+			ANIMPOSTFX_PLAY("CamTransition01Slow");
+			SET_ENTITY_HEALTH(wagon_spawned_vehicle, GET_ENTITY_MAX_HEALTH(wagon_spawned_vehicle, false), false);
+			SET_VEHICLE_FIXED(wagon_spawned_vehicle);
+		}
+	);
+	menu_addItem_callback("Open/Close Wagon", 
+		[]
+		{
+			wagon_door(5, !IS_VEHICLE_DOOR_FULLY_OPEN(wagon_spawned_vehicle, 5));
+		}
+	);
+
+	if (wagon_debug_menu_enabled)
+		menu_addItem("Debug", &wagon_menu_debug);
+}
+
+void wagon_menu_debug()
+{
+	menu_set_title("Hunting Wagon DEBUG MENU");
 	menu_addItem("Wagons", &trainer_vehicle_wagons);
 
 	menu_addItem_callback("Spawn Infront",
