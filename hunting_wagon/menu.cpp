@@ -47,20 +47,6 @@ int wagon_get_cost(char* wagon_string)
 	}
 }
 
-void menu_addItem_wagon(char* wagon_string)
-{
-	char* wagon_name = wagon_get_string(wagon_string);
-	int wagon_cost = wagon_get_cost(wagon_string);
-
-	menu_addItem(wagon_name);
-	menu_add_extra_string(GET_HASH_KEY(wagon_string));
-
-	char wagon_cost_string[100];
-	snprintf_s(wagon_cost_string, _TRUNCATE, "$%i", wagon_cost);
-
-	menu_addItem_string(wagon_cost_string);
-}
-
 void wagon_menu_wagons()
 {
 	menu_set_title("Wagons");
@@ -87,7 +73,25 @@ void wagon_menu_wagons()
 		if (!IS_MODEL_A_VEHICLE(wagon_hash))
 			continue;
 
-		menu_addItem_wagon(*i);
+		char* wagon_string = *i;
+
+		char* wagon_name = wagon_get_string(wagon_string);
+		int wagon_cost = wagon_get_cost(wagon_string);
+
+		menu_addItem(wagon_name);
+		menu_add_extra_string(wagon_string);
+
+		if (ini.GetBoolValue(wagon_string, "owned", false))
+		{
+			menu_set_items_selected(menu_count);
+		}
+		else
+		{
+			char wagon_cost_string[100];
+			snprintf_s(wagon_cost_string, _TRUNCATE, "$%i", wagon_cost);
+
+			menu_addItem_string(wagon_cost_string);
+		}
     }
 
 	menu_add_callback_action_all(
@@ -97,8 +101,8 @@ void wagon_menu_wagons()
 
 			ini.SetBoolValue(wagon_name, "owned", true);
 
-			menu_set_items_selected(menu_item_highlighted);
 			wagon_vehicle_hash = GET_HASH_KEY(wagon_name);
+			menu_refresh();
 		}
 	);
 
@@ -107,7 +111,17 @@ void wagon_menu_wagons()
 		{
 			if (menu_confirm("You won't be able to stow any more on your current Hunting Wagon. Are you sure?"))
 			{
-				//if (IS_ENTITY_AT_COORD(PLAYER_PED_ID(), wagon_spawn_camp_coords.x, wagon_spawn_camp_coords.y, wagon_spawn_camp_coords.z, 5f, 5f, 10f, false, true, 0))
+				if (IS_ENTITY_AT_COORD(PLAYER_PED_ID(), wagon_spawn_camp_coords.x, wagon_spawn_camp_coords.y, wagon_spawn_camp_coords.z, 5f, 5f, 10f, false, true, 0))
+				{
+					if (IS_PED_IN_VEHICLE(PLAYER_PED_ID(), wagon_spawned_vehicle, true))
+					{
+						CLEAR_PED_TASKS_IMMEDIATELY(PLAYER_PED_ID(), true, true);
+						SET_ENTITY_AS_MISSION_ENTITY(wagon_spawned_vehicle, 0, 1);
+						DELETE_VEHICLE(&wagon_spawned_vehicle);
+					}
+
+					wagon_spawn_into = true;
+				}
 
 				wagon_closest_camp = -1;
 
@@ -178,6 +192,18 @@ void menu_set()
 		[]
 		{
 			wagon_door(5, !IS_VEHICLE_DOOR_FULLY_OPEN(wagon_spawned_vehicle, 5));
+		}
+	);
+	menu_addItem("Settings", 
+		[]
+		{
+			menu_addItem_callback("Long whistle Wagon",
+				[]
+				{
+					menu_msg("Long hold whistle to call hunting wagon");
+				}
+			);
+			menu_addItem_bool(0);
 		}
 	);
 

@@ -94,7 +94,7 @@ extern Blip wagon_blip;
 
 extern float wagon_spawn_camp_heading;
 
-extern bool wagon_using_global, wagon_spawn_action, wagon_stow, wagon_run_set_code, wagon_run_dead_code;
+extern bool wagon_using_global, wagon_spawn_action, wagon_stow, wagon_run_set_code, wagon_run_dead_code, wagon_spawn_into;
 
 extern Ped animal_holding, wagon_stow_entity;
 

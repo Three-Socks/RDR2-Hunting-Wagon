@@ -6,32 +6,62 @@
 bool wagon_debug_enable()
 {
 	if (IsKeyJustUp(menu_keyboard_input))
-	{
 		wagon_debug_menu++;
-	}
 
-	if (wagon_debug_menu >= 3 && IsKeyDown(menu_keyboard_input))
+	if (wagon_debug_menu >= 3)
+		return true;
+	else
+		return false;
+}
+
+bool wagon_load_pressed()
+{
+	if (!menu_action_mode && !IS_PAUSE_MENU_ACTIVE())
 	{
-		if (GET_GAME_TIMER() - menu_load_hold_pressed > 3000 && !menu_unload_hold_pressed)
+		/*if (IsKeyDown(menu_keyboard_input) && !IsKeyDown(VK_LCONTROL) && !IsKeyDown(VK_RCONTROL))
 		{
-			menu_load_hold_pressed = GET_GAME_TIMER();
-			menu_unload_hold_pressed = 1;
-			return true;
+			if (!menu_unload_hold_pressed)
+			{
+				menu_unload_hold_pressed = true;
+				return true;
+			}
+			else
+				return false;
 		}
-		else
-			return false;
+		else */if ((DOES_ENTITY_EXIST(wagon_spawned_vehicle) && IS_PED_IN_VEHICLE(PLAYER_PED_ID(), wagon_spawned_vehicle, true) && IS_DISABLED_CONTROL_PRESSED(2, menu_gamepad_input)) 
+			|| (_PROMPT_IS_VALID(wagon_menu_prompt) && _PROMPT_IS_JUST_RELEASED(wagon_menu_prompt)))
+		{
+			DISABLE_CONTROL_ACTION(0, INPUT_PLAYER_MENU, false);
+			DISABLE_CONTROL_ACTION(2, INPUT_OPEN_JOURNAL, false);
+
+			DISABLE_CONTROL_ACTION(0, INPUT_JUMP, false);
+			DISABLE_CONTROL_ACTION(0, INPUT_COVER, false);
+
+			if (IS_PED_GOING_INTO_COVER(PLAYER_PED_ID()) || IS_PED_JUMPING(PLAYER_PED_ID()))
+			{
+				CLEAR_PED_TASKS_IMMEDIATELY(PLAYER_PED_ID(), 0, 1);
+			}
+
+			if (GET_GAME_TIMER() - menu_load_hold_pressed > 400 && !menu_unload_hold_pressed)
+			{
+				menu_load_hold_pressed = GET_GAME_TIMER();
+				menu_unload_hold_pressed = 1;
+				return true;
+			}
+			else
+				return false;
+
+		}
 	}
 
 	menu_unload_hold_pressed = false;
 	menu_load_hold_pressed = GET_GAME_TIMER();
 	return false;
-}
 
-bool wagon_load_pressed()
-{
 	if (!wagon_debug_menu_enabled && wagon_debug_enable())
 		wagon_debug_menu_enabled = true;
-	else if ((IsKeyJustUp(menu_keyboard_input) || (_PROMPT_IS_VALID(wagon_menu_prompt) && _PROMPT_IS_JUST_RELEASED(wagon_menu_prompt)) && !menu_action_mode && !IS_PAUSE_MENU_ACTIVE())
+
+	if ((IsKeyJustUp(menu_keyboard_input) || (_PROMPT_IS_VALID(wagon_menu_prompt) && _PROMPT_IS_JUST_RELEASED(wagon_menu_prompt)) && !menu_action_mode && !IS_PAUSE_MENU_ACTIVE())
 		return true;
 
 	return false;
@@ -159,7 +189,7 @@ void wagon_get_config_default_ini()
 	menu_config_version = ini.GetLongValue("config", "menu_config_version", 1);
 
 	menu_keyboard_input = ini.GetLongValue("config", "menu_keyboard_input", VK_F3);
-	menu_gamepad_input = ini.GetLongValue("config", "menu_gamepad_input", INPUT_FRONTEND_RB);
+	menu_gamepad_input = ini.GetLongValue("config", "menu_gamepad_input", INPUT_INTERACTION_MENU);
 	menu_gamepad_input2 = ini.GetLongValue("config", "menu_gamepad_input2", INPUT_FRONTEND_LEFT);
 
 	ini_menu_align = ini.GetLongValue("config", "menu_align", 0);
@@ -269,7 +299,7 @@ void wagon_setup()
 	wagon_spawn_camp_coords = { 0.0f, 0.0f, 0.0f };
 	wagon_spawn_camp_heading = 0.0f;
 
-	wagon_vehicle_hash = HUNTING_WAGON_1;
+	wagon_vehicle_hash = GET_HASH_KEY(WAGON_CHUCK);
 	wagon_spawned_vehicle = 0;
 	wagon_bone = 58;
 	wagon_spawn_action = false;
@@ -279,6 +309,7 @@ void wagon_setup()
 	wagon_log_debug_info = false;
 	wagon_run_set_code = false;
 	wagon_run_dead_code = false;
+	wagon_spawn_into = false;
 }
 
 void main()

@@ -516,6 +516,12 @@ void wagon_vehicle_spawn_action(Hash vehicle_hash, Vector3 spawn_vehicle_coordss
 
 		Log::Write(Log::Type::Normal, "Created menu prompt");
 
+		if (wagon_spawn_into)
+		{
+			wagon_spawn_into = false;
+			SET_PED_INTO_VEHICLE(PLAYER_PED_ID(), wagon_spawned_vehicle, -1);
+		}
+
 		wagon_run_set_code = true;
 		wagon_run_dead_code = true;
 

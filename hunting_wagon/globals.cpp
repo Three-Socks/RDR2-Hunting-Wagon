@@ -85,7 +85,7 @@ Blip wagon_blip;
 
 float wagon_spawn_camp_heading;
 
-bool wagon_using_global, wagon_spawn_action, wagon_stow, wagon_run_set_code, wagon_run_dead_code;
+bool wagon_using_global, wagon_spawn_action, wagon_stow, wagon_run_set_code, wagon_run_dead_code, wagon_spawn_into;
 Ped animal_holding, wagon_stow_entity;
 
 int wagon_camp_global_var, wagon_camp_global_member, wagon_spawn_action_mode, wagon_pickup_action_mode,
