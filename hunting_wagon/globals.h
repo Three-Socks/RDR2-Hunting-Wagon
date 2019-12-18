@@ -92,6 +92,8 @@ extern Vehicle wagon_spawned_vehicle;
 extern Vector3 wagon_spawn_camp_coords;
 extern Blip wagon_blip;
 
+extern char wagon_cost_string[100];
+
 extern float wagon_spawn_camp_heading;
 
 extern bool wagon_using_global, wagon_spawn_action, wagon_stow, wagon_run_set_code, wagon_run_dead_code, wagon_spawn_into;

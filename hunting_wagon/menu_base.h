@@ -14,6 +14,7 @@ enum menu_item_types
 	MENU_ITEM_TYPE_STRING_SELECT,
 	MENU_ITEM_TYPE_STRING_SELECT_2,
 	MENU_ITEM_TYPE_MODEL_FAVOURITE,
+	MENU_ITEM_TYPE_DOLLAR,
 };
 
 bool menu_get_open_state();
@@ -127,6 +128,7 @@ void menu_toggle_current_bool();
 int menu_get_current_bool();
 int menu_get_bool(int menu_item);
 void menu_addItem_string(char* string_val);
+void menu_addItem_dollar(int dollar);
 void menu_addItem_string_select(char* string_val, int num_val, int min, int max, int action_type);
 void menu_addItem_2_strings_select(char* string_val, char* extra_string_val, int num_val, int min, int max, int action_type);
 void menu_addItem_string_select_2(char* string_val, int num_val, int min, int max, int action_type);

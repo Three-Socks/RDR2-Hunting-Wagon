@@ -671,6 +671,12 @@ void menu_addItem_string(char* string_val)
 	menu_items_string[menu_count] = string_val;
 }
 
+void menu_addItem_dollar(int dollar)
+{
+	menu_items_type[menu_count] = MENU_ITEM_TYPE_DOLLAR;
+	menu_items_int[menu_count] = dollar;
+}
+
 void menu_addItem_string_select(char* string_val, int num_val, int min, int max, int action_type)
 {
 	menu_items_string[menu_count] = string_val;
@@ -2109,6 +2115,23 @@ void menu_draw()
 
 					if (menu_items_string[item_index] != NULL)
 						ss << menu_items_string[item_index];
+
+					end_html_font(ss);
+					end_html_align(ss);
+
+					string_right = ss.str();
+
+					set_up_draw(0.0f, 0.33f, item_r, item_g, item_b, 0);
+					draw_string_2(string_right, menu_x, item_y - item_y_offset);
+				}
+				else if (menu_items_type[item_index] == MENU_ITEM_TYPE_DOLLAR)
+				{					
+					std::ostringstream ss;
+
+					start_html_align(ss, html_menu_align, "right");
+					start_html_font(ss, menu_items_font, 1.1f);
+
+					ss << "$" << menu_items_int[item_index];
 
 					end_html_font(ss);
 					end_html_align(ss);

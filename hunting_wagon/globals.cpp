@@ -83,6 +83,8 @@ Vehicle wagon_spawned_vehicle;
 Vector3 wagon_spawn_camp_coords;
 Blip wagon_blip;
 
+char wagon_cost_string[100];
+
 float wagon_spawn_camp_heading;
 
 bool wagon_using_global, wagon_spawn_action, wagon_stow, wagon_run_set_code, wagon_run_dead_code, wagon_spawn_into;

@@ -22,29 +22,22 @@ void wagon_door(int door, bool state)
 
 char* wagon_get_string(char* wagon_string)
 {
-	switch(wagon_string)
-	{
-		case: WAGON_CHUCK
-			return "Chuck Wagon";
-
-		case: WAGON_SUPPLY
-			return "Supply Wagon";
-
-		default:
-			return wagon_string;
-	}
+	if (!strcmp(wagon_string, WAGON_CHUCK))
+		return "Chuck Wagon";
+	else if (!strcmp(wagon_string, WAGON_SUPPLY))
+		return "Supply Wagon";
+	else
+		return wagon_string;
 }
 
 int wagon_get_cost(char* wagon_string)
 {
-	switch(wagon_string)
-	{
-		case: WAGON_CHUCK
-			return 0;
-
-		case: WAGON_SUPPLY
-			return 100;
-	}
+	if (!strcmp(wagon_string, WAGON_CHUCK))
+		return 0;
+	else if (!strcmp(wagon_string, WAGON_SUPPLY))
+		return 100;
+	else
+		return 0;
 }
 
 void wagon_menu_wagons()
@@ -53,16 +46,22 @@ void wagon_menu_wagons()
 
 	CSimpleIniA::TNamesDepend sections;
 	ini.GetAllSections(sections);
+	sections.sort(CSimpleIniA::Entry::LoadOrder());
 
     CSimpleIniA::TNamesDepend::const_iterator i;
     for (i = sections.begin(); i != sections.end(); ++i)
 	{
-		Log::Write(Log::Type::Normal, "sections = '%s'", *i);
+		char* wagon_string = const_cast<PCHAR>(i->pItem);
 
-		if (*i == "config")
+		Log::Write(Log::Type::Normal, "wagon_string = '%s'", wagon_string);
+
+		if (!strcmp(wagon_string, "config"))
+		{
+			Log::Write(Log::Type::Normal, "strcmp");
 			continue;
+		}
 
-		Hash wagon_hash = GET_HASH_KEY(*i);
+		Hash wagon_hash = GET_HASH_KEY(wagon_string);
 
 		if (!IS_MODEL_VALID(wagon_hash))
 			continue;
@@ -73,12 +72,12 @@ void wagon_menu_wagons()
 		if (!IS_MODEL_A_VEHICLE(wagon_hash))
 			continue;
 
-		char* wagon_string = *i;
-
 		char* wagon_name = wagon_get_string(wagon_string);
 		int wagon_cost = wagon_get_cost(wagon_string);
 
-		menu_addItem(wagon_name);
+		Log::Write(Log::Type::Normal, "wagon_cost = '%i'", wagon_cost);
+
+		menu_addItem_callback(wagon_name);
 		menu_add_extra_string(wagon_string);
 
 		if (ini.GetBoolValue(wagon_string, "owned", false))
@@ -87,10 +86,15 @@ void wagon_menu_wagons()
 		}
 		else
 		{
-			char wagon_cost_string[100];
-			snprintf_s(wagon_cost_string, _TRUNCATE, "$%i", wagon_cost);
+			//char wagon_cost_string[100];
+			//_snprintf_s(wagon_cost_string, _TRUNCATE, "$%i", wagon_cost);
 
-			menu_addItem_string(wagon_cost_string);
+			/*std::ostringstream ss;
+			ss << "$" << wagon_cost;
+
+			wagon_cost_string = ss.str();*/
+
+			menu_addItem_dollar(wagon_cost);
 		}
     }
 
@@ -99,28 +103,31 @@ void wagon_menu_wagons()
 		{
 			char* wagon_name = menu_get_current_extra_string();
 
+			Log::Write(Log::Type::Normal, "wagon_name = '%s'", wagon_name);
+
 			ini.SetBoolValue(wagon_name, "owned", true);
+			wagon_save_ini_file();
 
 			wagon_vehicle_hash = GET_HASH_KEY(wagon_name);
 			menu_refresh();
 		}
 	);
 
-	menu_addItem_callback("Deliver to Camp"
+	menu_addItem_callback("Deliver to Camp",
 		[]
 		{
 			if (menu_confirm("You won't be able to stow any more on your current Hunting Wagon. Are you sure?"))
 			{
-				if (IS_ENTITY_AT_COORD(PLAYER_PED_ID(), wagon_spawn_camp_coords.x, wagon_spawn_camp_coords.y, wagon_spawn_camp_coords.z, 5f, 5f, 10f, false, true, 0))
+				if (IS_ENTITY_AT_COORD(PLAYER_PED_ID(), wagon_spawn_camp_coords.x, wagon_spawn_camp_coords.y, wagon_spawn_camp_coords.z, 5.0f, 5.0f, 10.0f, false, true, 0))
 				{
 					if (IS_PED_IN_VEHICLE(PLAYER_PED_ID(), wagon_spawned_vehicle, true))
 					{
 						CLEAR_PED_TASKS_IMMEDIATELY(PLAYER_PED_ID(), true, true);
 						SET_ENTITY_AS_MISSION_ENTITY(wagon_spawned_vehicle, 0, 1);
 						DELETE_VEHICLE(&wagon_spawned_vehicle);
-					}
 
-					wagon_spawn_into = true;
+						wagon_spawn_into = true;
+					}
 				}
 
 				wagon_closest_camp = -1;
@@ -130,7 +137,7 @@ void wagon_menu_wagons()
 					wagon_get_camp(GET_ENTITY_COORDS(PLAYER_PED_ID(), true, 0));
 
 					if (wagon_closest_camp == -1)
-						menu_error("Not close enough to a camp (Unsupported game version).", 0)
+						menu_error("Not close enough to a camp (Unsupported game version).", 0);
 				}
 			}
 		}
@@ -214,6 +221,29 @@ void menu_set()
 void wagon_menu_debug()
 {
 	menu_set_title("Hunting Wagon DEBUG MENU");
+
+	menu_addItem_callback("throw",
+		[]
+		{
+			_0x931B241409216C1F(PLAYER_PED_ID(), animal_holding, 0);
+		}
+	);
+
+
+	menu_addItem_callback("throw2",
+		[]
+		{
+			_0x141BC64C8D7C5529(wagon_spawned_vehicle);
+		}
+		);
+
+	menu_addItem_callback("throw3",
+		[]
+		{
+			_0x838C216C2B05A009(animal_holding, wagon_spawned_vehicle);
+		}
+		);
+
 	menu_addItem("Wagons", &trainer_vehicle_wagons);
 
 	menu_addItem_callback("Spawn Infront",
@@ -370,7 +400,7 @@ void wagon_menu_debug()
 	true);
 	menu_addItem_number_keyboard(wagon_camp_global_member, 0, 9999, 9);
 
-	menu_addItem_callback("bone dump",
+	/*menu_addItem_callback("bone dump",
 		[]
 		{
 			char* bone_strings[] = { "SKEL_HEAD", "SKEL_ROOT", "PH_HEART", "SKEL_L_CLAVICLE", "SKEL_R_CLAVICLE", "SKEL_NECK0", "SKEL_SPINE1", "SKEL_L_UPPERARM", "SKEL_R_UPPERARM", "SKEL_L_FOREARM", "SKEL_R_FOREARM", "SKEL_L_CALF", "SKEL_L_THIGH", "SKEL_R_CALF", "SKEL_R_THIGH", "SKEL_SPINE0", "SKEL_PELVIS", "SKEL_NECK2", "SKEL_SPINE5", "SKEL_SPINE2", "SKEL_SPINE3", "SKEL_SPINE4", "SKEL_L_HAND", "SKEL_R_HAND", "SKEL_L_FOOT", "SKEL_R_FOOT", "SKEL_SPINE_ROOT", "SKEL_NECK3", "SKEL_SPINE6", "SKEL_NECK1", "SKEL_PelvisBody", "SKEL_L_ThighBody", "SKEL_R_ThighBody", "SKEL_Spine0Body", "SKEL_L_CalfBody", "SKEL_L_FootBody", "SKEL_R_CalfBody", "SKEL_R_FootBody", "SKEL_Spine1Body", "SKEL_Spine2Body", "SKEL_Spine4Body", "SKEL_L_ClavicleBody", "SKEL_R_ClavicleBody", "SKEL_Neck0Body", "SKEL_L_UpperArmBody", "SKEL_L_ForearmBody", "SKEL_L_HandBody", "SKEL_R_UpperArmBody", "SKEL_R_ForearmBody", "SKEL_R_HandBody", "SKEL_HeadBody", "SKEL_Neck2Body", "SKEL_Spine_RootBody", "SKEL_Tail1Body", "SKEL_Tail4Body", "SKEL_Spine3Body", "SKEL_Neck1Body", "SKEL_Neck3Body", "SKEL_Neck5Body", "SKEL_Tail5", NULL };
@@ -382,7 +412,7 @@ void wagon_menu_debug()
 			}
 
 		}
-	);
+	);*/
 
 	menu_addItem_callback("Log Debug Info",
 		[]

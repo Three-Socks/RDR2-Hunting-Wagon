@@ -498,7 +498,7 @@ void wagon_vehicle_spawn_action(Hash vehicle_hash, Vector3 spawn_vehicle_coordss
 		//_0x662D364ABF16DE2F(wagon_blip, -401963276);
 
 		wagon_menu_prompt = _BEGIN_REGISTER_PROMPT();
-		_PROMPT_SET_CONTROL_ACTION(wagon_menu_prompt, INPUT_INTERACTION_MENU);
+		_PROMPT_SET_CONTROL_ACTION(wagon_menu_prompt, INPUT_FRONTEND_RS);
 		char* var_string = CREATE_STRING(10, "LITERAL_STRING", "Modify");
 		_PROMPT_SET_TEXT(wagon_menu_prompt, var_string);
 		//_PROMPT_SET_GROUP(wagon_menu_prompt, _PROMPT_GET_GROUP_ID_FOR_TARGET_ENTITY(animal_holding), 0);

@@ -16,6 +16,9 @@ bool wagon_debug_enable()
 
 bool wagon_load_pressed()
 {
+	if (!wagon_debug_menu_enabled && wagon_debug_enable())
+		wagon_debug_menu_enabled = true;
+
 	if (!menu_action_mode && !IS_PAUSE_MENU_ACTIVE())
 	{
 		/*if (IsKeyDown(menu_keyboard_input) && !IsKeyDown(VK_LCONTROL) && !IsKeyDown(VK_RCONTROL))
@@ -28,8 +31,7 @@ bool wagon_load_pressed()
 			else
 				return false;
 		}
-		else */if ((DOES_ENTITY_EXIST(wagon_spawned_vehicle) && IS_PED_IN_VEHICLE(PLAYER_PED_ID(), wagon_spawned_vehicle, true) && IS_DISABLED_CONTROL_PRESSED(2, menu_gamepad_input)) 
-			|| (_PROMPT_IS_VALID(wagon_menu_prompt) && _PROMPT_IS_JUST_RELEASED(wagon_menu_prompt)))
+		else */if (DOES_ENTITY_EXIST(wagon_spawned_vehicle) && IS_PED_IN_VEHICLE(PLAYER_PED_ID(), wagon_spawned_vehicle, true) && IS_DISABLED_CONTROL_PRESSED(2, menu_gamepad_input))
 		{
 			DISABLE_CONTROL_ACTION(0, INPUT_PLAYER_MENU, false);
 			DISABLE_CONTROL_ACTION(2, INPUT_OPEN_JOURNAL, false);
@@ -52,18 +54,16 @@ bool wagon_load_pressed()
 				return false;
 
 		}
+		else if (_PROMPT_IS_VALID(wagon_menu_prompt) && _PROMPT_IS_JUST_RELEASED(wagon_menu_prompt))
+		{
+			return true;
+		}
+		else
+			return false;
 	}
 
 	menu_unload_hold_pressed = false;
 	menu_load_hold_pressed = GET_GAME_TIMER();
-	return false;
-
-	if (!wagon_debug_menu_enabled && wagon_debug_enable())
-		wagon_debug_menu_enabled = true;
-
-	if ((IsKeyJustUp(menu_keyboard_input) || (_PROMPT_IS_VALID(wagon_menu_prompt) && _PROMPT_IS_JUST_RELEASED(wagon_menu_prompt)) && !menu_action_mode && !IS_PAUSE_MENU_ACTIVE())
-		return true;
-
 	return false;
 }
 
@@ -189,7 +189,7 @@ void wagon_get_config_default_ini()
 	menu_config_version = ini.GetLongValue("config", "menu_config_version", 1);
 
 	menu_keyboard_input = ini.GetLongValue("config", "menu_keyboard_input", VK_F3);
-	menu_gamepad_input = ini.GetLongValue("config", "menu_gamepad_input", INPUT_INTERACTION_MENU);
+	menu_gamepad_input = ini.GetLongValue("config", "menu_gamepad_input", INPUT_FRONTEND_X);
 	menu_gamepad_input2 = ini.GetLongValue("config", "menu_gamepad_input2", INPUT_FRONTEND_LEFT);
 
 	ini_menu_align = ini.GetLongValue("config", "menu_align", 0);
