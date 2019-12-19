@@ -200,7 +200,13 @@ void wagon_process_vehicle()
 {
 	if (DOES_ENTITY_EXIST(wagon_spawned_vehicle))
 	{
-		SET_VEHICLE_DOOR_SHUT(wagon_spawned_vehicle, 5, 1);
+		if (wagon_override_door && wagon_time_taken(wagon_override_door_request, 2000))
+			SET_VEHICLE_DOOR_SHUT(wagon_spawned_vehicle, 5, 1);
+
+		if (_PROMPT_IS_VALID(wagon_menu_prompt) && menu_get_open_state())
+			_PROMPT_SET_VISIBLE(wagon_menu_prompt, false);
+		else
+			_PROMPT_SET_VISIBLE(wagon_menu_prompt, true);
 
 		// Stow on wagon.
 		if (_PROMPT_IS_VALID(wagon_prompt))
@@ -251,7 +257,6 @@ void wagon_process_vehicle()
 				FORCE_ENTITY_AI_AND_ANIMATION_UPDATE(wagon_spawned_vehicle, 1);
 			}
 		}
-
 	}
 }
 
@@ -409,7 +414,7 @@ void wagon_update()
 	if (wagon_spawn_action)
 	{
 		//Log::Write(Log::Type::Normal, "wagon_vehicle_spawn_action");
-		wagon_vehicle_spawn_action(wagon_vehicle_hash, wagon_spawn_camp_coords, wagon_spawn_camp_heading);
+		wagon_vehicle_spawn_action(GET_HASH_KEY(wagon_vehicle_hash), wagon_spawn_camp_coords, wagon_spawn_camp_heading);
 	}
 
 	wagon_pickup_action(entity_holding);
@@ -498,15 +503,15 @@ void wagon_vehicle_spawn_action(Hash vehicle_hash, Vector3 spawn_vehicle_coordss
 		//_0x662D364ABF16DE2F(wagon_blip, -401963276);
 
 		wagon_menu_prompt = _BEGIN_REGISTER_PROMPT();
-		_PROMPT_SET_CONTROL_ACTION(wagon_menu_prompt, INPUT_FRONTEND_RS);
-		char* var_string = CREATE_STRING(10, "LITERAL_STRING", "Modify");
+		_PROMPT_SET_CONTROL_ACTION(wagon_menu_prompt, menu_gamepad_input);
+		char* var_string = CREATE_STRING(10, "LITERAL_STRING", "Hunting Wagon");
 		_PROMPT_SET_TEXT(wagon_menu_prompt, var_string);
 		//_PROMPT_SET_GROUP(wagon_menu_prompt, _PROMPT_GET_GROUP_ID_FOR_TARGET_ENTITY(animal_holding), 0);
 		_0x4D107406667423BE(wagon_menu_prompt, wagon_spawned_vehicle);
 		_PROMPT_SET_POSITION(wagon_menu_prompt, 0.0f, 0.0f, 0.0f);
 		_0x0C718001B77CA468(wagon_menu_prompt, 3.0f);
 		_PROMPT_SET_PRIORITY(wagon_menu_prompt, 1);
-		_PROMPT_SET_TRANSPORT_MODE(wagon_menu_prompt, 0);
+		_PROMPT_SET_TRANSPORT_MODE(wagon_menu_prompt, 1);
 		_PROMPT_SET_ATTRIBUTE(wagon_menu_prompt, 18, 1);
 		_PROMPT_SET_STANDARD_MODE(wagon_menu_prompt, 0);
 		_END_REGISTER_PROMPT(wagon_menu_prompt);
@@ -524,6 +529,7 @@ void wagon_vehicle_spawn_action(Hash vehicle_hash, Vector3 spawn_vehicle_coordss
 
 		wagon_run_set_code = true;
 		wagon_run_dead_code = true;
+		wagon_override_door = true;
 
 		wagon_spawn_action = false;
 		wagon_spawn_action_mode = 0;

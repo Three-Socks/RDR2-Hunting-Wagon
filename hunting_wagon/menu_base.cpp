@@ -1556,7 +1556,10 @@ bool menu_confirm(char* string_val)
 		return false;
 	}
 	else
+	{
+		menu_action_confirm = false;
 		return true;
+	}
 }
 
 void menu_refresh()

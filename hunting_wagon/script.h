@@ -63,7 +63,7 @@
 #define TYPE_MOUNT 2
 
 #define MAX_WAGONS 25
-#define WAGON_CHUCK STR(chuckwagon000x)
+#define WAGON_DEFAULT STR(chuckwagon000x)
 #define WAGON_SUPPLY STR(supplywagon)
 
 #include "globals.h"

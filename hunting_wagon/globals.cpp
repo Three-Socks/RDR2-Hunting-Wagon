@@ -78,20 +78,18 @@ CSimpleIniA ini(false, false, false);
 bool wagon_debug_menu_enabled, wagon_log_debug_info;
 int wagon_debug_menu;
 
-Hash wagon_vehicle_hash;
+char* wagon_vehicle_hash;
 Vehicle wagon_spawned_vehicle;
 Vector3 wagon_spawn_camp_coords;
 Blip wagon_blip;
 
-char wagon_cost_string[100];
-
 float wagon_spawn_camp_heading;
 
-bool wagon_using_global, wagon_spawn_action, wagon_stow, wagon_run_set_code, wagon_run_dead_code, wagon_spawn_into;
+bool wagon_using_global, wagon_spawn_action, wagon_stow, wagon_run_set_code, wagon_run_dead_code, wagon_spawn_into, wagon_override_door;
 Ped animal_holding, wagon_stow_entity;
 
 int wagon_camp_global_var, wagon_camp_global_member, wagon_spawn_action_mode, wagon_pickup_action_mode,
-wagon_bone, wagon_prompt, wagon_menu_prompt, wagon_closest_camp, wagon_stow_time, wagon_request_time;
+wagon_bone, wagon_prompt, wagon_menu_prompt, wagon_closest_camp, wagon_stow_time, wagon_request_time, wagon_override_door_request;
 
 bool menu_adjust;
 

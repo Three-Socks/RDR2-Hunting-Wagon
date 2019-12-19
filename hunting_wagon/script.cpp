@@ -21,29 +21,8 @@ bool wagon_load_pressed()
 
 	if (!menu_action_mode && !IS_PAUSE_MENU_ACTIVE())
 	{
-		/*if (IsKeyDown(menu_keyboard_input) && !IsKeyDown(VK_LCONTROL) && !IsKeyDown(VK_RCONTROL))
+		/*if (DOES_ENTITY_EXIST(wagon_spawned_vehicle) && IS_PED_IN_VEHICLE(PLAYER_PED_ID(), wagon_spawned_vehicle, true) && GET_ENTITY_SPEED(wagon_spawned_vehicle) < 1.0f && IS_DISABLED_CONTROL_PRESSED(2, menu_gamepad_input))
 		{
-			if (!menu_unload_hold_pressed)
-			{
-				menu_unload_hold_pressed = true;
-				return true;
-			}
-			else
-				return false;
-		}
-		else */if (DOES_ENTITY_EXIST(wagon_spawned_vehicle) && IS_PED_IN_VEHICLE(PLAYER_PED_ID(), wagon_spawned_vehicle, true) && IS_DISABLED_CONTROL_PRESSED(2, menu_gamepad_input))
-		{
-			DISABLE_CONTROL_ACTION(0, INPUT_PLAYER_MENU, false);
-			DISABLE_CONTROL_ACTION(2, INPUT_OPEN_JOURNAL, false);
-
-			DISABLE_CONTROL_ACTION(0, INPUT_JUMP, false);
-			DISABLE_CONTROL_ACTION(0, INPUT_COVER, false);
-
-			if (IS_PED_GOING_INTO_COVER(PLAYER_PED_ID()) || IS_PED_JUMPING(PLAYER_PED_ID()))
-			{
-				CLEAR_PED_TASKS_IMMEDIATELY(PLAYER_PED_ID(), 0, 1);
-			}
-
 			if (GET_GAME_TIMER() - menu_load_hold_pressed > 400 && !menu_unload_hold_pressed)
 			{
 				menu_load_hold_pressed = GET_GAME_TIMER();
@@ -52,9 +31,8 @@ bool wagon_load_pressed()
 			}
 			else
 				return false;
-
 		}
-		else if (_PROMPT_IS_VALID(wagon_menu_prompt) && _PROMPT_IS_JUST_RELEASED(wagon_menu_prompt))
+		else */if (_PROMPT_IS_VALID(wagon_menu_prompt) && _PROMPT_IS_JUST_RELEASED(wagon_menu_prompt))
 		{
 			return true;
 		}
@@ -120,11 +98,14 @@ void wagon_set_config_default_ini()
 	ini.SetValue("config", NULL, NULL, "; Hunting Wagon.");
 	ini.SetLongValue("config", "menu_config_version", VERSION_CONFIG);
 
-	ini.Delete(WAGON_CHUCK, NULL);
+	ini.Delete(WAGON_DEFAULT, NULL);
 	ini.Delete(WAGON_SUPPLY, NULL);
 
-	ini.SetValue(WAGON_CHUCK, NULL, NULL);
+	ini.SetValue(WAGON_DEFAULT, NULL, NULL);
+	//ini.SetLongValue(WAGON_DEFAULT, "wagon_bone", wagon_get_bone(WAGON_DEFAULT));
+
 	ini.SetValue(WAGON_SUPPLY, NULL, NULL);
+	//ini.SetLongValue(WAGON_SUPPLY, "wagon_bone", wagon_get_bone(WAGON_SUPPLY));
 
 	wagon_save_ini_file();
 }
@@ -189,7 +170,7 @@ void wagon_get_config_default_ini()
 	menu_config_version = ini.GetLongValue("config", "menu_config_version", 1);
 
 	menu_keyboard_input = ini.GetLongValue("config", "menu_keyboard_input", VK_F3);
-	menu_gamepad_input = ini.GetLongValue("config", "menu_gamepad_input", INPUT_FRONTEND_X);
+	menu_gamepad_input = ini.GetLongValue("config", "menu_gamepad_input", INPUT_FRONTEND_LS);
 	menu_gamepad_input2 = ini.GetLongValue("config", "menu_gamepad_input2", INPUT_FRONTEND_LEFT);
 
 	ini_menu_align = ini.GetLongValue("config", "menu_align", 0);
@@ -268,6 +249,20 @@ void wagon_get_config_default_ini()
 	col = wagon_get_rgb_from_hex(ini_info_text);
 	menu_set_info_text_colour(col.r, col.g, col.b);
 
+	// Wagon
+	wagon_vehicle_hash = const_cast<char*>(ini.GetValue("config", "wagon_vehicle_hash", WAGON_DEFAULT));
+
+	Hash check_hash = GET_HASH_KEY(wagon_vehicle_hash);
+
+	if (!IS_MODEL_VALID(check_hash) || !IS_MODEL_IN_CDIMAGE(check_hash) || !IS_MODEL_A_VEHICLE(check_hash))
+	{
+		wagon_vehicle_hash = WAGON_DEFAULT;
+		ini.Delete("config", "wagon_vehicle_hash");
+		ini.SetValue("config", "wagon_vehicle_hash", wagon_vehicle_hash);
+	}
+
+	wagon_bone = ini.GetLongValue(wagon_vehicle_hash, "wagon_bone", wagon_get_bone(wagon_vehicle_hash));
+
 	menu_ini_default = true;
 }
 
@@ -299,9 +294,8 @@ void wagon_setup()
 	wagon_spawn_camp_coords = { 0.0f, 0.0f, 0.0f };
 	wagon_spawn_camp_heading = 0.0f;
 
-	wagon_vehicle_hash = GET_HASH_KEY(WAGON_CHUCK);
 	wagon_spawned_vehicle = 0;
-	wagon_bone = 58;
+	//wagon_bone = 58;
 	wagon_spawn_action = false;
 	wagon_spawn_action_mode = 0;
 	wagon_pickup_action_mode = 0;
@@ -310,6 +304,8 @@ void wagon_setup()
 	wagon_run_set_code = false;
 	wagon_run_dead_code = false;
 	wagon_spawn_into = false;
+	wagon_override_door = true;
+	wagon_override_door_request = GET_GAME_TIMER();
 }
 
 void main()
@@ -318,38 +314,33 @@ void main()
 
 	Log::Write(Log::Type::Normal, "hunting_wagon started");
 
-	#ifdef LOGGING
-		menu_setup();
-	#endif
-
+	menu_setup();
 	wagon_setup();
 
 	while (true)
 	{
 		if (IS_PLAYER_PLAYING(PLAYER_ID()) && !GET_IS_LOADING_SCREEN_ACTIVE())
 		{
+			if (!menu_ini_default)
+				wagon_get_config_default_ini();
+
 			wagon_update();
 
-			#ifdef LOGGING
-				if (!menu_ini_default)
-					wagon_get_config_default_ini();
-
-				wagon_catch_load_button_press();
-				if (menu_get_open_state())
+			wagon_catch_load_button_press();
+			if (menu_get_open_state())
+			{
+				menu_modify_game_state();
+				menu_update();
+				if (menu_action_mode == 0)
 				{
-					menu_modify_game_state();
-					menu_update();
-					if (menu_action_mode == 0)
-					{
-						menu_catch_button_press();
-						menu_catch_select_button_press();
-					}
-					menu_action();
-					menu_draw_window();
-					menu_draw();
-					menu_load_sprite();
+					menu_catch_button_press();
+					menu_catch_select_button_press();
 				}
-			#endif
+				menu_action();
+				menu_draw_window();
+				menu_draw();
+				menu_load_sprite();
+			}
 		}
 		WAIT(0);
 	}

@@ -22,7 +22,7 @@ void wagon_door(int door, bool state)
 
 char* wagon_get_string(char* wagon_string)
 {
-	if (!strcmp(wagon_string, WAGON_CHUCK))
+	if (!strcmp(wagon_string, WAGON_DEFAULT))
 		return "Chuck Wagon";
 	else if (!strcmp(wagon_string, WAGON_SUPPLY))
 		return "Supply Wagon";
@@ -32,10 +32,20 @@ char* wagon_get_string(char* wagon_string)
 
 int wagon_get_cost(char* wagon_string)
 {
-	if (!strcmp(wagon_string, WAGON_CHUCK))
+	if (!strcmp(wagon_string, WAGON_DEFAULT))
 		return 0;
 	else if (!strcmp(wagon_string, WAGON_SUPPLY))
 		return 100;
+	else
+		return 0;
+}
+
+int wagon_get_bone(char* wagon_string)
+{
+	if (!strcmp(wagon_string, WAGON_DEFAULT))
+		return 58;
+	else if (!strcmp(wagon_string, WAGON_SUPPLY))
+		return 8;
 	else
 		return 0;
 }
@@ -56,10 +66,7 @@ void wagon_menu_wagons()
 		Log::Write(Log::Type::Normal, "wagon_string = '%s'", wagon_string);
 
 		if (!strcmp(wagon_string, "config"))
-		{
-			Log::Write(Log::Type::Normal, "strcmp");
 			continue;
-		}
 
 		Hash wagon_hash = GET_HASH_KEY(wagon_string);
 
@@ -80,22 +87,12 @@ void wagon_menu_wagons()
 		menu_addItem_callback(wagon_name);
 		menu_add_extra_string(wagon_string);
 
-		if (ini.GetBoolValue(wagon_string, "owned", false))
-		{
+		if (!strcmp(ini.GetValue("config", "wagon_vehicle_hash", WAGON_DEFAULT), wagon_string))
 			menu_set_items_selected(menu_count);
-		}
-		else
+		/*else if (!ini.GetBoolValue(wagon_string, "owned", false) && wagon_cost != 0)
 		{
-			//char wagon_cost_string[100];
-			//_snprintf_s(wagon_cost_string, _TRUNCATE, "$%i", wagon_cost);
-
-			/*std::ostringstream ss;
-			ss << "$" << wagon_cost;
-
-			wagon_cost_string = ss.str();*/
-
 			menu_addItem_dollar(wagon_cost);
-		}
+		}*/
     }
 
 	menu_add_callback_action_all(
@@ -103,12 +100,15 @@ void wagon_menu_wagons()
 		{
 			char* wagon_name = menu_get_current_extra_string();
 
+			wagon_vehicle_hash = wagon_name;
+			wagon_bone = ini.GetLongValue(wagon_vehicle_hash, "wagon_bone", wagon_get_bone(wagon_vehicle_hash));
+
 			Log::Write(Log::Type::Normal, "wagon_name = '%s'", wagon_name);
 
 			ini.SetBoolValue(wagon_name, "owned", true);
+			ini.SetValue("config", "wagon_vehicle_hash", wagon_vehicle_hash);
 			wagon_save_ini_file();
 
-			wagon_vehicle_hash = GET_HASH_KEY(wagon_name);
 			menu_refresh();
 		}
 	);
@@ -117,6 +117,7 @@ void wagon_menu_wagons()
 		[]
 		{
 			if (menu_confirm("You won't be able to stow any more on your current Hunting Wagon. Are you sure?"))
+			//if (menu_confirm("You can only have one active Hunting Wagon. Are you sure?"))
 			{
 				if (IS_ENTITY_AT_COORD(PLAYER_PED_ID(), wagon_spawn_camp_coords.x, wagon_spawn_camp_coords.y, wagon_spawn_camp_coords.z, 5.0f, 5.0f, 10.0f, false, true, 0))
 				{
@@ -131,6 +132,8 @@ void wagon_menu_wagons()
 				}
 
 				wagon_closest_camp = -1;
+
+				menu_msg("Delivered to Camp");
 
 				if (!wagon_using_global)
 				{
@@ -148,27 +151,42 @@ void wagon_menu_modify()
 {
 	menu_set_title("Style");
 
-	//if (GET_ENTITY_MODEL(wagon_spawned_vehicle) == GET_HASH_KEY(WAGON_CHUCK))
+	//if (GET_ENTITY_MODEL(wagon_spawned_vehicle) == GET_HASH_KEY(WAGON_DEFAULT))
 	if (true)
 	{
 		menu_addItem_callback("Covered",
 			[]
 			{
-				SET_VEHICLE_EXTRA(wagon_spawned_vehicle, 1, IS_VEHICLE_EXTRA_TURNED_ON(wagon_spawned_vehicle, 1));
+				SET_VEHICLE_EXTRA(wagon_spawned_vehicle, 1, 0);
+				SET_VEHICLE_EXTRA(wagon_spawned_vehicle, 2, 1);
+				SET_VEHICLE_EXTRA(wagon_spawned_vehicle, 3, 1);
+			}
+		);
+
+		menu_addItem_callback("Part Covered",
+			[]
+			{
+				SET_VEHICLE_EXTRA(wagon_spawned_vehicle, 1, 1);
+				SET_VEHICLE_EXTRA(wagon_spawned_vehicle, 2, 1);
+				SET_VEHICLE_EXTRA(wagon_spawned_vehicle, 3, 0);
 			}
 		);
 
 		menu_addItem_callback("Uncovered",
 			[]
 			{
-				SET_VEHICLE_EXTRA(wagon_spawned_vehicle, 3, IS_VEHICLE_EXTRA_TURNED_ON(wagon_spawned_vehicle, 3));
+				SET_VEHICLE_EXTRA(wagon_spawned_vehicle, 1, 1);
+				SET_VEHICLE_EXTRA(wagon_spawned_vehicle, 2, 1);
+				SET_VEHICLE_EXTRA(wagon_spawned_vehicle, 3, 1);
 			}
 		);
 
 		menu_addItem_callback("Frame",
 			[]
 			{
-				SET_VEHICLE_EXTRA(wagon_spawned_vehicle, 2, IS_VEHICLE_EXTRA_TURNED_ON(wagon_spawned_vehicle, 2));
+				SET_VEHICLE_EXTRA(wagon_spawned_vehicle, 1, 1);
+				SET_VEHICLE_EXTRA(wagon_spawned_vehicle, 2, 0);
+				SET_VEHICLE_EXTRA(wagon_spawned_vehicle, 3, 1);
 			}
 		);
 	}
@@ -190,24 +208,40 @@ void menu_set()
 	menu_addItem_callback("Repair",
 		[]
 		{
-			ANIMPOSTFX_PLAY("CamTransition01Slow");
 			SET_ENTITY_HEALTH(wagon_spawned_vehicle, GET_ENTITY_MAX_HEALTH(wagon_spawned_vehicle, false), false);
 			SET_VEHICLE_FIXED(wagon_spawned_vehicle);
 		}
 	);
-	menu_addItem_callback("Open/Close Wagon", 
+
+	menu_addItem_callback("Wagon Door", 
 		[]
 		{
-			wagon_door(5, !IS_VEHICLE_DOOR_FULLY_OPEN(wagon_spawned_vehicle, 5));
-		}
-	);
+			if (menu_get_current_bool())
+			{
+				wagon_override_door = true;
+				wagon_override_door_request = GET_GAME_TIMER();
+				SET_VEHICLE_DOOR_SHUT(wagon_spawned_vehicle, 5, 0);
+			}
+			else
+			{
+				wagon_override_door = false;
+				SET_VEHICLE_DOOR_OPEN(wagon_spawned_vehicle, 5, 0, 0);
+			}
+			menu_toggle_current_bool();
+		},
+	true);
+	menu_set_bool_strings("Closed", "Open");
+	menu_addItem_bool(IS_VEHICLE_DOOR_FULLY_OPEN(wagon_spawned_vehicle, 5));
+
 	menu_addItem("Settings", 
 		[]
 		{
-			menu_addItem_callback("Long whistle Wagon",
+			menu_set_title("Hunting Wagon - Settings");
+
+			menu_addItem_callback("Long Whistle for Wagon",
 				[]
 				{
-					menu_msg("Long hold whistle to call hunting wagon");
+					menu_msg("Long hold whistle to call the hunting wagon");
 				}
 			);
 			menu_addItem_bool(0);
@@ -260,7 +294,7 @@ void wagon_menu_debug()
 				SET_ENTITY_AS_NO_LONGER_NEEDED(&wagon_spawned_vehicle);
 
 			Vector3 min, max;
-			GET_MODEL_DIMENSIONS(wagon_vehicle_hash, &min, &max);
+			GET_MODEL_DIMENSIONS(GET_HASH_KEY(wagon_vehicle_hash), &min, &max);
 
 			Vector3 cur_min, cur_max;
 			GET_MODEL_DIMENSIONS(GET_ENTITY_MODEL(entity_type), &cur_min, &cur_max);
@@ -441,7 +475,7 @@ void wagon_menu_debug()
 			Log::Write(Log::Type::Normal, "wagon_spawn_camp_coords.y = %f", wagon_spawn_camp_coords.y);
 			Log::Write(Log::Type::Normal, "wagon_spawn_camp_coords.z = %f", wagon_spawn_camp_coords.z);
 			Log::Write(Log::Type::Normal, "wagon_spawn_camp_heading = %f", wagon_spawn_camp_heading);
-			Log::Write(Log::Type::Normal, "wagon_vehicle_hash = %i", wagon_vehicle_hash);
+			Log::Write(Log::Type::Normal, "wagon_vehicle_hash = %s", wagon_vehicle_hash);
 			Log::Write(Log::Type::Normal, "wagon_bone = %i", wagon_bone);
 			Log::Write(Log::Type::Normal, "wagon_spawn_action = %i", wagon_spawn_action);
 			Log::Write(Log::Type::Normal, "wagon_spawn_action_mode = %i", wagon_spawn_action_mode);
@@ -490,6 +524,6 @@ void trainer_vehicle_wagons()
 	menu_addItem_vehicle("Wagon Work", "wagonwork01x");
 	menu_add_callback_action_all(
 		[]
-		{ wagon_vehicle_hash = GET_HASH_KEY(menu_get_current_string()); }
+		{ wagon_vehicle_hash = menu_get_current_string(); }
 	);
 }
