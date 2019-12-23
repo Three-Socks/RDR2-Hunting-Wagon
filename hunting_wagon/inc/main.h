@@ -6,8 +6,7 @@
 
 #pragma once
 
-#define _AMD64_
-#include <windef.h>
+#include <windows.h>
 
 #define IMPORT __declspec(dllimport)
 
@@ -64,11 +63,14 @@ IMPORT BYTE *getScriptHandleBaseAddress(int handle);
 enum eGameVersion : int
 {
 	VER_AUTO,
+
 	VER_1_0_1207_60_RGS,
 	VER_1_0_1207_69_RGS,
 	VER_1_0_1207_73_RGS,
 	VER_1_0_1207_77_RGS,
-
+	VER_1_0_1207_80_RGS,
+	VER_1_0_1232_13_RGS,
+	
 	VER_SIZE,
 	VER_UNK = -1
 };

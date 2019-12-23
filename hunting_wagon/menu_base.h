@@ -14,7 +14,6 @@ enum menu_item_types
 	MENU_ITEM_TYPE_STRING_SELECT,
 	MENU_ITEM_TYPE_STRING_SELECT_2,
 	MENU_ITEM_TYPE_MODEL_FAVOURITE,
-	MENU_ITEM_TYPE_DOLLAR,
 };
 
 bool menu_get_open_state();
@@ -76,9 +75,17 @@ int menu_addDefaultPrompt(char* menu_prompt_string, int button_id, int button_id
 int menu_get_prompt_handle(int prompt_id);
 char* menu_get_prompt_string(int prompt_id);
 void menu_set_prompt_string(int prompt_id, char* menu_prompt_string);
+int menu_get_prompt_button(int prompt_id);
+void menu_set_prompt_button(int prompt_id, int button_id);
+int menu_get_prompt_button_2(int prompt_id);
+void menu_set_prompt_button_2(int prompt_id, int button_id_2);
 int menu_get_default_prompt_handle(int prompt_id);
 char* menu_get_default_prompt_string(int prompt_id);
 void menu_set_default_prompt_string(int prompt_id, char* menu_prompt_string);
+int menu_get_default_prompt_button(int prompt_id);
+void menu_set_default_prompt_button(int prompt_id, int button_id);
+int menu_get_default_prompt_button_2(int prompt_id);
+void menu_set_default_prompt_button_2(int prompt_id, int button_id_2);
 void menu_addItem(char* menu_item_string, funcptr callback_func = 0);
 void menu_add_callback_all(funcptr callback_func);
 void menu_addItem_gxt_number(char* gxt, int num_val);
@@ -128,7 +135,6 @@ void menu_toggle_current_bool();
 int menu_get_current_bool();
 int menu_get_bool(int menu_item);
 void menu_addItem_string(char* string_val);
-void menu_addItem_dollar(int dollar);
 void menu_addItem_string_select(char* string_val, int num_val, int min, int max, int action_type);
 void menu_addItem_2_strings_select(char* string_val, char* extra_string_val, int num_val, int min, int max, int action_type);
 void menu_addItem_string_select_2(char* string_val, int num_val, int min, int max, int action_type);
@@ -145,6 +151,7 @@ void menu_addItem_callback(char* menu_item_string, funcptr action_func = 0, bool
 void menu_add_callback_action(funcptr action_func);
 void menu_add_callback_action_all(funcptr action_func);
 void menu_addItem_favourite();
+void menu_concat_number(int number);
 void menu_setup();
 void menu_modify_game_state();
 void menu_update();
@@ -185,10 +192,13 @@ bool menu_is_item_string(int item_index);
 void menu_load_sprite();
 void menu_set_added_prompt_visible(int prompt_id, bool state);
 void menu_set_added_prompt_text(int prompt_id, char* prompt_string);
+void menu_set_added_prompt_button(int prompt_id, int prompt_button);
+void menu_set_added_prompt_button_2(int prompt_id, int prompt_button_2);
 void menu_set_prompts();
 void menu_draw_prompts();
 void menu_register_prompts(menu_prompt(&prompt)[MAX_MENU_PROMPTS], int prompt_count);
 void GetScreenResolution(int& horizontal, int& vertical);
+char* get_text_string(char* string_val);
 void menu_draw();
 void draw_string(char* string_val, float x, float y);
 void draw_string_2(std::string string_val, float x, float y);
@@ -199,4 +209,4 @@ void start_html_font(std::ostream& ss, std::string face, float size);
 void end_html_font(std::ostream& ss);
 void start_html_align(std::ostream& ss, float percent_right = 0, std::string align = "");
 void end_html_align(std::ostream& ss);
-void set_up_draw(float scale1, float scale2, int r, int g, int b, bool centre);
+void set_up_draw(float scale, int r, int g, int b, bool centre);

@@ -33,9 +33,13 @@ typedef int Camera;
 typedef int TaskSequence;
 typedef int ColourIndex;
 typedef int Sphere;
-typedef int ScrHandle;
-typedef int PropSet;
 typedef int ItemSet;
+typedef int PropSet;
+typedef int AnimScene;
+typedef int Volume;
+typedef int PopZone;
+typedef int Prompt;
+typedef int ScrHandle;
 
 #define ALIGN8 __declspec(align(8))
 

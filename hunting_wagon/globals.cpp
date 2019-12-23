@@ -53,6 +53,7 @@ int menu_items_extra_int[MAX_MENU_ITEMS];
 int menu_items_data[MAX_MENU_ITEMS];
 int menu_items_data_2[MAX_MENU_ITEMS];
 int menu_items_keyboard_length[MAX_MENU_ITEMS];
+int menu_items_concat_number[MAX_MENU_ITEMS];
 float menu_items_float[MAX_MENU_ITEMS];
 float menu_items_extra_float[MAX_MENU_ITEMS];
 float menu_items_float_data[MAX_MENU_ITEMS];
@@ -78,18 +79,21 @@ CSimpleIniA ini(false, false, false);
 bool wagon_debug_menu_enabled, wagon_log_debug_info;
 int wagon_debug_menu;
 
-char* wagon_vehicle_hash;
 Vehicle wagon_spawned_vehicle;
 Vector3 wagon_spawn_camp_coords;
 Blip wagon_blip;
+Hash wagon_vehicle_lantern;
+Ped animal_holding, wagon_stow_entity;
+
+char* wagon_vehicle_hash;
 
 float wagon_spawn_camp_heading;
 
 bool wagon_using_global, wagon_spawn_action, wagon_stow, wagon_run_set_code, wagon_run_dead_code, wagon_spawn_into, wagon_override_door;
-Ped animal_holding, wagon_stow_entity;
 
 int wagon_camp_global_var, wagon_camp_global_member, wagon_spawn_action_mode, wagon_pickup_action_mode,
-wagon_bone, wagon_prompt, wagon_menu_prompt, wagon_closest_camp, wagon_stow_time, wagon_request_time, wagon_override_door_request;
+wagon_bone, wagon_prompt, wagon_menu_prompt, wagon_closest_camp, wagon_stow_time, wagon_request_time, wagon_override_door_request,
+wagon_vehicle_lantern_index;
 
 bool menu_adjust;
 

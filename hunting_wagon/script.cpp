@@ -34,7 +34,7 @@ bool wagon_load_pressed()
 		}*/
 		if (wagon_debug_menu_enabled && IsKeyJustUp(menu_keyboard_input))
 			return true;
-		else if (_PROMPT_IS_VALID(wagon_menu_prompt) && _PROMPT_IS_JUST_RELEASED(wagon_menu_prompt))
+		else if (_UIPROMPT_IS_VALID(wagon_menu_prompt) && _UIPROMPT_IS_JUST_RELEASED(wagon_menu_prompt))
 		{
 			return true;
 		}
@@ -104,8 +104,24 @@ void wagon_set_config_default_ini()
 	ini.Delete(WAGON_SUPPLY, NULL);
 
 	ini.SetValue(WAGON_DEFAULT, NULL, NULL);
+	ini.SetBoolValue(WAGON_DEFAULT, "extra_1", true);
+	ini.SetBoolValue(WAGON_DEFAULT, "extra_2", true);
+	ini.SetBoolValue(WAGON_DEFAULT, "extra_3", true);
+
+	//ini.SetValue(WAGON_ARMYSUPPLY, NULL, NULL);
 	ini.SetValue(WAGON_SUPPLY, NULL, NULL);
-	ini.SetValue(WAGON_CART06, NULL, NULL);
+
+	ini.SetValue(WAGON_GATCHUCK, NULL, NULL);
+	ini.SetBoolValue(WAGON_GATCHUCK, "extra_4", true);
+
+	ini.SetValue(WAGON_UTILLIWAG, NULL, NULL);
+	ini.SetValue(WAGON_WAGON5, NULL, NULL);
+
+	ini.SetValue(WAGON_CART, NULL, NULL);
+	ini.SetBoolValue(WAGON_CART, "extra_1", true);
+	ini.SetBoolValue(WAGON_CART, "extra_4", false);
+
+	ini.SetValue(WAGON_CART03, NULL, NULL);
 
 	wagon_save_ini_file();
 }
@@ -261,8 +277,6 @@ void wagon_get_config_default_ini()
 		ini.SetValue("config", "wagon_vehicle_hash", wagon_vehicle_hash);
 	}
 
-	wagon_bone = ini.GetLongValue(wagon_vehicle_hash, "wagon_bone", wagon_get_bone(wagon_vehicle_hash));
-
 	menu_ini_default = true;
 }
 
@@ -293,9 +307,10 @@ void wagon_setup()
 
 	wagon_spawn_camp_coords = { 0.0f, 0.0f, 0.0f };
 	wagon_spawn_camp_heading = 0.0f;
+	wagon_vehicle_lantern = 0;
+	wagon_vehicle_lantern_index = 0;
 
 	wagon_spawned_vehicle = 0;
-	//wagon_bone = 58;
 	wagon_spawn_action = false;
 	wagon_spawn_action_mode = 0;
 	wagon_pickup_action_mode = 0;

@@ -387,6 +387,26 @@ void menu_set_prompt_string(int prompt_id, char* menu_prompt_string)
 	menu_added_prompts[prompt_id].string = menu_prompt_string;
 }
 
+int menu_get_prompt_button(int prompt_id)
+{
+	return menu_added_prompts[prompt_id].button;
+}
+
+void menu_set_prompt_button(int prompt_id, int button_id)
+{
+	menu_added_prompts[prompt_id].button = button_id;
+}
+
+int menu_get_prompt_button_2(int prompt_id)
+{
+	return menu_added_prompts[prompt_id].button_2;
+}
+
+void menu_set_prompt_button_2(int prompt_id, int button_id_2)
+{
+	menu_added_prompts[prompt_id].button_2 = button_id_2;
+}
+
 int menu_get_default_prompt_handle(int prompt_id)
 {
 	return menu_prompts[prompt_id].handle;
@@ -402,6 +422,26 @@ void menu_set_default_prompt_string(int prompt_id, char* menu_prompt_string)
 	menu_prompts[prompt_id].string = menu_prompt_string;
 }
 
+int menu_get_default_prompt_button(int prompt_id)
+{
+	return menu_prompts[prompt_id].button;
+}
+
+void menu_set_default_prompt_button(int prompt_id, int button_id)
+{
+	menu_prompts[prompt_id].button = button_id;
+}
+
+int menu_get_default_prompt_button_2(int prompt_id)
+{
+	return menu_prompts[prompt_id].button_2;
+}
+
+void menu_set_default_prompt_button_2(int prompt_id, int button_id_2)
+{
+	menu_prompts[prompt_id].button_2 = button_id_2;
+}
+
 void menu_addItem(char* menu_item_string, funcptr callback_func)
 {
 	menu_count++;
@@ -411,11 +451,8 @@ void menu_addItem(char* menu_item_string, funcptr callback_func)
 
 void menu_add_callback_all(funcptr callback_func)
 {
-	int callback_all_index;
-	for (callback_all_index = 0; callback_all_index < menu_count + 1; callback_all_index++)
-	{
+	for (int callback_all_index = 0; callback_all_index < menu_count + 1; callback_all_index++)
 		menu_items_callback[callback_all_index] = callback_func;
-	}
 }
 
 void menu_addItem_gxt_number(char* gxt, int num_val)
@@ -671,12 +708,6 @@ void menu_addItem_string(char* string_val)
 	menu_items_string[menu_count] = string_val;
 }
 
-void menu_addItem_dollar(int dollar)
-{
-	menu_items_type[menu_count] = MENU_ITEM_TYPE_DOLLAR;
-	menu_items_int[menu_count] = dollar;
-}
-
 void menu_addItem_string_select(char* string_val, int num_val, int min, int max, int action_type)
 {
 	menu_items_string[menu_count] = string_val;
@@ -795,6 +826,11 @@ void menu_addItem_favourite()
 	menu_items_type[menu_count] = MENU_ITEM_TYPE_MODEL_FAVOURITE;
 }
 
+void menu_concat_number(int number)
+{
+	menu_items_concat_number[menu_count] = number;
+}
+
 void menu_setup()
 {
 	menu_keyboard_input = 0x4E;
@@ -846,18 +882,14 @@ void menu_setup()
 
 void menu_modify_game_state()
 {
-	int version = getGameVersion();
-
-	// Disable player model auto switching
-	if (version > VER_UNK&& version < VER_1_0_1207_73_RGS) // Game Ver 1.0.1207.58/60/69 - global_1835009
-		*getGlobalPtr(1835009) = 1;
-	else if (version > VER_1_0_1207_69_RGS) // Game Ver 1.0.1207.73/77/80 - global_1835011
-		*getGlobalPtr(1835011) = 1;
-
 	SET_INPUT_EXCLUSIVE(2, INPUT_FRONTEND_LT);
 	SET_INPUT_EXCLUSIVE(2, INPUT_FRONTEND_RT);
 	SET_INPUT_EXCLUSIVE(2, INPUT_FRONTEND_LB);
 	SET_INPUT_EXCLUSIVE(2, INPUT_FRONTEND_RB);
+	SET_INPUT_EXCLUSIVE(2, INPUT_FRONTEND_LEFT);
+	SET_INPUT_EXCLUSIVE(2, INPUT_FRONTEND_RIGHT);
+	SET_INPUT_EXCLUSIVE(2, INPUT_FRONTEND_DOWN);
+	SET_INPUT_EXCLUSIVE(2, INPUT_FRONTEND_UP);
 	SET_INPUT_EXCLUSIVE(2, INPUT_GAME_MENU_TAB_RIGHT);
 	SET_INPUT_EXCLUSIVE(2, INPUT_GAME_MENU_TAB_LEFT);
 	SET_INPUT_EXCLUSIVE(2, INPUT_GAME_MENU_ACCEPT);
@@ -866,48 +898,55 @@ void menu_modify_game_state()
 	SET_INPUT_EXCLUSIVE(2, INPUT_GAME_MENU_DOWN);
 	SET_INPUT_EXCLUSIVE(2, INPUT_GAME_MENU_LEFT);
 	SET_INPUT_EXCLUSIVE(2, INPUT_GAME_MENU_RIGHT);
+	SET_INPUT_EXCLUSIVE(2, INPUT_AIM);
+	SET_INPUT_EXCLUSIVE(2, INPUT_ATTACK);
+	SET_INPUT_EXCLUSIVE(2, INPUT_HORSE_AIM);
+	SET_INPUT_EXCLUSIVE(2, INPUT_HORSE_ATTACK);
+	SET_INPUT_EXCLUSIVE(2, INPUT_VEH_AIM);
+	SET_INPUT_EXCLUSIVE(2, INPUT_VEH_ATTACK);
+	SET_INPUT_EXCLUSIVE(2, INPUT_VEH_BOAT_AIM);
+	SET_INPUT_EXCLUSIVE(2, INPUT_VEH_BOAT_ATTACK);
+	SET_INPUT_EXCLUSIVE(2, INPUT_VEH_CAR_AIM);
+	SET_INPUT_EXCLUSIVE(2, INPUT_VEH_CAR_ATTACK);
+	SET_INPUT_EXCLUSIVE(2, INPUT_VEH_DRAFT_AIM);
+	SET_INPUT_EXCLUSIVE(2, INPUT_VEH_DRAFT_ATTACK);
+	SET_INPUT_EXCLUSIVE(2, INPUT_VEH_PASSENGER_AIM);
+	SET_INPUT_EXCLUSIVE(2, INPUT_VEH_PASSENGER_ATTACK);
 
-	//ENABLE_CONTROL_ACTION(0, INPUT_FRONTEND_UP, true);
-	//ENABLE_CONTROL_ACTION(0, INPUT_FRONTEND_DOWN, true);
-	//ENABLE_CONTROL_ACTION(0, INPUT_FRONTEND_LEFT, true);
-	//ENABLE_CONTROL_ACTION(0, INPUT_FRONTEND_RIGHT, true);
-
-	DISABLE_CONTROL_ACTION(0, INPUT_ATTACK2, false);
-	DISABLE_CONTROL_ACTION(0, INPUT_CHARACTER_WHEEL, false);
-	DISABLE_CONTROL_ACTION(0, INPUT_COVER, false);
-	DISABLE_CONTROL_ACTION(0, INPUT_COVER_TRANSITION, false);
-	DISABLE_CONTROL_ACTION(0, INPUT_LOOT, false);
-	DISABLE_CONTROL_ACTION(0, INPUT_LOOT2, false);
-	DISABLE_CONTROL_ACTION(0, INPUT_MELEE_ATTACK, false);
-	DISABLE_CONTROL_ACTION(0, INPUT_MELEE_BLOCK, false);
-	DISABLE_CONTROL_ACTION(0, INPUT_MELEE_GRAPPLE, false);
-	DISABLE_CONTROL_ACTION(0, INPUT_PLAYER_MENU, false);
-	DISABLE_CONTROL_ACTION(0, INPUT_OPEN_CRAFTING_MENU, false);
-	DISABLE_CONTROL_ACTION(0, INPUT_OPEN_EMOTE_WHEEL, false);
-	DISABLE_CONTROL_ACTION(0, INPUT_OPEN_JOURNAL, false);
-	DISABLE_CONTROL_ACTION(0, INPUT_OPEN_SATCHEL_HORSE_MENU, false);
-	DISABLE_CONTROL_ACTION(0, INPUT_OPEN_SATCHEL_MENU, false);
-	DISABLE_CONTROL_ACTION(0, INPUT_OPEN_WHEEL_MENU, false);
-	DISABLE_CONTROL_ACTION(0, INPUT_PICKUP, false);
-	DISABLE_CONTROL_ACTION(0, INPUT_QUICK_USE_ITEM, false);
-	DISABLE_CONTROL_ACTION(0, INPUT_REVEAL_HUD, false);
-	DISABLE_CONTROL_ACTION(0, INPUT_SELECT_RADAR_MODE, false);
-	DISABLE_CONTROL_ACTION(0, INPUT_TOGGLE_HOLSTER, false);
+	DISABLE_CONTROL_ACTION(2, INPUT_ATTACK2, false);
+	DISABLE_CONTROL_ACTION(2, INPUT_CHARACTER_WHEEL, false);
+	DISABLE_CONTROL_ACTION(2, INPUT_COVER, false);
+	DISABLE_CONTROL_ACTION(2, INPUT_COVER_TRANSITION, false);
+	DISABLE_CONTROL_ACTION(2, INPUT_LOOT, false);
+	DISABLE_CONTROL_ACTION(2, INPUT_LOOT2, false);
+	DISABLE_CONTROL_ACTION(2, INPUT_MELEE_ATTACK, false);
+	DISABLE_CONTROL_ACTION(2, INPUT_MELEE_BLOCK, false);
+	DISABLE_CONTROL_ACTION(2, INPUT_MELEE_GRAPPLE, false);
+	DISABLE_CONTROL_ACTION(2, INPUT_PLAYER_MENU, false);
+	DISABLE_CONTROL_ACTION(2, INPUT_OPEN_CRAFTING_MENU, false);
+	DISABLE_CONTROL_ACTION(2, INPUT_OPEN_EMOTE_WHEEL, false);
 	DISABLE_CONTROL_ACTION(2, INPUT_OPEN_JOURNAL, false);
-	DISABLE_CONTROL_ACTION(0, INPUT_WHISTLE, false);
-	DISABLE_CONTROL_ACTION(0, INPUT_WHISTLE_HORSEBACK, false);
-	DISABLE_CONTROL_ACTION(0, INPUT_HITCH_ANIMAL, false);
+	DISABLE_CONTROL_ACTION(2, INPUT_OPEN_SATCHEL_HORSE_MENU, false);
+	DISABLE_CONTROL_ACTION(2, INPUT_OPEN_SATCHEL_MENU, false);
+	DISABLE_CONTROL_ACTION(2, INPUT_OPEN_WHEEL_MENU, false);
+	DISABLE_CONTROL_ACTION(2, INPUT_PICKUP, false);
+	DISABLE_CONTROL_ACTION(2, INPUT_QUICK_USE_ITEM, false);
+	DISABLE_CONTROL_ACTION(2, INPUT_REVEAL_HUD, false);
+	DISABLE_CONTROL_ACTION(2, INPUT_SELECT_RADAR_MODE, false);
+	DISABLE_CONTROL_ACTION(2, INPUT_TOGGLE_HOLSTER, false);
+	DISABLE_CONTROL_ACTION(2, INPUT_OPEN_JOURNAL, false);
+	DISABLE_CONTROL_ACTION(2, INPUT_WHISTLE, false);
+	DISABLE_CONTROL_ACTION(2, INPUT_WHISTLE_HORSEBACK, false);
+	DISABLE_CONTROL_ACTION(2, INPUT_HITCH_ANIMAL, false);
 	
-	/*DISABLE_CONTROL_ACTION(0, INPUT_AIM, false);
-	DISABLE_CONTROL_ACTION(0, INPUT_ATTACK, false);
-	DISABLE_CONTROL_ACTION(0, INPUT_DUCK, false);
-	DISABLE_CONTROL_ACTION(0, INPUT_ENTER, false);
-	DISABLE_CONTROL_ACTION(0, INPUT_SPECIAL_ABILITY, false);*/
+	/*DISABLE_CONTROL_ACTION(2, INPUT_DUCK, false);
+	DISABLE_CONTROL_ACTION(2, INPUT_ENTER, false);
+	DISABLE_CONTROL_ACTION(2, INPUT_SPECIAL_ABILITY, false);*/
 
 	if (menu_is_item_keyboard(menu_item_highlighted))
 	{
-		DISABLE_CONTROL_ACTION(0, INPUT_JUMP, false);
-		DISABLE_CONTROL_ACTION(0, INPUT_HORSE_JUMP, false);
+		DISABLE_CONTROL_ACTION(2, INPUT_JUMP, false);
+		DISABLE_CONTROL_ACTION(2, INPUT_HORSE_JUMP, false);
 	}
 }
 
@@ -926,26 +965,28 @@ void menu_update()
 	// Show/Hide default menu prompts needed
 	if (menu_prompts_count != -1)
 	{
-		if (_PROMPT_IS_VALID(menu_get_default_prompt_handle(menu_prompt_extra)))
-			_PROMPT_SET_VISIBLE(menu_get_default_prompt_handle(menu_prompt_extra), menu_is_item_keyboard(menu_item_highlighted));
+		if (_UIPROMPT_IS_VALID(menu_get_default_prompt_handle(menu_prompt_extra)))
+			_UIPROMPT_SET_VISIBLE(menu_get_default_prompt_handle(menu_prompt_extra), menu_is_item_keyboard(menu_item_highlighted));
 
-		if (_PROMPT_IS_VALID(menu_get_default_prompt_handle(menu_prompt_lb_rb)))
-			_PROMPT_SET_VISIBLE(menu_get_default_prompt_handle(menu_prompt_lb_rb), (menu_is_item_float(menu_item_highlighted) && menu_items_int[menu_item_highlighted] >= 3));
+		if (_UIPROMPT_IS_VALID(menu_get_default_prompt_handle(menu_prompt_lb_rb)))
+			_UIPROMPT_SET_VISIBLE(menu_get_default_prompt_handle(menu_prompt_lb_rb), (menu_is_item_float(menu_item_highlighted) && menu_items_int[menu_item_highlighted] >= 3));
 
-		if (_PROMPT_IS_VALID(menu_get_default_prompt_handle(menu_prompt_left_right)))
+		if (_UIPROMPT_IS_VALID(menu_get_default_prompt_handle(menu_prompt_left_right)))
 		{
 			int leftright_handle = menu_get_default_prompt_handle(menu_prompt_left_right);
 
 			if (menu_is_item_string_select(menu_item_highlighted))
 			{
-				char* var_string = CREATE_STRING(10, "LITERAL_STRING", "Previous/Next");
-				_PROMPT_SET_TEXT(leftright_handle, var_string);
-				_PROMPT_SET_VISIBLE(leftright_handle, true);
+				_UIPROMPT_SET_TEXT(leftright_handle, _CREATE_VAR_STRING(10, "LITERAL_STRING", "Previous/Next"));
+				_UIPROMPT_SET_VISIBLE(leftright_handle, true);
 			}
 			else if (menu_is_item_number(menu_item_highlighted) || menu_is_item_float(menu_item_highlighted) || (menu_is_item_bool(menu_item_highlighted) && menu_items_action_update[menu_item_highlighted]))
-				_PROMPT_SET_VISIBLE(leftright_handle, true);
+			{				
+				_UIPROMPT_SET_TEXT(leftright_handle, _CREATE_VAR_STRING(10, "LITERAL_STRING", "Decrease/Increase"));
+				_UIPROMPT_SET_VISIBLE(leftright_handle, true);
+			}
 			else
-				_PROMPT_SET_VISIBLE(leftright_handle, false);
+				_UIPROMPT_SET_VISIBLE(leftright_handle, false);
 		}
 	}
 }
@@ -1449,7 +1490,7 @@ void menu_msg(char* string_val, bool force)
 	{
 		menu_notification_item = menu_item_highlighted;
 		menu_notifications_request = GET_GAME_TIMER();
-		menu_notification_text = string_val;
+		menu_notification_text = get_text_string(string_val);
 	}
 }
 
@@ -1463,10 +1504,10 @@ void menu_msg_2_strings(char* string_val, char* string_val2, bool force)
 		std::ostringstream ss;
 
 		if (string_val != NULL)
-			ss << string_val;
+			ss << get_text_string(string_val);
 
 		if (string_val2 != NULL)
-			ss << string_val2;
+			ss << get_text_string(string_val2);
 
 		menu_notification_string = ss.str();
 
@@ -1477,9 +1518,9 @@ void menu_msg_2_strings(char* string_val, char* string_val2, bool force)
 void print_msg_bottom_screen(char* string_val)
 {
 	//_0xDD1232B332CBB9E7(3, 1, 0); // Not sure exactly what this does but has something to do with removing the print only when set to 3.
-	_LOG_SET_CACHED_OBJECTIVE(CREATE_STRING(10, "LITERAL_STRING", string_val));
-	_LOG_PRINT_CACHED_OBJECTIVE();
-	_LOG_CLEAR_CACHED_OBJECTIVE();
+	_UILOG_SET_CACHED_OBJECTIVE(_CREATE_VAR_STRING(10, "LITERAL_STRING", get_text_string(string_val)));
+	_UILOG_PRINT_CACHED_OBJECTIVE();
+	_UILOG_CLEAR_CACHED_OBJECTIVE();
 }
 
 void print_msg_2_strings_bottom_screen(char* string_val, char* string_val2)
@@ -1487,16 +1528,16 @@ void print_msg_2_strings_bottom_screen(char* string_val, char* string_val2)
 	std::ostringstream ss;
 
 	if (string_val != NULL)
-		ss << string_val;
+		ss << get_text_string(string_val);
 
 	if (string_val2 != NULL)
-		ss << string_val2;
+		ss << get_text_string(string_val2);
 
 	menu_notification_string = ss.str();
 
-	_LOG_SET_CACHED_OBJECTIVE(CREATE_STRING(10, "LITERAL_STRING", const_cast<PCHAR>(menu_notification_string.c_str())));
-	_LOG_PRINT_CACHED_OBJECTIVE();
-	_LOG_CLEAR_CACHED_OBJECTIVE();
+	_UILOG_SET_CACHED_OBJECTIVE(_CREATE_VAR_STRING(10, "LITERAL_STRING", const_cast<PCHAR>(menu_notification_string.c_str())));
+	_UILOG_PRINT_CACHED_OBJECTIVE();
+	_UILOG_CLEAR_CACHED_OBJECTIVE();
 }
 
 void menu_error(char* string_val, int menu_level_back)
@@ -1597,6 +1638,7 @@ void menu_clean()
 		menu_items_float_data[clean_index] = 0.0f;
 		menu_items_float_data_2[clean_index] = 0.0f;
 		menu_items_selected[clean_index] = -1;
+		menu_items_concat_number[clean_index] = 0;
 	}
 
 	menu_update_callback[menu_level] = 0;
@@ -1655,56 +1697,56 @@ void menu_do_hold_pressed(int button_id)
 
 bool menu_up_pressed()
 {
-	if (IS_CONTROL_JUST_PRESSED(2, INPUT_GAME_MENU_UP) || (IS_CONTROL_PRESSED(2, INPUT_GAME_MENU_UP) &&
+	if (IS_CONTROL_JUST_PRESSED(2, INPUT_FRONTEND_UP) || (IS_CONTROL_PRESSED(2, INPUT_FRONTEND_UP) &&
 		GET_GAME_TIMER() - press_time > press_delay - (menu_scroll_multiplier * 10)))
 	{
 		press_time = GET_GAME_TIMER();
 		menu_up = true;
 		return true;
 	}
-	menu_do_hold_pressed(INPUT_GAME_MENU_UP);
+	menu_do_hold_pressed(INPUT_FRONTEND_UP);
 
 	return false;
 }
 
 bool menu_down_pressed()
 {
-	if (IS_CONTROL_JUST_PRESSED(2, INPUT_GAME_MENU_DOWN) || (IS_CONTROL_PRESSED(2, INPUT_GAME_MENU_DOWN) &&
+	if (IS_CONTROL_JUST_PRESSED(2, INPUT_FRONTEND_DOWN) || (IS_CONTROL_PRESSED(2, INPUT_FRONTEND_DOWN) &&
 		GET_GAME_TIMER() - press_time > press_delay - (menu_scroll_multiplier * 10)))
 	{
 		press_time = GET_GAME_TIMER();
 		menu_down = true;
 		return true;
 	}
-	menu_do_hold_pressed(INPUT_GAME_MENU_DOWN);
+	menu_do_hold_pressed(INPUT_FRONTEND_DOWN);
 
 	return false;
 }
 
 bool menu_left_pressed()
 {
-	if (IS_CONTROL_JUST_PRESSED(2, INPUT_GAME_MENU_LEFT) || (IS_CONTROL_PRESSED(2, INPUT_GAME_MENU_LEFT) &&
+	if (IS_CONTROL_JUST_PRESSED(2, INPUT_FRONTEND_LEFT) || (IS_CONTROL_PRESSED(2, INPUT_FRONTEND_LEFT) &&
 		GET_GAME_TIMER() - press_time > press_delay))
 	{
 		press_time = GET_GAME_TIMER();
 		menu_left = true;
 		return true;
 	}
-	menu_do_hold_pressed(INPUT_GAME_MENU_LEFT);
+	menu_do_hold_pressed(INPUT_FRONTEND_LEFT);
 
 	return false;
 }
 
 bool menu_right_pressed()
 {
-	if (IS_CONTROL_JUST_PRESSED(2, INPUT_GAME_MENU_RIGHT) || (IS_CONTROL_PRESSED(2, INPUT_GAME_MENU_RIGHT) &&
+	if (IS_CONTROL_JUST_PRESSED(2, INPUT_FRONTEND_RIGHT) || (IS_CONTROL_PRESSED(2, INPUT_FRONTEND_RIGHT) &&
 		GET_GAME_TIMER() - press_time > press_delay))
 	{
 		press_time = GET_GAME_TIMER();
 		menu_right = true;
 		return true;
 	}
-	menu_do_hold_pressed(INPUT_GAME_MENU_RIGHT);
+	menu_do_hold_pressed(INPUT_FRONTEND_RIGHT);
 
 	return false;
 }
@@ -1781,8 +1823,8 @@ void menu_load_sprite()
 
 void menu_set_added_prompt_visible(int prompt_id, bool state)
 {
-	if (_PROMPT_IS_VALID(menu_get_prompt_handle(prompt_id)))
-		_PROMPT_SET_VISIBLE(menu_get_prompt_handle(prompt_id), state);
+	if (_UIPROMPT_IS_VALID(menu_get_prompt_handle(prompt_id)))
+		_UIPROMPT_SET_VISIBLE(menu_get_prompt_handle(prompt_id), state);
 }
 
 void menu_set_added_prompt_text(int prompt_id, char* prompt_string)
@@ -1790,9 +1832,28 @@ void menu_set_added_prompt_text(int prompt_id, char* prompt_string)
 	if (menu_get_prompt_string(prompt_id) != prompt_string)
 	{
 		menu_set_prompt_string(prompt_id, prompt_string);
-		char* var_string = CREATE_STRING(10, "LITERAL_STRING", menu_get_prompt_string(prompt_id));
-		if (_PROMPT_IS_VALID(menu_get_prompt_handle(prompt_id)))
-			_PROMPT_SET_TEXT(menu_get_prompt_handle(prompt_id), var_string);
+		if (_UIPROMPT_IS_VALID(menu_get_prompt_handle(prompt_id)))
+			_UIPROMPT_SET_TEXT(menu_get_prompt_handle(prompt_id), _CREATE_VAR_STRING(10, "LITERAL_STRING", menu_get_prompt_string(prompt_id)));
+	}
+}
+
+void menu_set_added_prompt_button(int prompt_id, int prompt_button)
+{
+	if (menu_get_prompt_button(prompt_id) != prompt_button)
+	{
+		menu_set_prompt_button(prompt_id, prompt_button);
+		if (_UIPROMPT_IS_VALID(menu_get_prompt_handle(prompt_id)))
+			_UIPROMPT_SET_CONTROL_ACTION(menu_get_prompt_handle(prompt_id), menu_get_prompt_button(prompt_id));
+	}
+}
+
+void menu_set_added_prompt_button_2(int prompt_id, int prompt_button_2)
+{
+	if (menu_get_prompt_button_2(prompt_id) != prompt_button_2)
+	{
+		menu_set_prompt_button_2(prompt_id, prompt_button_2);
+		if (_UIPROMPT_IS_VALID(menu_get_prompt_handle(prompt_id)))
+			_UIPROMPT_SET_CONTROL_ACTION(menu_get_prompt_handle(prompt_id), menu_get_prompt_button_2(prompt_id));
 	}
 }
 
@@ -1806,7 +1867,7 @@ void menu_set_prompts()
 
 			menu_prompt_lb_rb = menu_addDefaultPrompt("Slower (Hold)/Faster (Hold)", INPUT_GAME_MENU_TAB_LEFT, INPUT_GAME_MENU_TAB_RIGHT, false);
 
-			menu_prompt_left_right = menu_addDefaultPrompt("Decrease/Increase", INPUT_GAME_MENU_LEFT, INPUT_GAME_MENU_RIGHT, false);
+			menu_prompt_left_right = menu_addDefaultPrompt("Decrease/Increase", INPUT_FRONTEND_LEFT, INPUT_FRONTEND_RIGHT, false);
 
 			if (menu_level == 0)
 				menu_prompt_cancel = menu_addDefaultPrompt("Exit", INPUT_GAME_MENU_CANCEL);
@@ -1833,29 +1894,28 @@ void menu_register_prompts(menu_prompt(&prompt)[MAX_MENU_PROMPTS], int prompt_co
 	{
 		for (int i = 0; i < prompt_count + 1; i++)
 		{
-			if (!_PROMPT_IS_VALID(prompt[i].handle))
+			if (!_UIPROMPT_IS_VALID(prompt[i].handle))
 			{
-				prompt[i].handle = _BEGIN_REGISTER_PROMPT();
-				_PROMPT_SET_CONTROL_ACTION(prompt[i].handle, prompt[i].button);
+				prompt[i].handle = _UIPROMPT_REGISTER_BEGIN();
+				_UIPROMPT_SET_CONTROL_ACTION(prompt[i].handle, prompt[i].button);
 
 				if (prompt[i].button_2 != 0)
-					_PROMPT_SET_CONTROL_ACTION(prompt[i].handle, prompt[i].button_2);
+					_UIPROMPT_SET_CONTROL_ACTION(prompt[i].handle, prompt[i].button_2);
 
-				char* var_string = CREATE_STRING(10, "LITERAL_STRING", prompt[i].string);
-				_PROMPT_SET_TEXT(prompt[i].handle, var_string);
+				_UIPROMPT_SET_TEXT(prompt[i].handle, _CREATE_VAR_STRING(10, "LITERAL_STRING", prompt[i].string));
 
 				_0x4D107406667423BE(prompt[i].handle, 0);
-				_PROMPT_SET_POSITION(prompt[i].handle, 0.0f, 0.0f, 0.0f);
-				_0x0C718001B77CA468(prompt[i].handle, 0.0f);
-				_PROMPT_SET_PRIORITY(prompt[i].handle, 1);
-				_PROMPT_SET_TRANSPORT_MODE(prompt[i].handle, 0);
-				_PROMPT_SET_ATTRIBUTE(prompt[i].handle, 18, 1);
-				_PROMPT_SET_STANDARD_MODE(prompt[i].handle, 0);
+				_UIPROMPT_CONTEXT_SET_POINT(prompt[i].handle, 0.0f, 0.0f, 0.0f);
+				_UIPROMPT_CONTEXT_SET_SIZE(prompt[i].handle, 0.0f);
+				_UIPROMPT_SET_PRIORITY(prompt[i].handle, 1);
+				_UIPROMPT_SET_TRANSPORT_MODE(prompt[i].handle, 0);
+				_UIPROMPT_SET_ATTRIBUTE(prompt[i].handle, 18, 1);
+				_UIPROMPT_SET_STANDARD_MODE(prompt[i].handle, 0);
 
-				_END_REGISTER_PROMPT(prompt[i].handle);
+				_UIPROMPT_REGISTER_END(prompt[i].handle);
 
-				_PROMPT_SET_ENABLED(prompt[i].handle, true);
-				_PROMPT_SET_VISIBLE(prompt[i].handle, prompt[i].visible);
+				_UIPROMPT_SET_ENABLED(prompt[i].handle, true);
+				_UIPROMPT_SET_VISIBLE(prompt[i].handle, prompt[i].visible);
 			}
 		}
 	}
@@ -1865,8 +1925,8 @@ void menu_clean_prompts()
 {
 	for (int prompt_index = 0; prompt_index < menu_prompts_count + 1; prompt_index++)
 	{
-		if (_PROMPT_IS_VALID(menu_prompts[prompt_index].handle))
-			_PROMPT_DELETE(menu_prompts[prompt_index].handle);
+		if (_UIPROMPT_IS_VALID(menu_prompts[prompt_index].handle))
+			_UIPROMPT_DELETE(menu_prompts[prompt_index].handle);
 
 		menu_prompts[prompt_index].handle = 0;
 		menu_prompts[prompt_index].string = NULL;
@@ -1876,8 +1936,8 @@ void menu_clean_prompts()
 
 	for (int prompt_index = 0; prompt_index < menu_added_prompts_count + 1; prompt_index++)
 	{
-		if (_PROMPT_IS_VALID(menu_added_prompts[prompt_index].handle))
-			_PROMPT_DELETE(menu_added_prompts[prompt_index].handle);
+		if (_UIPROMPT_IS_VALID(menu_added_prompts[prompt_index].handle))
+			_UIPROMPT_DELETE(menu_added_prompts[prompt_index].handle);
 
 		menu_added_prompts[prompt_index].handle = 0;
 		menu_added_prompts[prompt_index].string = NULL;
@@ -1946,6 +2006,14 @@ void GetScreenResolution(int& horizontal, int& vertical)
 	vertical = desktop.bottom;
 }
 
+char* get_text_string(char* string_val)
+{
+	if (DOES_TEXT_LABEL_EXIST(string_val))
+		return _GET_LABEL_TEXT(string_val);
+	else
+		return string_val;
+}
+
 void menu_draw()
 {
 	int item_r, item_g, item_b;
@@ -1980,13 +2048,13 @@ void menu_draw()
 
 	start_html_font(ss, menu_header_font, 1.45f);
 
-	ss << menu_header;
+	ss << get_text_string(menu_header);
 
 	end_html_font(ss);
 
 	string_menu_header = ss.str();
 
-	set_up_draw(0.0f, 0.33f, header_text_r, header_text_g, header_text_b, 1);
+	set_up_draw(0.33f, header_text_r, header_text_g, header_text_b, 1);
 	draw_string_2(string_menu_header, menu_x + win_size_x - menu_x_offset - (win_size_x * 0.5f), menu_y - 0.020f);
 
 	for (item_index = 0; item_index < menu_count + 1; item_index++)
@@ -2030,7 +2098,7 @@ void menu_draw()
 
 					end_html_font(ss);
 
-					set_up_draw(0.0f, 0.33f, non_highlighted_text_r, non_highlighted_text_g, non_highlighted_text_b, 0);
+					set_up_draw(0.33f, non_highlighted_text_r, non_highlighted_text_g, non_highlighted_text_b, 0);
 					draw_string_2(ss.str(), menu_x + win_size_x + 0.022f, item_y - item_y_offset);
 				}
 
@@ -2039,14 +2107,18 @@ void menu_draw()
 				start_html_align(ss);
 				start_html_font(ss, menu_items_font, 1.1f);
 
-				ss << menu_items_name[item_index];
+
+				if (menu_items_concat_number[item_index] > 0)
+					ss << get_text_string(menu_items_name[item_index]) << " " << menu_items_concat_number[item_index];
+				else
+					ss << get_text_string(menu_items_name[item_index]);
 
 				end_html_font(ss);
 				end_html_align(ss);
 
 				string_left = ss.str();
 
-				set_up_draw(0.0f, 0.33f, item_r, item_g, item_b, 0);
+				set_up_draw(0.33f, item_r, item_g, item_b, 0);
 				draw_string_2(string_left, menu_x + menu_x_offset, item_y - item_y_offset);
 				if (menu_is_item_number(item_index) || menu_is_item_float(item_index) || menu_is_item_string_select(item_index) || (menu_is_item_bool(item_index) && !menu_use_bool_sprite))
 				{
@@ -2073,9 +2145,7 @@ void menu_draw()
 						html_sprite(ss, "generic_textures", "selection_arrow_left", 0.6f, 5);
 
 					if (menu_is_item_number(item_index))
-					{
 						ss << menu_items_int[item_index];
-					}
 					else if (menu_is_item_float(item_index))
 					{
 						int dp = menu_items_int[item_index];
@@ -2083,15 +2153,13 @@ void menu_draw()
 						ss << std::fixed << menu_items_float[item_index];
 					}
 					else if (menu_is_item_string_select(item_index))
-					{
-						ss << menu_items_string[item_index];
-					}
+						ss << get_text_string(menu_items_string[item_index]);
 					else if (menu_is_item_bool(item_index))
 					{
 						if (menu_items_extra_int[item_index] == 1)
-							ss << custom_bool_string_on;
+							ss << get_text_string(custom_bool_string_on);
 						else
-							ss << custom_bool_string_off;
+							ss << get_text_string(custom_bool_string_off);
 					}
 
 					end_html_font(ss);
@@ -2106,7 +2174,7 @@ void menu_draw()
 
 					string_right = ss.str();
 
-					set_up_draw(0.0f, 0.33f, item_r, item_g, item_b, 0);
+					set_up_draw(0.33f, item_r, item_g, item_b, 0);
 					draw_string_2(string_right, 0.0f, item_y - item_y_offset);
 				}
 				else if (menu_is_item_string(item_index))
@@ -2117,31 +2185,14 @@ void menu_draw()
 					start_html_font(ss, menu_items_font, 1.1f);
 
 					if (menu_items_string[item_index] != NULL)
-						ss << menu_items_string[item_index];
+						ss << get_text_string(menu_items_string[item_index]);
 
 					end_html_font(ss);
 					end_html_align(ss);
 
 					string_right = ss.str();
 
-					set_up_draw(0.0f, 0.33f, item_r, item_g, item_b, 0);
-					draw_string_2(string_right, menu_x, item_y - item_y_offset);
-				}
-				else if (menu_items_type[item_index] == MENU_ITEM_TYPE_DOLLAR)
-				{					
-					std::ostringstream ss;
-
-					start_html_align(ss, html_menu_align, "right");
-					start_html_font(ss, menu_items_font, 1.1f);
-
-					ss << "$" << menu_items_int[item_index];
-
-					end_html_font(ss);
-					end_html_align(ss);
-
-					string_right = ss.str();
-
-					set_up_draw(0.0f, 0.33f, item_r, item_g, item_b, 0);
+					set_up_draw(0.33f, item_r, item_g, item_b, 0);
 					draw_string_2(string_right, menu_x, item_y - item_y_offset);
 				}
 				else if (menu_is_item_bool(item_index))
@@ -2193,30 +2244,30 @@ void menu_draw()
 
 		string_item_count = ss.str();
 
-		set_up_draw(0.0f, 0.33f, items_count_r, items_count_g, items_count_b, 0);
+		set_up_draw(0.33f, items_count_r, items_count_g, items_count_b, 0);
 		draw_string_2(string_item_count, 0.0f, (arrow_ud_y + menu_y - 0.020f) + (menu_spacing * 0.5f));
 	}
 }
 
 void draw_string(char* string_val, float x, float y)
 {
-	DRAW_TEXT(CREATE_STRING(10, "LITERAL_STRING", string_val), x, y);
+	_DISPLAY_TEXT(_CREATE_VAR_STRING(10, "LITERAL_STRING", get_text_string(string_val)), x, y);
 }
 
 void draw_string_2(const std::string string_val, float x, float y)
 {
-	DRAW_TEXT(CREATE_STRING(10, "LITERAL_STRING", const_cast<PCHAR>(string_val.c_str())), x, y);
+	_DISPLAY_TEXT(_CREATE_VAR_STRING(10, "LITERAL_STRING", const_cast<PCHAR>(string_val.c_str())), x, y);
 }
 
 void draw_number(int num_val, float x, float y)
 {
-	DRAW_TEXT(CREATE_STRING(2, "NUMBER", num_val), x, y);
+	_DISPLAY_TEXT(_CREATE_VAR_STRING(2, "NUMBER", num_val), x, y);
 }
 
 void draw_float(float num_val, float x, float y, int dp)
 {
 	char text[256];
-	char* dp_change = {};
+	char* dp_change = "%.04f";
 	if (dp == 0) dp_change = "%.00f";
 	else if (dp == 1) dp_change = "%.01f";
 	else if (dp == 2) dp_change = "%.02f";
@@ -2224,7 +2275,7 @@ void draw_float(float num_val, float x, float y, int dp)
 	else if (dp == 4) dp_change = "%.04f";
 
 	sprintf_s(text, dp_change, num_val);
-	DRAW_TEXT(CREATE_STRING(10, "LITERAL_STRING", text), x, y);
+	_DISPLAY_TEXT(_CREATE_VAR_STRING(10, "LITERAL_STRING", text), x, y);
 }
 
 void html_sprite(std::ostream& ss, std::string texture_dict, std::string texture_name, float width_height, int vspace)
@@ -2269,10 +2320,10 @@ void end_html_align(std::ostream& ss)
 	ss << "</p></textformat>";
 }
 
-void set_up_draw(float scale1, float scale2, int r, int g, int b, bool centre)
+void set_up_draw(float scale, int r, int g, int b, bool centre)
 {
-	SET_TEXT_SCALE(scale1, scale2);
-	SET_TEXT_COLOR_RGBA(r, g, b, 255);
+	SET_TEXT_SCALE(0.0f, scale);
+	_SET_TEXT_COLOR(r, g, b, 255);
 	SET_TEXT_CENTRE(centre);
 	SET_TEXT_DROPSHADOW(0, 0, 0, 0, 0);
 }

@@ -64,8 +64,19 @@
 
 #define MAX_WAGONS 25
 #define WAGON_DEFAULT STR(chuckwagon000x)
+#define WAGON_ARMYSUPPLY STR(armysupplywagon)
 #define WAGON_SUPPLY STR(supplywagon)
+#define WAGON_GATCHUCK STR(gatchuck)
+#define WAGON_UTILLIWAG STR(utilliwag)
+#define WAGON_WAGON5 STR(wagon05x)
+#define WAGON_WAGONCIRCUS STR(wagoncircus01x)
+#define WAGON_WAGONCIRCUS2 STR(wagoncircus02x)
+#define WAGON_WAGONWORK STR(wagonwork01x)
+#define WAGON_CART STR(cart01)
+#define WAGON_CART03 STR(cart03)
 #define WAGON_CART06 STR(cart06)
+#define WAGON_CART07 STR(cart07)
+#define WAGON_CART08 STR(cart07)
 
 #include "globals.h"
 #include "menu.h"
