@@ -4,7 +4,7 @@
 
 bool trainer_test_bool[3] = { false, false, false };
 int trainer_test_val_1 = 8, trainer_test_val_2 = -1, trainer_test_val_3 = 1, trainer_test_val_4 = 1, trainer_test_val_5 = 0, trainer_test_val_6 = 1, trainer_test_val_7 = 2, trainer_test_val_8 = 0;
-float trainer_test_float_1 = 0.0f, trainer_test_float_2 = 0.0f, trainer_test_float_3 = 0.7f, trainer_test_float_4 = 0.0f, trainer_test_float_5 = 0.0f, trainer_test_float_6 = 0.0f, trainer_test_float_7 = 0.0f, trainer_test_float_8 = 0.0f, trainer_test_float_9 = 0.0f, trainer_test_float_10 = 100.0f;
+float trainer_test_float_1 = 10.0f, trainer_test_float_2 = 10.0f, trainer_test_float_3 = 10.0f, trainer_test_float_4 = 0.0f, trainer_test_float_5 = 0.0f, trainer_test_float_6 = 0.0f, trainer_test_float_7 = 0.0f, trainer_test_float_8 = 0.0f, trainer_test_float_9 = 0.0f, trainer_test_float_10 = 100.0f;
 char* trainer_test_texture = "translate_bg_1a";
 char* trainer_test_font = "$title1";
 
@@ -256,28 +256,109 @@ void wagon_menu_debug()
 {
 	menu_set_title("Hunting Wagon DEBUG MENU");
 
+	menu_addItem_callback("global_40",
+		[]
+		{
+			*getGlobalPtr(40) = menu_get_current_number();
+		}
+		);
+	menu_addItem_number(*getGlobalPtr(40), 0, 5);
+
 	menu_addItem_callback("throw",
 		[]
 		{
-			_0x931B241409216C1F(PLAYER_PED_ID(), animal_holding, 0);
+			if (!DOES_ENTITY_EXIST(animal_holding))
+			{
+				menu_error("no animal_holding", 0);
+				return;
+			}
+
+			if (!DOES_ENTITY_EXIST(wagon_spawned_vehicle))
+			{
+				menu_error("no wagon_spawned_vehicle", 0);
+				return;
+			}
+
+			SET_PED_CAN_RAGDOLL(animal_holding, true);
+
+			if (!IS_ENTITY_ATTACHED(animal_holding))
+			{
+				FREEZE_ENTITY_POSITION(animal_holding, false);
+			}
+
+			SET_ENTITY_COLLISION(animal_holding, true, false);
+			SET_ENTITY_COMPLETELY_DISABLE_COLLISION(animal_holding, true, false);
+			ACTIVATE_PHYSICS(animal_holding);
+			SET_ENTITY_VISIBLE(animal_holding, true);
+
+
+			DETACH_ENTITY(animal_holding, 1, 1);
+			//Vector3 animal_coords = GET_ENTITY_COORDS(animal_holding, false, false);
+			//SET_ENTITY_COORDS(animal_holding, animal_coords.x, animal_coords.y, animal_coords.z, 0, 1, 1, 0);
+
+			WAIT(100);
+
+			APPLY_FORCE_TO_ENTITY_CENTER_OF_MASS(animal_holding, 1, trainer_test_float_1, trainer_test_float_2, trainer_test_float_3, false, false, true, false);
+
+			//FORCE_ENTITY_AI_AND_ANIMATION_UPDATE(animal_holding, 1);
 		}
 	);
 
 
-	menu_addItem_callback("throw2",
+	menu_addItem_callback("force x",
 		[]
 		{
-			_0x141BC64C8D7C5529(wagon_spawned_vehicle);
+			trainer_test_float_1 = menu_get_current_float();
+		}
+		);
+	menu_addItem_float_keyboard(trainer_test_float_1, 9, 1, -50.0f, 50.0f);
+
+	menu_addItem_callback("force y",
+		[]
+		{
+			trainer_test_float_2 = menu_get_current_float();
+		}
+		);
+	menu_addItem_float_keyboard(trainer_test_float_2, 9, 1, -50.0f, 50.0f);
+
+	menu_addItem_callback("force z",
+		[]
+		{
+			trainer_test_float_3 = menu_get_current_float();
+		}
+		);
+	menu_addItem_float_keyboard(trainer_test_float_3, 9, 1, -50.0f, 50.0f);
+
+	menu_addItem_callback("propset",
+		[]
+		{
+			//_0xC0F0417A90402742(wagon_spawned_vehicle, 861424286); // lantern
+
+			int prop_set = GET_HASH_KEY("pg_veh_chuckwagon000x_lanterns");
+
+			_REQUEST_PROPSET(prop_set);
+			while (!_HAS_PROPSET_LOADED(prop_set))
+			{
+				WAIT(0);
+			}
+
+			_0xC0F0417A90402742(wagon_spawned_vehicle, prop_set);
+			//_0x75F90E4051CC084C(wagon_spawned_vehicle, 295596934);
+			//_0xD80FAF919A2E56EA(wagon_spawned_vehicle, prop_set);
+			//_0xD80FAF919A2E56EA(wagon_spawned_vehicle, 1014756160); // blood
+
+			Log::Write(Log::Type::Normal, "bodyshell = %i", GET_ENTITY_BONE_INDEX_BY_NAME(wagon_spawned_vehicle, "bodyshell"));
+			Log::Write(Log::Type::Normal, "_0xCE2ACD6F602803E5 = %i", _0xCE2ACD6F602803E5(wagon_spawned_vehicle));
 		}
 		);
 
-	menu_addItem_callback("throw3",
+	menu_addItem_callback("propset2",
 		[]
 		{
-			_0x838C216C2B05A009(animal_holding, wagon_spawned_vehicle);
+			_0x75F90E4051CC084C(wagon_spawned_vehicle, 295596934);
+			_0x75F90E4051CC084C(wagon_spawned_vehicle, 696075367);
 		}
 		);
-
 	menu_addItem("Wagons", &trainer_vehicle_wagons);
 
 	menu_addItem_callback("Spawn Infront",

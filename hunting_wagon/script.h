@@ -65,6 +65,7 @@
 #define MAX_WAGONS 25
 #define WAGON_DEFAULT STR(chuckwagon000x)
 #define WAGON_SUPPLY STR(supplywagon)
+#define WAGON_CART06 STR(cart06)
 
 #include "globals.h"
 #include "menu.h"

@@ -34,6 +34,8 @@ typedef int TaskSequence;
 typedef int ColourIndex;
 typedef int Sphere;
 typedef int ScrHandle;
+typedef int PropSet;
+typedef int ItemSet;
 
 #define ALIGN8 __declspec(align(8))
 

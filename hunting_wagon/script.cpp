@@ -31,8 +31,10 @@ bool wagon_load_pressed()
 			}
 			else
 				return false;
-		}
-		else */if (_PROMPT_IS_VALID(wagon_menu_prompt) && _PROMPT_IS_JUST_RELEASED(wagon_menu_prompt))
+		}*/
+		if (wagon_debug_menu_enabled && IsKeyJustUp(menu_keyboard_input))
+			return true;
+		else if (_PROMPT_IS_VALID(wagon_menu_prompt) && _PROMPT_IS_JUST_RELEASED(wagon_menu_prompt))
 		{
 			return true;
 		}
@@ -102,10 +104,8 @@ void wagon_set_config_default_ini()
 	ini.Delete(WAGON_SUPPLY, NULL);
 
 	ini.SetValue(WAGON_DEFAULT, NULL, NULL);
-	//ini.SetLongValue(WAGON_DEFAULT, "wagon_bone", wagon_get_bone(WAGON_DEFAULT));
-
 	ini.SetValue(WAGON_SUPPLY, NULL, NULL);
-	//ini.SetLongValue(WAGON_SUPPLY, "wagon_bone", wagon_get_bone(WAGON_SUPPLY));
+	ini.SetValue(WAGON_CART06, NULL, NULL);
 
 	wagon_save_ini_file();
 }
@@ -306,6 +306,9 @@ void wagon_setup()
 	wagon_spawn_into = false;
 	wagon_override_door = true;
 	wagon_override_door_request = GET_GAME_TIMER();
+
+	// TEMP
+	wagon_debug_menu_enabled = true;
 }
 
 void main()

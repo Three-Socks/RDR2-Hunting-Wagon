@@ -196,6 +196,28 @@ void wagon_get_camp(Vector3 player_coords)
 	}
 }
 
+Vector3 func_2985(Vector3 vParam0)
+{
+	float fVar0;
+	float fVar1;
+
+	fVar0 = VMAG(vParam0.x, vParam0.y, vParam0.z);
+	if (fVar0 != 0.0f)
+	{
+		fVar1 = (1.0f / fVar0);
+		vParam0.x = vParam0.x * fVar1;
+		vParam0.y = vParam0.y * fVar1;
+		vParam0.z = vParam0.z * fVar1;
+	}
+	else
+	{
+		vParam0.x = 0.0f;
+		vParam0.y = 0.0f;
+		vParam0.z = 0.0f;
+	}
+	return vParam0;
+}
+
 void wagon_process_vehicle()
 {
 	if (DOES_ENTITY_EXIST(wagon_spawned_vehicle))
@@ -213,24 +235,132 @@ void wagon_process_vehicle()
 		{
 			if (_PROMPT_HAS_HOLD_MODE_COMPLETED(wagon_prompt))
 			{
-				ANIMPOSTFX_PLAY("CamTransition01");
+				//ANIMPOSTFX_PLAY("CamTransition01");
 
 				Log::Write(Log::Type::Normal, "_PROMPT_HAS_HOLD_MODE_COMPLETED");
+				//DETACH_ENTITY(animal_holding, 1, 1);
+
+				//ATTACH_ENTITY_TO_ENTITY(animal_holding, PLAYER_PED_ID(), GET_PED_BONE_INDEX(PLAYER_PED_ID(), 37709), 0.06f, 0.06f, 0.055f, -42.0f, 14.0f, 56.0f, 1, 1, 0, 0, 2, 1, 0, 0);
+
+				REQUEST_ANIM_DICT("mech_hogtie@human@throw_body");
+				while (!HAS_ANIM_DICT_LOADED("mech_hogtie@human@throw_body"))
+				{
+					WAIT(0);
+				}
+				TASK_PLAY_ANIM(PLAYER_PED_ID(), "mech_hogtie@human@throw_body", "throw", 8.0f, -8.0f, -1, 4, 0, 0, 0, 0, 0, 0);
+
+				//_0xED00D72F81CF7278(animal_holding, 1, 0);
+
+				//while (!HAS_ENTITY_ANIM_FINISHED(PLAYER_PED_ID(), "mech_hogtie@human@throw_body", "throw", 1))
+				//while (!HAS_ANIM_EVENT_FIRED(PLAYER_PED_ID(), 1479346977))
+				while (_0x627520389E288A73(PLAYER_PED_ID(), "mech_hogtie@human@throw_body", "throw") < 0.7f)
+				{
+					float fVar6;
+					int uVar7;
+					//FIND_ANIM_EVENT_PHASE("mech_hogtie@human@throw_body", "throw", "ThrowItem", &fVar6, &uVar7);
+					//Log::Write(Log::Type::Normal, "fVar6 = %f", fVar6);
+					Log::Write(Log::Type::Normal, "%f", _0x627520389E288A73(PLAYER_PED_ID(), "mech_hogtie@human@throw_body", "throw"));
+					Log::Write(Log::Type::Normal, "waiting");
+					WAIT(0);
+				}
+
+				SET_PED_CAN_RAGDOLL(animal_holding, true);
+
+				Log::Write(Log::Type::Normal, "DETACH_ENTITY");
 				DETACH_ENTITY(animal_holding, 1, 1);
 
-				FREEZE_ENTITY_POSITION(animal_holding, true);
+				if (!IS_ENTITY_ATTACHED(animal_holding))
+				{
+					FREEZE_ENTITY_POSITION(animal_holding, false);
+				}
+
+				SET_ENTITY_COLLISION(animal_holding, true, false);
+				SET_ENTITY_COMPLETELY_DISABLE_COLLISION(animal_holding, true, false);
+				ACTIVATE_PHYSICS(animal_holding);
+				SET_ENTITY_VISIBLE(animal_holding, true);
+
+				Vector3 vehicle_coords = GET_WORLD_POSITION_OF_ENTITY_BONE(wagon_spawned_vehicle, GET_ENTITY_BONE_INDEX_BY_NAME(wagon_spawned_vehicle, "bodyshell"));
+				Vector3 player_coords = GET_ENTITY_COORDS(PLAYER_PED_ID(), false, false);
+				float fVar14 = 0.95f;
+				float fVar15 = VDIST(player_coords.x, player_coords.y, player_coords.z, vehicle_coords.x, vehicle_coords.y, vehicle_coords.z);
+
+				Vector3 push_force;
+				push_force.x = vehicle_coords.x - player_coords.x;
+				push_force.y = vehicle_coords.y - player_coords.y;
+				push_force.z = vehicle_coords.z - player_coords.z;
+
+				if (fVar15 < 1.0f)
+				{
+					fVar14 = 0.1f;
+				}
+				else if (fVar15 < 1.5f)
+				{
+					fVar14 = 0.5f;
+				}
+
+				Log::Write(Log::Type::Normal, "push_force.x = %f", push_force.x);
+				Log::Write(Log::Type::Normal, "push_force.y = %f", push_force.y);
+				Log::Write(Log::Type::Normal, "push_force.z = %f", push_force.z);
+
+				push_force = func_2985(push_force);
+
+				Log::Write(Log::Type::Normal, "push_force.x = %f", push_force.x);
+				Log::Write(Log::Type::Normal, "push_force.y = %f", push_force.y);
+				Log::Write(Log::Type::Normal, "push_force.z = %f", push_force.z);
+
+				push_force.z = (push_force.z + fVar14);
+
+				push_force.x = push_force.x * 5.1f;
+				push_force.y = push_force.y * 5.1f;
+				push_force.z = push_force.z * 5.1f;
+
+				Log::Write(Log::Type::Normal, "push_force.x = %f", push_force.x);
+				Log::Write(Log::Type::Normal, "push_force.y = %f", push_force.y);
+				Log::Write(Log::Type::Normal, "push_force.z = %f", push_force.z);
+
+				push_force.x = push_force.x * fVar15;
+				push_force.y = push_force.y * fVar15;
+				push_force.z = push_force.z * fVar15;
+
+				/*Vector3 player_vector = _0x935A30AA88FB1014(PLAYER_PED_ID());
+				Vector3 player_vector2 = GET_ENTITY_FORWARD_VECTOR(PLAYER_PED_ID());
+
+				push_force.x = push_force.x + player_vector.x * 0.2f - player_vector2.x * 0.7f;
+				push_force.y = push_force.y + player_vector.y * 0.2f - player_vector2.y * 0.7f;
+				push_force.z = push_force.z + player_vector.z * 0.2f - player_vector2.z * 0.7f;*/
+
+				Log::Write(Log::Type::Normal, "push_force.x = %f", push_force.x);
+				Log::Write(Log::Type::Normal, "push_force.y = %f", push_force.y);
+				Log::Write(Log::Type::Normal, "push_force.z = %f", push_force.z);
+
+				//APPLY_FORCE_TO_ENTITY_CENTER_OF_MASS(animal_holding, 0, 0.0f, -100.0f, -100.0f, false, true, true, false);
+				
+				APPLY_FORCE_TO_ENTITY_CENTER_OF_MASS(animal_holding, 1, push_force.x, push_force.y, push_force.z, false, false, true, false);
+
+				//CLEAR_PED_TASKS_IMMEDIATELY(animal_holding, 0, 1);
+				//SET_BLOCKING_OF_NON_TEMPORARY_EVENTS(animal_holding, true);
+				//ATTACH_ENTITY_TO_ENTITY(animal_holding, wagon_spawned_vehicle, 0, -0.1f, -0.5f, 1.35f, 0.0f, 0.0f, 0.0f, 0, 0, 0, 0, 2, 1, 0, 0);
+				//TASK::TASK_PLAY_ANIM(animal_holding, sLocal_44875, sLocal_44876, 8f, -8f, -1, 5, 0, 0, 0, 0, 0, 0);*/
+
+
+				/*FREEZE_ENTITY_POSITION(animal_holding, true);
 				SET_ENTITY_COMPLETELY_DISABLE_COLLISION(animal_holding, false, 0);
 
-				Vector3 detach_coords = GET_WORLD_POSITION_OF_ENTITY_BONE(wagon_spawned_vehicle, wagon_bone);
+				Vector3 detach_coords = GET_WORLD_POSITION_OF_ENTITY_BONE(wagon_spawned_vehicle, GET_ENTITY_BONE_INDEX_BY_NAME(wagon_spawned_vehicle, "bodyshell"));
 
 				ACTIVATE_PHYSICS(animal_holding);
-				SET_ENTITY_COORDS(animal_holding, detach_coords.x, detach_coords.y, detach_coords.z + 0.5f, 0, 0, 0, 0);
+				SET_ENTITY_COORDS(animal_holding, detach_coords.x, detach_coords.y, detach_coords.z + 0.575f, 0, 0, 0, 0);
 
 				ACTIVATE_PHYSICS(wagon_spawned_vehicle);
 				FORCE_ENTITY_AI_AND_ANIMATION_UPDATE(wagon_spawned_vehicle, 1);
 
 				FREEZE_ENTITY_POSITION(animal_holding, false);
-				SET_ENTITY_COMPLETELY_DISABLE_COLLISION(animal_holding, true, 0);
+				SET_ENTITY_COMPLETELY_DISABLE_COLLISION(animal_holding, true, 0);*/
+
+				if (HAS_ANIM_DICT_LOADED("mech_hogtie@human@throw_body"))
+				{
+					REMOVE_ANIM_DICT("mech_hogtie@human@throw_body");
+				}
 
 				SET_ENTITY_AS_MISSION_ENTITY(animal_holding, 1, 1);
 
@@ -345,8 +475,8 @@ void wagon_pickup_action(Entity entity_holding)
 
 					// !! TODO TEST
 					//if (!_0x9A100F1CF4546629(animal_holding) && !_0xC346A546612C49A9(animal_holding))
-					//Log::Write(Log::Type::Normal, "_0x9A100F1CF4546629 = %i", _0x9A100F1CF4546629(animal_holding));
-					//Log::Write(Log::Type::Normal, "_0xC346A546612C49A9 = %i", _0xC346A546612C49A9(animal_holding));
+					Log::Write(Log::Type::Normal, "_0x9A100F1CF4546629 = %i", _0x9A100F1CF4546629(animal_holding));
+					Log::Write(Log::Type::Normal, "_0xC346A546612C49A9 = %i", _0xC346A546612C49A9(animal_holding));
 				}
 			}
 		}
@@ -404,7 +534,15 @@ void wagon_update()
 	Entity entity_holding = _GET_PED_CARRIABLE_ENTITY(player_ped);
 
 	if (wagon_closest_camp == -1)
+	{
+		if (_PROMPT_IS_VALID(wagon_menu_prompt))
+		{
+			_PROMPT_DELETE(wagon_menu_prompt);
+			wagon_menu_prompt = 0;
+		}
+
 		wagon_get_global_camp_id();
+	}
 
 	wagon_get_camp(player_coords);
 	wagon_process_vehicle();
