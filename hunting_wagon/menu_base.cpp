@@ -363,83 +363,33 @@ int menu_addPrompt(char* menu_prompt_string, int button_id, int button_id_2, boo
 
 int menu_addDefaultPrompt(char* menu_prompt_string, int button_id, int button_id_2, bool visible)
 {
-	menu_prompts_count++;
-	menu_prompts[menu_prompts_count].string = menu_prompt_string;
-	menu_prompts[menu_prompts_count].button = button_id;
-	menu_prompts[menu_prompts_count].button_2 = button_id_2;
-	menu_prompts[menu_prompts_count].visible = visible;
+	menu_default_prompts_count++;
+	menu_default_prompts[menu_default_prompts_count].string = menu_prompt_string;
+	menu_default_prompts[menu_default_prompts_count].button = button_id;
+	menu_default_prompts[menu_default_prompts_count].button_2 = button_id_2;
+	menu_default_prompts[menu_default_prompts_count].visible = visible;
 
-	return menu_prompts_count;
+	return menu_default_prompts_count;
 }
 
-int menu_get_prompt_handle(int prompt_id)
+int menu_get_prompt_handle(int prompt_id, menu_prompt(&prompt)[MAX_MENU_PROMPTS])
 {
-	return menu_added_prompts[prompt_id].handle;
+	return prompt[prompt_id].handle;
 }
 
-char* menu_get_prompt_string(int prompt_id)
+char* menu_get_prompt_string(int prompt_id, menu_prompt(&prompt)[MAX_MENU_PROMPTS])
 {
-	return menu_added_prompts[prompt_id].string;
+	return prompt[prompt_id].string;
 }
 
-void menu_set_prompt_string(int prompt_id, char* menu_prompt_string)
+int menu_get_prompt_button(int prompt_id, menu_prompt(&prompt)[MAX_MENU_PROMPTS])
 {
-	menu_added_prompts[prompt_id].string = menu_prompt_string;
+	return prompt[prompt_id].button;
 }
 
-int menu_get_prompt_button(int prompt_id)
+int menu_get_prompt_button_2(int prompt_id, menu_prompt(&prompt)[MAX_MENU_PROMPTS])
 {
-	return menu_added_prompts[prompt_id].button;
-}
-
-void menu_set_prompt_button(int prompt_id, int button_id)
-{
-	menu_added_prompts[prompt_id].button = button_id;
-}
-
-int menu_get_prompt_button_2(int prompt_id)
-{
-	return menu_added_prompts[prompt_id].button_2;
-}
-
-void menu_set_prompt_button_2(int prompt_id, int button_id_2)
-{
-	menu_added_prompts[prompt_id].button_2 = button_id_2;
-}
-
-int menu_get_default_prompt_handle(int prompt_id)
-{
-	return menu_prompts[prompt_id].handle;
-}
-
-char* menu_get_default_prompt_string(int prompt_id)
-{
-	return menu_prompts[prompt_id].string;
-}
-
-void menu_set_default_prompt_string(int prompt_id, char* menu_prompt_string)
-{
-	menu_prompts[prompt_id].string = menu_prompt_string;
-}
-
-int menu_get_default_prompt_button(int prompt_id)
-{
-	return menu_prompts[prompt_id].button;
-}
-
-void menu_set_default_prompt_button(int prompt_id, int button_id)
-{
-	menu_prompts[prompt_id].button = button_id;
-}
-
-int menu_get_default_prompt_button_2(int prompt_id)
-{
-	return menu_prompts[prompt_id].button_2;
-}
-
-void menu_set_default_prompt_button_2(int prompt_id, int button_id_2)
-{
-	menu_prompts[prompt_id].button_2 = button_id_2;
+	return prompt[prompt_id].button_2;
 }
 
 void menu_addItem(char* menu_item_string, funcptr callback_func)
@@ -849,7 +799,7 @@ void menu_setup()
 	menu_clean_stored_string_data();
 	menu_clean_stored_string_data_2();
 	menu_count = -1;
-	menu_prompts_count = -1;
+	menu_default_prompts_count = -1;
 	menu_added_prompts_count = -1;
 	menu_action_mode = 0;
 	menu_level = 0;
@@ -863,13 +813,11 @@ void menu_setup()
 	press_id = INPUT_FRONTEND_UP;
 	menu_sound_id = -1;
 
-	menu_set_bool_strings("Off", "On");
 	menu_use_bool_sprite = false;
 	menu_selected_sprite_txd = NULL;
 	menu_selected_sprite = NULL;
 
 	menu_keyboard_active = false;
-	menu_default_prompts = true;
 	menu_notifications_request = 0;
 	menu_adjust = false;
 
@@ -963,31 +911,24 @@ void menu_update()
 		menu_notifications_request = 0;
 
 	// Show/Hide default menu prompts needed
-	if (menu_prompts_count != -1)
+	if (menu_default_prompts_count != -1)
 	{
-		if (_UIPROMPT_IS_VALID(menu_get_default_prompt_handle(menu_prompt_extra)))
-			_UIPROMPT_SET_VISIBLE(menu_get_default_prompt_handle(menu_prompt_extra), menu_is_item_keyboard(menu_item_highlighted));
+		menu_set_prompt_visible(menu_prompt_extra, menu_is_item_keyboard(menu_item_highlighted), menu_default_prompts);
+		menu_set_prompt_visible(menu_prompt_lb_rb, (menu_is_item_float(menu_item_highlighted) && menu_items_int[menu_item_highlighted] >= 3), menu_default_prompts);
 
-		if (_UIPROMPT_IS_VALID(menu_get_default_prompt_handle(menu_prompt_lb_rb)))
-			_UIPROMPT_SET_VISIBLE(menu_get_default_prompt_handle(menu_prompt_lb_rb), (menu_is_item_float(menu_item_highlighted) && menu_items_int[menu_item_highlighted] >= 3));
-
-		if (_UIPROMPT_IS_VALID(menu_get_default_prompt_handle(menu_prompt_left_right)))
+		if (menu_is_item_string_select(menu_item_highlighted))
 		{
-			int leftright_handle = menu_get_default_prompt_handle(menu_prompt_left_right);
-
-			if (menu_is_item_string_select(menu_item_highlighted))
-			{
-				_UIPROMPT_SET_TEXT(leftright_handle, _CREATE_VAR_STRING(10, "LITERAL_STRING", "Previous/Next"));
-				_UIPROMPT_SET_VISIBLE(leftright_handle, true);
-			}
-			else if (menu_is_item_number(menu_item_highlighted) || menu_is_item_float(menu_item_highlighted) || (menu_is_item_bool(menu_item_highlighted) && menu_items_action_update[menu_item_highlighted]))
-			{				
-				_UIPROMPT_SET_TEXT(leftright_handle, _CREATE_VAR_STRING(10, "LITERAL_STRING", "Decrease/Increase"));
-				_UIPROMPT_SET_VISIBLE(leftright_handle, true);
-			}
-			else
-				_UIPROMPT_SET_VISIBLE(leftright_handle, false);
+			menu_set_prompt_text(menu_prompt_left_right, "Previous/Next", menu_default_prompts);
+			menu_set_prompt_visible(menu_prompt_left_right, true, menu_default_prompts);
 		}
+		else if (menu_is_item_number(menu_item_highlighted) || menu_is_item_float(menu_item_highlighted) || (menu_is_item_bool(menu_item_highlighted) && menu_items_action_update[menu_item_highlighted]))
+		{				
+			menu_set_prompt_text(menu_prompt_left_right, "Decrease/Increase", menu_default_prompts);
+			menu_set_prompt_visible(menu_prompt_left_right, true, menu_default_prompts);
+
+		}
+		else
+			menu_set_prompt_visible(menu_prompt_left_right, false, menu_default_prompts);
 	}
 }
 
@@ -1606,6 +1547,7 @@ bool menu_confirm(char* string_val)
 void menu_refresh()
 {
 	menu_clean();
+
 	if (menu_level != 0 && last_selected_callback[menu_level - 1] != 0)
 		last_selected_callback[menu_level - 1]();
 	else
@@ -1656,6 +1598,7 @@ void menu_clean()
 	menu_set_items_selected_sprites(NULL, NULL);
 	menu_notifications_request = 0;
 	menu_use_bool_sprite = false;
+	menu_set_bool_strings("Off", "On");
 	menu_set_bool_sprites(NULL, NULL, NULL);
 }
 
@@ -1821,66 +1764,55 @@ void menu_load_sprite()
 	}
 }
 
-void menu_set_added_prompt_visible(int prompt_id, bool state)
+void menu_set_prompt_visible(int prompt_id, bool state, menu_prompt(&prompt)[MAX_MENU_PROMPTS])
 {
-	if (_UIPROMPT_IS_VALID(menu_get_prompt_handle(prompt_id)))
-		_UIPROMPT_SET_VISIBLE(menu_get_prompt_handle(prompt_id), state);
+	prompt[prompt_id].visible = state;
+	if (_UIPROMPT_IS_VALID(menu_get_prompt_handle(prompt_id, prompt)))
+		_UIPROMPT_SET_VISIBLE(menu_get_prompt_handle(prompt_id, prompt), state);
 }
 
-void menu_set_added_prompt_text(int prompt_id, char* prompt_string)
+void menu_set_prompt_text(int prompt_id, char* prompt_string, menu_prompt(&prompt)[MAX_MENU_PROMPTS])
 {
-	if (menu_get_prompt_string(prompt_id) != prompt_string)
-	{
-		menu_set_prompt_string(prompt_id, prompt_string);
-		if (_UIPROMPT_IS_VALID(menu_get_prompt_handle(prompt_id)))
-			_UIPROMPT_SET_TEXT(menu_get_prompt_handle(prompt_id), _CREATE_VAR_STRING(10, "LITERAL_STRING", menu_get_prompt_string(prompt_id)));
-	}
+	prompt[prompt_id].string = prompt_string;
+	if (_UIPROMPT_IS_VALID(menu_get_prompt_handle(prompt_id, prompt)))
+		_UIPROMPT_SET_TEXT(menu_get_prompt_handle(prompt_id, prompt), _CREATE_VAR_STRING(10, "LITERAL_STRING", prompt[prompt_id].string));
 }
 
-void menu_set_added_prompt_button(int prompt_id, int prompt_button)
+void menu_set_prompt_button(int prompt_id, int prompt_button, menu_prompt(&prompt)[MAX_MENU_PROMPTS])
 {
-	if (menu_get_prompt_button(prompt_id) != prompt_button)
-	{
-		menu_set_prompt_button(prompt_id, prompt_button);
-		if (_UIPROMPT_IS_VALID(menu_get_prompt_handle(prompt_id)))
-			_UIPROMPT_SET_CONTROL_ACTION(menu_get_prompt_handle(prompt_id), menu_get_prompt_button(prompt_id));
-	}
+	prompt[prompt_id].button = prompt_button;
+	if (_UIPROMPT_IS_VALID(menu_get_prompt_handle(prompt_id, prompt)))
+		_UIPROMPT_SET_CONTROL_ACTION(menu_get_prompt_handle(prompt_id, prompt), prompt[prompt_id].button);
 }
 
-void menu_set_added_prompt_button_2(int prompt_id, int prompt_button_2)
+void menu_set_prompt_button_2(int prompt_id, int prompt_button_2, menu_prompt(&prompt)[MAX_MENU_PROMPTS])
 {
-	if (menu_get_prompt_button_2(prompt_id) != prompt_button_2)
-	{
-		menu_set_prompt_button_2(prompt_id, prompt_button_2);
-		if (_UIPROMPT_IS_VALID(menu_get_prompt_handle(prompt_id)))
-			_UIPROMPT_SET_CONTROL_ACTION(menu_get_prompt_handle(prompt_id), menu_get_prompt_button_2(prompt_id));
-	}
+	prompt[prompt_id].button_2 = prompt_button_2;
+	if (_UIPROMPT_IS_VALID(menu_get_prompt_handle(prompt_id, prompt)))
+		_UIPROMPT_SET_CONTROL_ACTION(menu_get_prompt_handle(prompt_id, prompt), prompt[prompt_id].button_2);
 }
 
 void menu_set_prompts()
 {
-	if (menu_default_prompts)
+	if (menu_get_open_state())
 	{
-		if (menu_get_open_state())
-		{
-			menu_prompt_extra = menu_addDefaultPrompt("Edit With Keyboard", INPUT_GAME_MENU_OPTION, 0, false);
+		menu_prompt_extra = menu_addDefaultPrompt("Edit With Keyboard", INPUT_GAME_MENU_OPTION, 0, false);
 
-			menu_prompt_lb_rb = menu_addDefaultPrompt("Slower (Hold)/Faster (Hold)", INPUT_GAME_MENU_TAB_LEFT, INPUT_GAME_MENU_TAB_RIGHT, false);
+		menu_prompt_lb_rb = menu_addDefaultPrompt("Slower (Hold)/Faster (Hold)", INPUT_GAME_MENU_TAB_LEFT, INPUT_GAME_MENU_TAB_RIGHT, false);
 
-			menu_prompt_left_right = menu_addDefaultPrompt("Decrease/Increase", INPUT_FRONTEND_LEFT, INPUT_FRONTEND_RIGHT, false);
+		menu_prompt_left_right = menu_addDefaultPrompt("Decrease/Increase", INPUT_FRONTEND_LEFT, INPUT_FRONTEND_RIGHT, false);
 
-			if (menu_level == 0)
-				menu_prompt_cancel = menu_addDefaultPrompt("Exit", INPUT_GAME_MENU_CANCEL);
-			else
-				menu_prompt_cancel = menu_addDefaultPrompt("Back", INPUT_GAME_MENU_CANCEL);
+		if (menu_level == 0)
+			menu_prompt_cancel = menu_addDefaultPrompt("Exit", INPUT_GAME_MENU_CANCEL);
+		else
+			menu_prompt_cancel = menu_addDefaultPrompt("Back", INPUT_GAME_MENU_CANCEL);
 
-			menu_prompt_accept = menu_addDefaultPrompt("Enter", INPUT_GAME_MENU_ACCEPT);
+		menu_prompt_accept = menu_addDefaultPrompt("Enter", INPUT_GAME_MENU_ACCEPT);
 
-			menu_prompt_disable_whistle = menu_addDefaultPrompt("", INPUT_GAME_MENU_UP, 0, false);
-		}
-
-		menu_register_prompts(menu_prompts, menu_prompts_count);
+		menu_prompt_disable_whistle = menu_addDefaultPrompt("", INPUT_GAME_MENU_UP, 0, false);
 	}
+
+	menu_register_prompts(menu_default_prompts, menu_default_prompts_count);
 }
 
 void menu_draw_prompts()
@@ -1921,29 +1853,25 @@ void menu_register_prompts(menu_prompt(&prompt)[MAX_MENU_PROMPTS], int prompt_co
 	}
 }
 
+void menu_clean_prompt_single(menu_prompt(&prompt)[MAX_MENU_PROMPTS], int &prompt_count)
+{
+	for (int prompt_index = 0; prompt_index < prompt_count + 1; prompt_index++)
+	{
+		if (_UIPROMPT_IS_VALID(prompt[prompt_index].handle))
+			_UIPROMPT_DELETE(prompt[prompt_index].handle);
+
+		prompt[prompt_index].handle = 0;
+		prompt[prompt_index].string = NULL;
+		prompt[prompt_index].button = 0;
+	}
+
+	prompt_count = -1;
+}
+
 void menu_clean_prompts()
 {
-	for (int prompt_index = 0; prompt_index < menu_prompts_count + 1; prompt_index++)
-	{
-		if (_UIPROMPT_IS_VALID(menu_prompts[prompt_index].handle))
-			_UIPROMPT_DELETE(menu_prompts[prompt_index].handle);
-
-		menu_prompts[prompt_index].handle = 0;
-		menu_prompts[prompt_index].string = NULL;
-		menu_prompts[prompt_index].button = 0;
-	}
-	menu_prompts_count = -1;
-
-	for (int prompt_index = 0; prompt_index < menu_added_prompts_count + 1; prompt_index++)
-	{
-		if (_UIPROMPT_IS_VALID(menu_added_prompts[prompt_index].handle))
-			_UIPROMPT_DELETE(menu_added_prompts[prompt_index].handle);
-
-		menu_added_prompts[prompt_index].handle = 0;
-		menu_added_prompts[prompt_index].string = NULL;
-		menu_added_prompts[prompt_index].button = 0;
-	}
-	menu_added_prompts_count = -1;
+	menu_clean_prompt_single(menu_default_prompts, menu_default_prompts_count);
+	menu_clean_prompt_single(menu_added_prompts, menu_added_prompts_count);
 }
 
 void menu_draw_window()

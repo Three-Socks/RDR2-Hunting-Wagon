@@ -2253,7 +2253,7 @@ static Any _0xEC174ADBCB611ECC(Any p0, Any p1, Any p2, Any p3, Any p4, Any p5, A
 static Any _0xA6EF0C54A3443E70(Any p0, Any p1) { return invoke<Any>(0xA6EF0C54A3443E70, p0, p1); } // 0xA6EF0C54A3443E70 b1207
 static Any _0xEDD964B7984AC291(Any p0, Any p1) { return invoke<Any>(0xEDD964B7984AC291, p0, p1); } // 0xEDD964B7984AC291 b1207
 static Any _0xBD62D98799A3DAF0(Any p0, Any p1) { return invoke<Any>(0xBD62D98799A3DAF0, p0, p1); } // 0xBD62D98799A3DAF0 b1207
-static Any _0x662D364ABF16DE2F(Any p0, Any p1) { return invoke<Any>(0x662D364ABF16DE2F, p0, p1); } // 0x662D364ABF16DE2F b1207
+static Any _0x662D364ABF16DE2F(Blip p0, int p1) { return invoke<Any>(0x662D364ABF16DE2F, p0, p1); } // 0x662D364ABF16DE2F b1207
 static Any _0xB059D7BD3D78C16F(Any p0, Any p1) { return invoke<Any>(0xB059D7BD3D78C16F, p0, p1); } // 0xB059D7BD3D78C16F b1207
 static void _0x250C75EB1728CC0D(Any p0) { invoke<Void>(0x250C75EB1728CC0D, p0); } // 0x250C75EB1728CC0D b1207
 static void SET_BLIP_FLASH_TIMER(Any p0, Any p1, Any p2) { invoke<Void>(0x02FF4CF43B7209D1, p0, p1, p2); } // 0x02FF4CF43B7209D1 b1207
@@ -5723,7 +5723,7 @@ static void TASK_TURN_PED_TO_FACE_COORD(Ped ped, float x, float y, float z, int 
 static void TASK_VEHICLE_TEMP_ACTION(Ped driver, Vehicle vehicle, int action, int time) { invoke<Void>(0xC429DCEEB339E129, driver, vehicle, action, time); } // 0xC429DCEEB339E129 b1207
 static void TASK_VEHICLE_MISSION(int p0, int p1, Vehicle veh, Any p3, float p4, Any p5, float p6, float p7, BOOL p8) { invoke<Void>(0x659427E0EF36BCDE, p0, p1, veh, p3, p4, p5, p6, p7, p8); } // 0x659427E0EF36BCDE b1207
 static void _TASK_VEHICLE_DRIVE_TO_DESTINATION(Any p0, Any p1, Any p2, Any p3, Any p4, Any p5, Any p6, Any p7, Any p8, Any p9, Any p10) { invoke<Void>(0x7F241A0D14354583, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10); } // 0x7F241A0D14354583 b1207
-static void _TASK_VEHICLE_DRIVE_TO_DESTINATION_2(Any p0, Any p1, Any p2, Any p3, Any p4, Any p5, Any p6, Any p7, Any p8) { invoke<Void>(0x391073B9D3CCE2BA, p0, p1, p2, p3, p4, p5, p6, p7, p8); } // 0x391073B9D3CCE2BA b1207
+static void _TASK_VEHICLE_DRIVE_TO_DESTINATION_2(Vehicle vehicle, float x, float y, float z, float heading, int p5, int p6, float p7, float p8) { invoke<Void>(0x391073B9D3CCE2BA, vehicle, x, y, z, heading, p5, p6, p7, p8); } // 0x391073B9D3CCE2BA b1207
 static void _0x55CD5FDDD4335C1E(Any p0, Any p1, Any p2, Any p3, Any p4, Any p5) { invoke<Void>(0x55CD5FDDD4335C1E, p0, p1, p2, p3, p4, p5); } // 0x55CD5FDDD4335C1E b1207
 static void _TASK_VEHICLE_DRIVE_TO_POINT(Any p0, Any p1, Any p2, Any p3, Any p4, Any p5, Any p6, Any p7) { invoke<Void>(0x089FF2FB965F0A29, p0, p1, p2, p3, p4, p5, p6, p7); } // 0x089FF2FB965F0A29 b1207
 static void _TASK_VEHICLE_DRIVE_TO_POINT_2(Any p0, Any p1, Any p2, Any p3, Any p4, Any p5, Any p6) { invoke<Void>(0x6524A8981E8BE7C9, p0, p1, p2, p3, p4, p5, p6); } // 0x6524A8981E8BE7C9 b1207

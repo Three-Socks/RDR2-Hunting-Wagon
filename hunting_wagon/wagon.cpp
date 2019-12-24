@@ -105,7 +105,7 @@ Vector3 wagon_get_camp_coords(int camp_id)
 
 void wagon_set_lantern(char* wagon_string)
 {
-	wagon_vehicle_lantern_index = ini.GetLongValue(wagon_string, "lantern_type", wagon_get_lantern(wagon_string));
+	wagon_vehicle_lantern_index = ini.GetLongValue(wagon_string, "lantern_type", wagon_get_lantern_index(wagon_string));
 
 	int lantern_count = get_vehicle_lantern_count(GET_HASH_KEY(wagon_string));
 
@@ -128,8 +128,11 @@ void wagon_get_global_camp_id()
 	{
 		wagon_closest_camp = (int)*getGlobalPtr(wagon_camp_global_var + wagon_camp_global_member);
 
-		wagon_spawn_camp_coords = wagon_get_camp_spawn_coords(wagon_closest_camp);
-		wagon_spawn_camp_heading = wagon_get_camp_spawn_heading(wagon_closest_camp);
+		if (wagon_spawn_camp_coords.x == 0.0f)
+		{
+			wagon_spawn_camp_coords = wagon_get_camp_spawn_coords(wagon_closest_camp);
+			wagon_spawn_camp_heading = wagon_get_camp_spawn_heading(wagon_closest_camp);
+		}
 
 		wagon_set_lantern(wagon_vehicle_hash);
 
@@ -201,8 +204,11 @@ void wagon_get_camp(Vector3 player_coords)
 				//wagon_closest_camp = 1;
 			else
 			{
-				wagon_spawn_camp_coords = wagon_get_camp_spawn_coords(wagon_closest_camp);
-				wagon_spawn_camp_heading = wagon_get_camp_spawn_heading(wagon_closest_camp);
+				if (wagon_spawn_camp_coords.x == 0.0f)
+				{
+					wagon_spawn_camp_coords = wagon_get_camp_spawn_coords(wagon_closest_camp);
+					wagon_spawn_camp_heading = wagon_get_camp_spawn_heading(wagon_closest_camp);
+				}
 
 				wagon_set_lantern(wagon_vehicle_hash);
 
@@ -221,10 +227,163 @@ void wagon_get_camp(Vector3 player_coords)
 	}
 }
 
+float func_275(Vector3 Param0, Vector3 Param3, int iParam6)
+{
+	float fVar0;
+	float fVar1;
+	float fVar2;
+
+	fVar1 = (Param3.x - Param0.x);
+	fVar2 = (Param3.y - Param0.y);
+	if (fVar2 != 0.0f)
+	{
+		fVar0 = ATAN2(fVar1, fVar2);
+	}
+	else if (fVar1 < 0.0f)
+	{
+		fVar0 = -90.0f;
+	}
+	else
+	{
+		fVar0 = 90.0f;
+	}
+	if (iParam6 == 1)
+	{
+		fVar0 = (fVar0 * -1.0f);
+		if (fVar0 < 0.0f)
+		{
+			fVar0 = (fVar0 + 360.0f);
+		}
+	}
+	return fVar0;
+}
+
+bool wagon_get_road(Vector3 player_coords, Vector3 vehicle_coords, Vector3(&road_coords), float &road_heading)
+{
+	Vector3 vVar0, vVar3;
+	Any uVar6, uVar7;
+	float uVar8;
+
+	if (GET_CLOSEST_ROAD(player_coords.x, player_coords.y, player_coords.z, 2.0f, 1, &vVar0, &vVar3, &uVar6, &uVar7, &uVar8, true))
+	{
+		road_coords.x = 0.5f * (vVar0.x + vVar3.x);
+		road_coords.y = 0.5f * (vVar0.y + vVar3.y);
+		road_coords.z = 0.5f * (vVar0.z + vVar3.z);
+
+		if (VDIST(vehicle_coords.x, vehicle_coords.y, vehicle_coords.z, vVar0.x, vVar0.y, vVar0.z) < VDIST(vehicle_coords.x, vehicle_coords.y, vehicle_coords.z, vVar3.x, vVar3.y, vVar3.z))
+		{
+			Log::Write(Log::Type::Normal, "VDIST");
+			road_heading = func_275(vVar3, vVar0, 1);
+		}
+		else
+		{
+			Log::Write(Log::Type::Normal, "NOT VDIST");
+			road_heading = func_275(vVar0, vVar3, 1);
+		}
+		return true;
+	}
+	else
+		return false;
+}
+
+bool wagon_whistle_pressed()
+{
+	if (IS_CONTROL_PRESSED(2, INPUT_WHISTLE))
+	{
+		if (GET_GAME_TIMER() - wagon_whistle_hold > 1000 && !wagon_whistle_unload_hold)
+		{
+			wagon_whistle_hold = GET_GAME_TIMER();
+			wagon_whistle_unload_hold = 1;
+			return true;
+		}
+		else
+			return false;
+	}
+
+	wagon_whistle_unload_hold = false;
+	wagon_whistle_hold = GET_GAME_TIMER();
+	return false;
+}
+
+void wagon_process_whistle()
+{
+	if (wagon_whistle_pressed())
+	{
+		//_0xB059D7BD3D78C16F(wagon_blip, -272772079);
+
+		Vector3 player_coords = GET_ENTITY_COORDS(PLAYER_PED_ID(), true, false);
+		Vector3 vehicle_coords = GET_ENTITY_COORDS(wagon_spawned_vehicle, true, false);
+
+		if (IS_ENTITY_DEAD(wagon_spawned_vehicle))
+		{
+			menu_msg("The Hunting Wagon is dead. Open menu and deliver to camp to get another.");
+			return;
+		}
+
+		float vehicle_distance = VDIST(player_coords.x, player_coords.y, player_coords.z, vehicle_coords.x, vehicle_coords.y, vehicle_coords.z);
+
+		Log::Write(Log::Type::Normal, "vehicle_distance = %f", vehicle_distance);
+
+		if (vehicle_distance >= 200.0f)
+		{
+			menu_msg("The Hunting Wagon is too far. Open menu and deliver to camp.");
+			return;
+		}
+		else if (vehicle_distance < 50.0f)
+			return;
+
+		Vector3 road_coords;
+		float road_heading;
+
+		Log::Write(Log::Type::Normal, "wagon_process_whistle");
+
+		if (wagon_get_road(player_coords, vehicle_coords, road_coords, road_heading))
+		{
+			Log::Write(Log::Type::Normal, "road_coords.x = %f", road_coords.x);
+			Log::Write(Log::Type::Normal, "road_coords.y = %f", road_coords.y);
+			Log::Write(Log::Type::Normal, "road_coords.z = %f", road_coords.z);
+			Log::Write(Log::Type::Normal, "road_heading = %f", road_heading);
+			//CLEAR_PED_TASKS_IMMEDIATELY(wagon_spawned_vehicle, true, true);
+
+			_0x662D364ABF16DE2F(wagon_blip, -272772079);
+
+			_TASK_VEHICLE_DRIVE_TO_DESTINATION_2(wagon_spawned_vehicle, road_coords.x, road_coords.y, road_coords.z, 6.0f, 1147928963, 2, 8.0f, 3.0f);
+		}
+		else
+			menu_msg("Not close enough to a road.");
+	}
+}
+
 void wagon_process_vehicle()
 {
 	if (DOES_ENTITY_EXIST(wagon_spawned_vehicle))
 	{
+		if (wagon_whistle)
+			wagon_process_whistle();
+
+		if (IS_PED_IN_VEHICLE(PLAYER_PED_ID(), wagon_spawned_vehicle, true))
+		{
+			wagon_saved_coords = false;
+			wagon_was_in_vehicle = true;
+		}
+		else if (wagon_was_in_vehicle && !wagon_saved_coords)
+		{
+			wagon_saved_coords = true;
+			wagon_was_in_vehicle = false;
+
+			Vector3 vehicle_coords = GET_ENTITY_COORDS(wagon_spawned_vehicle, true, 0);
+			float vehicle_heading = GET_ENTITY_HEADING(wagon_spawned_vehicle);
+
+			ini.SetDoubleValue("config", "saved_coord_x", vehicle_coords.x);
+			ini.SetDoubleValue("config", "saved_coord_y", vehicle_coords.y);
+			ini.SetDoubleValue("config", "saved_coord_z", vehicle_coords.z);
+			ini.SetDoubleValue("config", "saved_heading", vehicle_heading);
+			wagon_save_ini_file();
+
+			Log::Write(Log::Type::Normal, "wagon_saved_coords");
+		}
+
+
 		if (wagon_override_door && wagon_time_taken(wagon_override_door_request, 2000))
 			SET_VEHICLE_DOOR_SHUT(wagon_spawned_vehicle, 5, 1);
 

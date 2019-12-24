@@ -21,7 +21,7 @@ trainer_menu_last_selected_0, trainer_menu_last_selected_1, trainer_menu_last_se
 
 bool menu_open_state, menu_unload_hold_pressed, menu_texture_loaded, menu_sfx, menu_continue_action, keyboard_pressed, menu_keyboard_active,
 menu_up, menu_down, menu_left, menu_right, menu_ini_default, menu_use_bool_sprite,
-menu_action_confirm, menu_default_prompts, menu_notifications;
+menu_action_confirm, menu_notifications;
 
 float menu_x, menu_x_offset, menu_y, menu_header_y, menu_start_y, menu_consts_start_y, menu_spacing;
 
@@ -68,8 +68,8 @@ char* menu_stored_string_data[MAX_MENU_ITEMS];
 char* menu_stored_string_data_2[MAX_MENU_ITEMS];
 int menu_items_selected[MAX_MENU_ITEMS];
 
-int menu_prompts_count, menu_added_prompts_count;
-menu_prompt menu_prompts[MAX_MENU_PROMPTS];
+int menu_default_prompts_count, menu_added_prompts_count;
+menu_prompt menu_default_prompts[MAX_MENU_PROMPTS];
 menu_prompt menu_added_prompts[MAX_MENU_PROMPTS];
 
 int menu_item_highlighted_prompt[MAX_MENU_PROMPTS];
@@ -89,11 +89,12 @@ char* wagon_vehicle_hash;
 
 float wagon_spawn_camp_heading;
 
-bool wagon_using_global, wagon_spawn_action, wagon_stow, wagon_run_set_code, wagon_run_dead_code, wagon_spawn_into, wagon_override_door;
+bool wagon_using_global, wagon_spawn_action, wagon_stow, wagon_run_set_code, wagon_run_dead_code, wagon_spawn_into, wagon_override_door,
+wagon_was_in_vehicle, wagon_saved_coords, wagon_whistle, wagon_whistle_unload_hold;
 
 int wagon_camp_global_var, wagon_camp_global_member, wagon_spawn_action_mode, wagon_pickup_action_mode,
 wagon_bone, wagon_prompt, wagon_menu_prompt, wagon_closest_camp, wagon_stow_time, wagon_request_time, wagon_override_door_request,
-wagon_vehicle_lantern_index;
+wagon_vehicle_lantern_index, wagon_whistle_hold;
 
 bool menu_adjust;
 
