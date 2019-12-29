@@ -312,7 +312,6 @@ void wagon_setup()
 
 	int camp_global_check_member = 39;
 
-	//if (strstr(game_version, "1207.80"))
 	if ((int)*getGlobalPtr(wagon_camp_global_var + camp_global_check_member) == GET_HASH_KEY("Player_Zero") || (int)*getGlobalPtr(wagon_camp_global_var + camp_global_check_member) == GET_HASH_KEY("Player_Three"))
 	{
 		int camp_global = (int)*getGlobalPtr(wagon_camp_global_var + wagon_camp_global_member);
@@ -351,7 +350,7 @@ void main()
 {
 	Log::Init();
 
-	Log::Write(Log::Type::Normal, "hunting_wagon started");
+	Log::Write(Log::Type::Normal, "hunting_wagon " VERSION_STRING " started");
 
 	menu_setup();
 	wagon_setup();

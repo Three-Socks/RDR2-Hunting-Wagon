@@ -1,6 +1,6 @@
 #pragma once
 
-typedef void(*funcptr)();
+typedef std::function<void()> funcptr;
 
 extern int menu_keyboard_input, menu_gamepad_input, menu_gamepad_input2, menu_count, menu_item_highlighted, menu_item_selected,
 menu_action_mode, menu_load_hold_pressed, menu_level, press_time, hold_time, press_delay, press_id, menu_sound_id, menu_res_x, menu_res_y,

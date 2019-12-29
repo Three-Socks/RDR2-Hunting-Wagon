@@ -332,7 +332,7 @@ void menu_onUpdate(funcptr callback_func, bool this_frame)
 	menu_update_callback[menu_level] = callback_func;
 
 	if (this_frame && menu_update_callback[menu_level] != 0)
-		(*menu_update_callback[menu_level])();
+		(menu_update_callback[menu_level])();
 }
 
 void menu_add_onUpdate(funcptr callback_func)
@@ -902,9 +902,9 @@ void menu_update()
 {
 	// Run menu code callbacks
 	if (menu_update_callback[menu_level] != 0)
-		(*menu_update_callback[menu_level])();
+		(menu_update_callback[menu_level])();
 	else if (menu_items_update_callback[menu_item_highlighted] != 0)
-		(*menu_items_update_callback[menu_item_highlighted])();
+		(menu_items_update_callback[menu_item_highlighted])();
 
 	// Reset menu notification after time has run out
 	if (GET_GAME_TIMER() - menu_notifications_request > 2000)
@@ -1011,7 +1011,7 @@ void menu_action()
 				menu_set_item_selected(menu_item_highlighted);
 
 			if (menu_items_action[menu_item_highlighted] != 0)
-				(*menu_items_action[menu_item_highlighted])();
+				(menu_items_action[menu_item_highlighted])();
 
 			if (menu_continue_action)
 			{
@@ -1260,7 +1260,7 @@ void menu_catch_button_press()
 			menu_set_item_selected(menu_item_highlighted);
 
 		if (menu_items_action[menu_item_highlighted] != 0)
-			(*menu_items_action[menu_item_highlighted])();
+			(menu_items_action[menu_item_highlighted])();
 	}
 }
 
@@ -1311,7 +1311,7 @@ void menu_catch_select_button_press()
 				menu_level++;
 
 				last_selected_callback[menu_level - 1] = selected_callback;
-				(*selected_callback)();
+				(selected_callback)();
 				if (menu_item_selected != -1)
 				{
 					last_selected[menu_level] = menu_item_selected;
@@ -1330,7 +1330,7 @@ void menu_catch_select_button_press()
 	if (IS_DISABLED_CONTROL_JUST_RELEASED(2, INPUT_GAME_MENU_CANCEL) && !menu_adjust)
 	{
 		if (menu_back_callback[menu_level] != 0)
-			(*menu_back_callback[menu_level])();
+			(menu_back_callback[menu_level])();
 
 		if (menu_level != 0)
 		{
@@ -1516,7 +1516,7 @@ void menu_back(int menu_level_back)
 	}
 	else if (last_selected_callback[menu_level - 1] != 0)
 	{
-		(*last_selected_callback[menu_level - 1])();
+		(last_selected_callback[menu_level - 1])();
 		menu_set_last_selected();
 	}
 

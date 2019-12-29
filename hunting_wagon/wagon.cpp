@@ -18,9 +18,9 @@ Vector3 wagon_get_camp_spawn_coords(int camp_id)
 		case 3:
 			return { 1829.5162f, -1829.1899f, 44.7012f };
 		
-		// TODO Lakay
+		// Lakay
 		case 5:
-			return { 2277.974f, -753.376f, 41.0869f };
+			return { 2330.9775f, -752.5705f, 41.8000f };
 		
 		// Beaver Hollow
 		case 6:
@@ -52,6 +52,9 @@ float wagon_get_camp_spawn_heading(int camp_id)
 
 		case 3:
 			return 356.0f;
+
+		case 5:
+			return 345.0f;
 
 		case 6:
 			return 225.0f;
@@ -329,7 +332,7 @@ void wagon_process_whistle()
 			menu_msg("The Hunting Wagon is too far. Open menu and deliver to camp.");
 			return;
 		}
-		else if (vehicle_distance < 50.0f)
+		else if (vehicle_distance < 30.0f)
 			return;
 
 		Vector3 road_coords;
@@ -358,6 +361,9 @@ void wagon_process_vehicle()
 {
 	if (DOES_ENTITY_EXIST(wagon_spawned_vehicle))
 	{
+		if (wagon_override_door && wagon_time_taken(wagon_override_door_request, 2000))
+			SET_VEHICLE_DOOR_SHUT(wagon_spawned_vehicle, 5, 1);
+
 		if (wagon_whistle)
 			wagon_process_whistle();
 
@@ -382,10 +388,6 @@ void wagon_process_vehicle()
 
 			Log::Write(Log::Type::Normal, "wagon_saved_coords");
 		}
-
-
-		if (wagon_override_door && wagon_time_taken(wagon_override_door_request, 2000))
-			SET_VEHICLE_DOOR_SHUT(wagon_spawned_vehicle, 5, 1);
 
 		if (_UIPROMPT_IS_VALID(wagon_menu_prompt) && menu_get_open_state())
 			_UIPROMPT_SET_VISIBLE(wagon_menu_prompt, false);

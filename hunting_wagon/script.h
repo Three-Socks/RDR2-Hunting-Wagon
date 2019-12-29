@@ -18,17 +18,14 @@
 //#include <fstream>
 #include "SimpleIni.h"
 
-#include <iostream>
-#include <map>
-#include <string>
-#include <iterator>
+#include <functional>
 
 #include "log.h"
 
 #define		_STR(x) #x
 #define		STR(x) _STR(x)
 #define VERSION_MAJOR			1
-#define VERSION_MINOR			0
+#define VERSION_MINOR			1
 #define VERSION_MAINTENANCE		0
 #define VERSION_TAG				BETA
 
@@ -77,6 +74,7 @@
 #define WAGON_CART06 STR(cart06)
 #define WAGON_CART07 STR(cart07)
 #define WAGON_CART08 STR(cart07)
+#define WAGON_HUNTERCART01 STR(Huntercart01)
 
 #include "globals.h"
 #include "menu.h"

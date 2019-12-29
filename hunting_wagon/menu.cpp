@@ -30,6 +30,8 @@ char* wagon_get_string(char* wagon_string)
 		return "Small Cart";
 	else if (!strcmp(wagon_string, WAGON_CART03))
 		return "Cart";
+	else if (!strcmp(wagon_string, WAGON_HUNTERCART01))
+		return "Hunting Wagon";
 	else
 		return wagon_string;
 }
@@ -107,13 +109,22 @@ void wagon_menu_wagons()
 		Hash wagon_hash = GET_HASH_KEY(wagon_string);
 
 		if (!IS_MODEL_VALID(wagon_hash))
-			continue;
+		{
+			Log::Write(Log::Type::Normal, "IS_MODEL_VALID wagon_string = '%s'", wagon_string);
+			//continue;
+		}
 
 		if (!IS_MODEL_IN_CDIMAGE(wagon_hash))
+		{
+			Log::Write(Log::Type::Normal, "IS_MODEL_IN_CDIMAGE wagon_string = '%s'", wagon_string);
 			continue;
+		}	
 
 		if (!IS_MODEL_A_VEHICLE(wagon_hash))
+		{
+			Log::Write(Log::Type::Normal, "IS_MODEL_A_VEHICLE wagon_string = '%s'", wagon_string);
 			continue;
+		}
 
 		char* wagon_name = wagon_get_string(wagon_string);;
 
@@ -452,12 +463,13 @@ void menu_set()
 }
 
 float trainer_test_float_1 = 10.0f, trainer_test_float_2 = 10.0f, trainer_test_float_3 = 10.0f, trainer_test_float_4 = 0.0f, trainer_test_float_5 = 0.0f, trainer_test_float_6 = 0.0f, trainer_test_float_7 = 0.0f, trainer_test_float_8 = 0.0f, trainer_test_float_9 = 0.0f, trainer_test_float_10 = 100.0f;
+int trainer_test_int = 4;
 
 void wagon_menu_debug()
 {
 	menu_set_title("Hunting Wagon DEBUG MENU");
 
-	/*menu_addItem_callback("throw",
+	menu_addItem_callback("throw",
 		[]
 		{
 			if (!DOES_ENTITY_EXIST(animal_holding))
@@ -472,7 +484,30 @@ void wagon_menu_debug()
 				return;
 			}
 
-			SET_PED_CAN_RAGDOLL(animal_holding, true);
+			//char* anim_dict = "mech_carry_ped@dead@throw_body@into_wagon";
+			char* anim_dict = "mech_carry_ped@dead@mount@stow@lt";
+			char* anim_clip = "throw";
+
+			REQUEST_ANIM_DICT(anim_dict);
+			while (!HAS_ANIM_DICT_LOADED(anim_dict))
+			{
+				WAIT(0);
+			}
+
+			//DETACH_ENTITY(animal_holding, 1, 1);
+
+			//WAIT(100);
+
+			CLEAR_PED_TASKS(animal_holding, 1, 0);
+			TASK_PLAY_ANIM(animal_holding, anim_dict, "throw_ped", 8.0f, -8.0f, -1, trainer_test_int, 0, 0, 0, 0, 0, 0);
+			TASK_PLAY_ANIM(PLAYER_PED_ID(), anim_dict, anim_clip, 8.0f, -8.0f, -1, 4, 0, 0, 0, 0, 0, 0);
+
+			if (HAS_ANIM_DICT_LOADED(anim_dict))
+			{
+				REMOVE_ANIM_DICT(anim_dict);
+			}
+
+			/*SET_PED_CAN_RAGDOLL(animal_holding, true);
 
 			if (!IS_ENTITY_ATTACHED(animal_holding))
 			{
@@ -486,19 +521,24 @@ void wagon_menu_debug()
 
 
 			DETACH_ENTITY(animal_holding, 1, 1);
-			//Vector3 animal_coords = GET_ENTITY_COORDS(animal_holding, false, false);
-			//SET_ENTITY_COORDS(animal_holding, animal_coords.x, animal_coords.y, animal_coords.z, 0, 1, 1, 0);
 
 			WAIT(100);
 
-			APPLY_FORCE_TO_ENTITY_CENTER_OF_MASS(animal_holding, 1, trainer_test_float_1, trainer_test_float_2, trainer_test_float_3, false, false, true, false);
+			APPLY_FORCE_TO_ENTITY_CENTER_OF_MASS(animal_holding, 1, trainer_test_float_1, trainer_test_float_2, trainer_test_float_3, false, false, true, false);*/
 
 			//FORCE_ENTITY_AI_AND_ANIMATION_UPDATE(animal_holding, 1);
 		}
 	);
 
+	menu_addItem_callback("anim flag",
+		[]
+		{
+			trainer_test_int = menu_get_current_number();
+		},
+		true);
+	menu_addItem_number_keyboard(trainer_test_int, -1, 10, 9);
 
-	menu_addItem_callback("force x",
+	/*menu_addItem_callback("force x",
 		[]
 		{
 			trainer_test_float_1 = menu_get_current_float();
