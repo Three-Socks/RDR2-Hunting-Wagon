@@ -46,7 +46,7 @@ int wagon_get_lantern_index(char* wagon_string)
 
 void wagon_save()
 {
-	if (menu_confirm("This will remove your current Hunting Wagon. Are you sure?"))
+	if (menu_confirm("This will remove your current Hunting Wagon and your stuff inside. Are you sure?"))
 	{
 		char* wagon_name = menu_get_current_extra_string();
 
@@ -390,7 +390,7 @@ void menu_set()
 	if (!wagon_using_global)
 		print_msg_bottom_screen("Hunting Wagon: Unsupported game version some features may be missing.");
 
-	menu_addItem("Wagons", &wagon_menu_wagons);
+	menu_addItem("Replace Wagon", &wagon_menu_wagons);
 	menu_addItem("Style", &wagon_menu_modify);
 	menu_addItem_callback("Repair",
 		[]
@@ -468,6 +468,14 @@ int trainer_test_int = 4;
 void wagon_menu_debug()
 {
 	menu_set_title("Hunting Wagon DEBUG MENU");
+
+	menu_addItem_callback("task id",
+		[]
+		{
+			trainer_test_int_1 = menu_get_current_number();
+		},
+			true);
+	menu_addItem_number_keyboard(trainer_test_int_1, -1, 9999, 9);
 
 	menu_addItem_callback("throw",
 		[]
@@ -752,13 +760,41 @@ void wagon_menu_debug()
 		[]
 		{
 			Vector3 player_coords = GET_ENTITY_COORDS(PLAYER_PED_ID(), true, 0);
-			Object closest_obj = GET_CLOSEST_OBJECT_OF_TYPE(player_coords.x, player_coords.y, player_coords.z, 500.0f, 0x62C3DE15, 0, 0, 1);
+			Object closest_obj = GET_CLOSEST_OBJECT_OF_TYPE(player_coords.x, player_coords.y, player_coords.z, 100.0f, 0x85218677, trainer_test_int_1, trainer_test_int_2, trainer_test_int_3);
 
-			SET_ENTITY_VISIBLE(closest_obj, menu_get_current_bool());
-			menu_toggle_current_bool();
+			if (DOES_ENTITY_EXIST(closest_obj))
+			{
+				Log::Write(Log::Type::Normal, "found Closest Obj");
+				SET_ENTITY_VISIBLE(closest_obj, menu_get_current_bool());
+				menu_toggle_current_bool();
+			}
 		}
 	);
 	menu_addItem_bool(0);
+
+	menu_addItem_callback("trainer_test_int_1",
+		[]
+		{
+			trainer_test_int_1 = menu_get_current_number();
+		},
+			true);
+	menu_addItem_number_keyboard(trainer_test_int_1, -1, 9999, 9);
+
+	menu_addItem_callback("trainer_test_int_2",
+		[]
+		{
+			trainer_test_int_2 = menu_get_current_number();
+		},
+			true);
+	menu_addItem_number_keyboard(trainer_test_int_2, -1, 9999, 9);
+
+	menu_addItem_callback("trainer_test_int_3",
+		[]
+		{
+			trainer_test_int_3 = menu_get_current_number();
+		},
+			true);
+	menu_addItem_number_keyboard(trainer_test_int_3, -1, 9999, 9);
 
 	menu_addItem_callback("Camp global",
 		[]

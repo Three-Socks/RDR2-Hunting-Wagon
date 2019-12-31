@@ -85,6 +85,8 @@ extern int menu_item_highlighted_prompt[MAX_MENU_PROMPTS];
 
 extern CSimpleIniA ini;
 
+extern int trainer_test_int_1, trainer_test_int_2, trainer_test_int_3;
+
 extern bool wagon_debug_menu_enabled, wagon_log_debug_info;
 extern int wagon_debug_menu;
 
@@ -102,7 +104,7 @@ extern bool wagon_using_global, wagon_spawn_action, wagon_stow, wagon_run_set_co
 wagon_was_in_vehicle, wagon_saved_coords, wagon_whistle, wagon_whistle_unload_hold;
 
 extern int wagon_camp_global_var, wagon_camp_global_member, wagon_spawn_action_mode, wagon_pickup_action_mode,
-wagon_bone, wagon_prompt, wagon_menu_prompt, wagon_closest_camp, wagon_stow_time, wagon_request_time, wagon_override_door_request,
+wagon_bone, wagon_prompt, wagon_menu_prompt, wagon_camp_menu_prompt, wagon_closest_camp, wagon_stow_time, wagon_request_time, wagon_override_door_request,
 wagon_vehicle_lantern_index, wagon_whistle_hold;
 
 extern bool menu_adjust;

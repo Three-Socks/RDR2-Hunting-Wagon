@@ -34,8 +34,15 @@ bool wagon_load_pressed()
 		}*/
 		if (wagon_debug_menu_enabled && IsKeyJustUp(menu_keyboard_input))
 			return true;
-		else if (_UIPROMPT_IS_VALID(wagon_menu_prompt) && _UIPROMPT_IS_JUST_RELEASED(wagon_menu_prompt))
+		else if ((_UIPROMPT_IS_VALID(wagon_camp_menu_prompt) && _UIPROMPT_HAS_HOLD_MODE_COMPLETED(wagon_camp_menu_prompt)) || (_UIPROMPT_IS_VALID(wagon_menu_prompt) && _UIPROMPT_IS_JUST_RELEASED(wagon_menu_prompt)))
 		{
+			_UIPROMPT_DELETE(wagon_camp_menu_prompt);
+			wagon_camp_menu_prompt = 0;
+
+			_UIPROMPT_DELETE(wagon_menu_prompt);
+			wagon_menu_prompt = 0;
+
+			Log::Write(Log::Type::Normal, "prompt menu open");
 			return true;
 		}
 		else
@@ -350,7 +357,7 @@ void main()
 {
 	Log::Init();
 
-	Log::Write(Log::Type::Normal, "hunting_wagon " VERSION_STRING " started");
+	Log::Write(Log::Type::Normal, CONFIG_NAME " started");
 
 	menu_setup();
 	wagon_setup();

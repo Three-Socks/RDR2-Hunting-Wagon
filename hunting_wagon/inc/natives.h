@@ -1828,14 +1828,14 @@ static void _UIPROMPT_SET_SPINNER_SPEED(Prompt prompt, Any p1) { invoke<Void>(0x
 static void _UIPROMPT_SET_SPINNER_POSITION(Prompt prompt, Any p1) { invoke<Void>(0x832CB510DE546282, prompt, p1); } // 0x832CB510DE546282 b1207
 static void _UIPROMPT_SET_URGENT_PULSING_ENABLED(Prompt prompt, Any p1) { invoke<Void>(0xC5F428EE08FA7F2C, prompt, p1); } // 0xC5F428EE08FA7F2C b1207
 static BOOL _UIPROMPT_GET_URGENT_PULSING_ENABLED(Prompt prompt) { return invoke<BOOL>(0x1FBA0DABECDDB52B, prompt); } // 0x1FBA0DABECDDB52B b1207
-static void _UIPROMPT_SET_TAG(Prompt prompt, Any p1) { invoke<Void>(0xDEC85C174751292B, prompt, p1); } // 0xDEC85C174751292B b1207
+static void _UIPROMPT_SET_TAG(Prompt prompt, char* p1) { invoke<Void>(0xDEC85C174751292B, prompt, p1); } // 0xDEC85C174751292B b1207
 static int _UIPROMPT_GET_GROUP_ID_FOR_TARGET_ENTITY(Entity entity) { return invoke<int>(0xB796970BD125FCE8, entity); } // 0xB796970BD125FCE8 b1207
 static int _UIPROMPT_GET_GROUP_ID_FOR_SCENARIO_POINT(Any p0, int p1) { return invoke<int>(0xCB73D7521E7103F0, p0, p1); } // 0xCB73D7521E7103F0 b1207
 static void _UIPROMPT_SET_GROUP(Prompt prompt, Any p1, Any p2) { invoke<Void>(0x2F11D3A254169EA4, prompt, p1, p2); } // 0x2F11D3A254169EA4 b1207
 static void _UIPROMPT_REMOVE_GROUP(Prompt prompt, Any p1) { invoke<Void>(0x4E52C800A28F7BE8, prompt, p1); } // 0x4E52C800A28F7BE8 b1207
-static Any _UIPROMPT_SET_ACTIVE_GROUP_THIS_FRAME(Hash hash, Any p1, Any p2, Any p3, Any p4, Prompt prompt) { return invoke<Any>(0xC65A45D4453C2627, hash, p1, p2, p3, p4, prompt); } // 0xC65A45D4453C2627 b1207
+static Any _UIPROMPT_SET_ACTIVE_GROUP_THIS_FRAME(Hash hash, char* p1, Any p2, Any p3, Any p4, Prompt prompt) { return invoke<Any>(0xC65A45D4453C2627, hash, p1, p2, p3, p4, prompt); } // 0xC65A45D4453C2627 b1207
 static int _UIPROMPT_GET_GROUP_ACTIVE_PAGE(Hash hash) { return invoke<int>(0xC1FCC36C3F7286C8, hash); } // 0xC1FCC36C3F7286C8 b1207
-static Any _UIPROMPT_SET_AMBIENT_GROUP_THIS_FRAME(Entity entity, Any p1, Any p2, Any p3, Any p4, Any p5, Any p6) { return invoke<Any>(0x315C81D760609108, entity, p1, p2, p3, p4, p5, p6); } // 0x315C81D760609108 b1207
+static Any _UIPROMPT_SET_AMBIENT_GROUP_THIS_FRAME(Entity entity, float p1, Any p2, Any p3, Any p4, char* p5, Any p6) { return invoke<Any>(0x315C81D760609108, entity, p1, p2, p3, p4, p5, p6); } // 0x315C81D760609108 b1207
 static Any _0x8B55B324A9123F6B(Any p0, Any p1, Any p2, Any p3, Any p4, Any p5) { return invoke<Any>(0x8B55B324A9123F6B, p0, p1, p2, p3, p4, p5); } // 0x8B55B324A9123F6B b1232
 static BOOL _UIPROMPT_DOES_AMBIENT_GROUP_EXIST(Hash hash) { return invoke<BOOL>(0xEB550B927B34A1BB, hash); } // 0xEB550B927B34A1BB b1207
 static void _UIPROMPT_ADD_GROUP_LINK(Any p0, Prompt prompt, Any p2) { invoke<Void>(0x684C96CC7C66E8EF, p0, prompt, p2); } // 0x684C96CC7C66E8EF b1207
@@ -3452,11 +3452,11 @@ static BOOL GET_NTH_CLOSEST_VEHICLE_NODE(float x, float y, float z, int nthClose
 static int GET_NTH_CLOSEST_VEHICLE_NODE_ID(float x, float y, float z, int nth, int nodetype, float p5, float p6) { return invoke<int>(0x116443008E5CEFC3, x, y, z, nth, nodetype, p5, p6); } // 0x116443008E5CEFC3 b1207
 static BOOL GET_NTH_CLOSEST_VEHICLE_NODE_WITH_HEADING(float x, float y, float z, int nthClosest, Vector3* outPosition, float* heading, Any* unknown1, int unknown2, float unknown3, float unknown4) { return invoke<BOOL>(0x591B40D4390DB54A, x, y, z, nthClosest, outPosition, heading, unknown1, unknown2, unknown3, unknown4); } // 0x591B40D4390DB54A b1207
 static BOOL GET_NTH_CLOSEST_VEHICLE_NODE_ID_WITH_HEADING(float x, float y, float z, int nthClosest, Vector3* outPosition, float outHeading, Any p6, float p7, float p8) { return invoke<BOOL>(0x4114EAA8A7F7766D, x, y, z, nthClosest, outPosition, outHeading, p6, p7, p8); } // 0x4114EAA8A7F7766D b1207
-static BOOL GET_NTH_CLOSEST_VEHICLE_NODE_FAVOUR_DIRECTION(float x, float y, float z, float desiredX, float desiredY, float desiredZ, int nthClosest, Vector3* outPosition, float* outHeading, int nodetype, Any p10, Any p11) { return invoke<BOOL>(0x2FAC235A6062F14A, x, y, z, desiredX, desiredY, desiredZ, nthClosest, outPosition, outHeading, nodetype, p10, p11); } // 0x2FAC235A6062F14A b1207
+static BOOL GET_NTH_CLOSEST_VEHICLE_NODE_FAVOUR_DIRECTION(float x, float y, float z, float desiredX, float desiredY, float desiredZ, int nthClosest, Vector3* outPosition, float* outHeading, int nodetype, float p10, Any p11) { return invoke<BOOL>(0x2FAC235A6062F14A, x, y, z, desiredX, desiredY, desiredZ, nthClosest, outPosition, outHeading, nodetype, p10, p11); } // 0x2FAC235A6062F14A b1207
 static BOOL IS_VEHICLE_NODE_ID_VALID(int vehicleNodeId) { return invoke<BOOL>(0x5829A02AF4F0B3CB, vehicleNodeId); } // 0x5829A02AF4F0B3CB b1207
 static void GET_VEHICLE_NODE_POSITION(int nodeId, Vector3* outPosition) { invoke<Void>(0x8E8D72FF24DEE1FB, nodeId, outPosition); } // 0x8E8D72FF24DEE1FB b1207
 static BOOL GET_VEHICLE_NODE_IS_SWITCHED_OFF(int nodeID) { return invoke<BOOL>(0x28533DBDDF7C2C97, nodeID); } // 0x28533DBDDF7C2C97 b1207
-static Any GET_CLOSEST_ROAD(float x, float y, float z, float p3, int p4, Vector3* p5, Vector3* p6, Any* p7, Any* p8, float* p9, BOOL p10) { return invoke<Any>(0x132F52BBA570FE92, x, y, z, p3, p4, p5, p6, p7, p8, p9, p10); } // 0x132F52BBA570FE92 b1207
+static BOOL GET_CLOSEST_ROAD(float x, float y, float z, float p3, int p4, Vector3* p5, Vector3* p6, Any* p7, Any* p8, float* p9, BOOL p10) { return invoke<Any>(0x132F52BBA570FE92, x, y, z, p3, p4, p5, p6, p7, p8, p9, p10); } // 0x132F52BBA570FE92 b1207
 static BOOL _ARE_PATH_NODES_LOADED_IN_AREA(float x1, float y1, float x2, float y2) { return invoke<BOOL>(0xF7B79A50B905A30D, x1, y1, x2, y2); } // 0xF7B79A50B905A30D b1207
 static BOOL _0x07FB139B592FA687(float p0, float p1, float p2, float p3) { return invoke<BOOL>(0x07FB139B592FA687, p0, p1, p2, p3); } // 0x07FB139B592FA687 b1207
 static BOOL GET_RANDOM_VEHICLE_NODE(float x, float y, float z, float radius, BOOL p4, BOOL p5, BOOL p6, Vector3* outPosition, int* nodeId) { return invoke<BOOL>(0x93E0DB8440B73A7D, x, y, z, radius, p4, p5, p6, outPosition, nodeId); } // 0x93E0DB8440B73A7D b1207
@@ -5723,12 +5723,12 @@ static void TASK_TURN_PED_TO_FACE_COORD(Ped ped, float x, float y, float z, int 
 static void TASK_VEHICLE_TEMP_ACTION(Ped driver, Vehicle vehicle, int action, int time) { invoke<Void>(0xC429DCEEB339E129, driver, vehicle, action, time); } // 0xC429DCEEB339E129 b1207
 static void TASK_VEHICLE_MISSION(int p0, int p1, Vehicle veh, Any p3, float p4, Any p5, float p6, float p7, BOOL p8) { invoke<Void>(0x659427E0EF36BCDE, p0, p1, veh, p3, p4, p5, p6, p7, p8); } // 0x659427E0EF36BCDE b1207
 static void _TASK_VEHICLE_DRIVE_TO_DESTINATION(Any p0, Any p1, Any p2, Any p3, Any p4, Any p5, Any p6, Any p7, Any p8, Any p9, Any p10) { invoke<Void>(0x7F241A0D14354583, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10); } // 0x7F241A0D14354583 b1207
-static void _TASK_VEHICLE_DRIVE_TO_DESTINATION_2(Vehicle vehicle, float x, float y, float z, float heading, int p5, int p6, float p7, float p8) { invoke<Void>(0x391073B9D3CCE2BA, vehicle, x, y, z, heading, p5, p6, p7, p8); } // 0x391073B9D3CCE2BA b1207
-static void _0x55CD5FDDD4335C1E(Any p0, Any p1, Any p2, Any p3, Any p4, Any p5) { invoke<Void>(0x55CD5FDDD4335C1E, p0, p1, p2, p3, p4, p5); } // 0x55CD5FDDD4335C1E b1207
+static void _TASK_VEHICLE_DRIVE_TO_DESTINATION_2(Vehicle vehicle, float x, float y, float z, float speed, int p5, int p6, float p7, float p8) { invoke<Void>(0x391073B9D3CCE2BA, vehicle, x, y, z, speed, p5, p6, p7, p8); } // 0x391073B9D3CCE2BA b1207
+static void _0x55CD5FDDD4335C1E(Vehicle p0, float p1, float p2, float p3, float p4, int p5) { invoke<Void>(0x55CD5FDDD4335C1E, p0, p1, p2, p3, p4, p5); } // 0x55CD5FDDD4335C1E b1207
 static void _TASK_VEHICLE_DRIVE_TO_POINT(Any p0, Any p1, Any p2, Any p3, Any p4, Any p5, Any p6, Any p7) { invoke<Void>(0x089FF2FB965F0A29, p0, p1, p2, p3, p4, p5, p6, p7); } // 0x089FF2FB965F0A29 b1207
-static void _TASK_VEHICLE_DRIVE_TO_POINT_2(Any p0, Any p1, Any p2, Any p3, Any p4, Any p5, Any p6) { invoke<Void>(0x6524A8981E8BE7C9, p0, p1, p2, p3, p4, p5, p6); } // 0x6524A8981E8BE7C9 b1207
+static void _TASK_VEHICLE_DRIVE_TO_POINT_2(Any p0, float p1, float p2, float p3, float p4, float p5, Any p6) { invoke<Void>(0x6524A8981E8BE7C9, p0, p1, p2, p3, p4, p5, p6); } // 0x6524A8981E8BE7C9 b1207
 static void _0x1D125814EBC517EB(Any p0, Any p1, Any p2, Any p3) { invoke<Void>(0x1D125814EBC517EB, p0, p1, p2, p3); } // 0x1D125814EBC517EB b1207
-static Any _0x583AE9AF9CEE0958(Any p0, Any p1, Any p2, Any p3) { return invoke<Any>(0x583AE9AF9CEE0958, p0, p1, p2, p3); } // 0x583AE9AF9CEE0958 b1207
+static Any _0x583AE9AF9CEE0958(Vehicle p0, float p1, float p2, float p3) { return invoke<Any>(0x583AE9AF9CEE0958, p0, p1, p2, p3); } // 0x583AE9AF9CEE0958 b1207
 static void TASK_VEHICLE_MISSION_PED_TARGET(Ped ped, Vehicle vehicle, Ped pedTarget, int mode, float maxSpeed, int drivingStyle, float minDistance, float p7, BOOL p8) { invoke<Void>(0x9454528DF15D657A, ped, vehicle, pedTarget, mode, maxSpeed, drivingStyle, minDistance, p7, p8); } // 0x9454528DF15D657A b1207
 static void _0xA263ADBBC8056214(Any p0, Any p1) { invoke<Void>(0xA263ADBBC8056214, p0, p1); } // 0xA263ADBBC8056214 b1207
 static void TASK_VEHICLE_ESCORT(Ped ped, Vehicle vehicle, Vehicle targetVehicle, int mode, float speed, int drivingStyle, float minDistance, int p7, float noRoadsDistance) { invoke<Void>(0x0FA6E4B75F302400, ped, vehicle, targetVehicle, mode, speed, drivingStyle, minDistance, p7, noRoadsDistance); } // 0x0FA6E4B75F302400 b1207
@@ -5892,7 +5892,7 @@ static void _0xE9225354FB7437A7(Any p0, Any p1) { invoke<Void>(0xE9225354FB7437A
 static void _0x764DB5A48390FBAD(Any p0, Any p1) { invoke<Void>(0x764DB5A48390FBAD, p0, p1); } // 0x764DB5A48390FBAD b1207
 static void _0x8F8C84363810691A(Any p0, Any p1) { invoke<Void>(0x8F8C84363810691A, p0, p1); } // 0x8F8C84363810691A b1207
 static void _0xFF8AFCA532B500D4(Any p0, Any p1) { invoke<Void>(0xFF8AFCA532B500D4, p0, p1); } // 0xFF8AFCA532B500D4 b1207
-static Any _0xFE5D28B9B7837CC1(Any p0, Any p1, Any p2, Any p3) { return invoke<Any>(0xFE5D28B9B7837CC1, p0, p1, p2, p3); } // 0xFE5D28B9B7837CC1 b1207
+static Any _0xFE5D28B9B7837CC1(Any p0, float p1, float p2, float p3) { return invoke<Any>(0xFE5D28B9B7837CC1, p0, p1, p2, p3); } // 0xFE5D28B9B7837CC1 b1207
 static void _0x2B8AF29A78024BD3(Any p0) { invoke<Void>(0x2B8AF29A78024BD3, p0); } // 0x2B8AF29A78024BD3 b1207
 static Any _0x0365000D8BF86531(Any p0) { return invoke<Any>(0x0365000D8BF86531, p0); } // 0x0365000D8BF86531 b1207
 static Vector3 _0x865732725536EE39(Any p0) { return invoke<Vector3>(0x865732725536EE39, p0); } // 0x865732725536EE39 b1207

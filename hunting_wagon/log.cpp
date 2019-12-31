@@ -5,7 +5,7 @@
 
 #pragma warning(disable : 4996) //_CRT_SECURE_NO_WARNINGS
 
-void wagon_get_log_file_path(char* log_file, char* log_file_path)
+void log_get_file_path(char* log_file, char* log_file_path)
 {
 	char path[MAX_PATH];
 	HRESULT hr = SHGetFolderPath(NULL, CSIDL_PERSONAL, NULL, SHGFP_TYPE_CURRENT, path);
@@ -27,11 +27,11 @@ void Log::Init(bool createConsole)
 	FILE* file;
 	memset(g_logFile, 0, sizeof(g_logFile));
 
-	wagon_get_log_file_path(CONFIG_NAME, g_logFile);
+	log_get_file_path(CONFIG_NAME, g_logFile);
 
 	if ((fopen_s(&file, g_logFile, "w")) == 0)
 	{
-		fprintf_s(file, "%s\n", CONFIG_NAME);
+		fprintf_s(file, "%s\n", CONFIG_NAME " - " VERSION_STRING);
 		fclose(file);
 	}
 
