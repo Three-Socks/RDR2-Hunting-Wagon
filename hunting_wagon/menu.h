@@ -2,7 +2,9 @@
 
 int wagon_get_lantern_index(char* wagon_string);
 void menu_set();
+#ifdef LOGGING
 void wagon_menu_debug();
+#endif
 void trainer_vehicle_wagons();
 void wagon_menu_lanterns();
 void wagon_vehicle_propset_action(Hash prop_hash, int prop_index, int lantern);

@@ -30,8 +30,6 @@ char* wagon_get_string(char* wagon_string)
 		return "Small Cart";
 	else if (!strcmp(wagon_string, WAGON_CART03))
 		return "Cart";
-	else if (!strcmp(wagon_string, WAGON_HUNTERCART01))
-		return "Hunting Wagon";
 	else
 		return wagon_string;
 }
@@ -44,16 +42,23 @@ int wagon_get_lantern_index(char* wagon_string)
 		return 0;
 }
 
-void wagon_save()
+void wagon_send_to_camp(char* wagon_name)
 {
-	if (menu_confirm("This will remove your current Hunting Wagon and your stuff inside. Are you sure?"))
+	if (menu_confirm("This will delete your current Hunting Wagon and your stuff inside. Are you sure?"))
 	{
-		char* wagon_name = menu_get_current_extra_string();
-
 		wagon_vehicle_hash = wagon_name;
 		wagon_bone = ini.GetLongValue(wagon_vehicle_hash, "bone", GET_ENTITY_BONE_INDEX_BY_NAME(wagon_spawned_vehicle, "bodyshell"));
 
 		Log::Write(Log::Type::Normal, "wagon_name = '%s'", wagon_name);
+
+		ini.Delete("config", "saved_coord_x");
+		ini.Delete("config", "saved_coord_y");
+		ini.Delete("config", "saved_coord_z");
+		ini.Delete("config", "saved_heading");
+		wagon_custom_spawn_coords.x = 0.0f;
+		wagon_custom_spawn_coords.y = 0.0f;
+		wagon_custom_spawn_coords.z = 0.0f;
+		wagon_custom_spawn_heading = 0.0f;
 
 		ini.SetValue("config", "wagon_vehicle_hash", wagon_vehicle_hash);
 		wagon_save_ini_file();
@@ -74,7 +79,7 @@ void wagon_save()
 
 		wagon_closest_camp = -1;
 
-		menu_msg("Delivered to Camp.");
+		menu_msg("Sent to Camp.");
 
 		if (!wagon_using_global)
 		{
@@ -135,7 +140,12 @@ void wagon_menu_wagons()
 			menu_set_items_selected(menu_count);
 	}
 
-	menu_add_callback_action_all(&wagon_save);
+	menu_add_callback_action_all(
+		[]
+		{
+			wagon_send_to_camp(menu_get_current_extra_string());
+		}
+	);
 }
 
 void wagon_menu_lanterns()
@@ -387,41 +397,74 @@ void menu_set()
 {
 	menu_set_title("Hunting Wagon");
 
-	if (!wagon_using_global)
-		print_msg_bottom_screen("Hunting Wagon: Unsupported game version some features may be missing.");
+	bool player_at_camp_spawn = false;
 
-	menu_addItem("Replace Wagon", &wagon_menu_wagons);
-	menu_addItem("Style", &wagon_menu_modify);
-	menu_addItem_callback("Repair",
-		[]
-		{
-			_SET_ENTITY_HEALTH(wagon_spawned_vehicle, GET_ENTITY_MAX_HEALTH(wagon_spawned_vehicle, false), false);
-			SET_VEHICLE_FIXED(wagon_spawned_vehicle);
-			menu_refresh();
-		}
-	);
+	if (IS_ENTITY_AT_COORD(PLAYER_PED_ID(), wagon_spawn_camp_coords.x, wagon_spawn_camp_coords.y, wagon_spawn_camp_coords.z, 50.0f, 50.0f, 10.0f, false, true, 0))
+		player_at_camp_spawn = true;
 
-	if (strcmp(wagon_vehicle_hash, WAGON_CART) && strcmp(wagon_vehicle_hash, WAGON_CART03))
+	if (wagon_in_camp_menu)
 	{
-		menu_addItem_callback("Wagon Door", 
+		menu_addItem_callback("Call for Wagon",
 			[]
 			{
-				if (menu_get_current_bool())
+				if (menu_confirm("This will delete your current Hunting Wagon and your stuff inside. Are you sure?"))
 				{
-					wagon_override_door = true;
-					wagon_override_door_request = GET_GAME_TIMER();
-					SET_VEHICLE_DOOR_SHUT(wagon_spawned_vehicle, 5, 0);
+					Vector3 player_coords = GET_ENTITY_COORDS(PLAYER_PED_ID(), true, false);
+					Vector3 vehicle_coords = GET_ENTITY_COORDS(wagon_spawned_vehicle, true, false);
+
+					if (!wagon_spawn_call(player_coords, vehicle_coords))
+						menu_error("The Hunting Wagon couldn't get to your location.", 0);
 				}
-				else
+			}
+		);
+
+		menu_addItem_callback("Send to Camp",
+			[]
+			{
+				wagon_send_to_camp(wagon_vehicle_hash);
+			}
+		);
+	}
+
+	if (!wagon_in_camp_menu)
+	{
+		if (player_at_camp_spawn)
+		{
+			menu_addItem("Replace Wagon", &wagon_menu_wagons);
+			menu_addItem("Style", &wagon_menu_modify);
+		}
+
+		menu_addItem_callback("Repair",
+			[]
+			{
+				_SET_ENTITY_HEALTH(wagon_spawned_vehicle, GET_ENTITY_MAX_HEALTH(wagon_spawned_vehicle, false), false);
+				SET_VEHICLE_FIXED(wagon_spawned_vehicle);
+				menu_refresh();
+			}
+		);
+
+		if (strcmp(wagon_vehicle_hash, WAGON_CART) && strcmp(wagon_vehicle_hash, WAGON_CART03))
+		{
+			menu_addItem_callback("Wagon Door", 
+				[]
 				{
-					wagon_override_door = false;
-					SET_VEHICLE_DOOR_OPEN(wagon_spawned_vehicle, 5, 0, 0);
-				}
-				menu_toggle_current_bool();
-			},
-		true);
-		menu_set_bool_strings("Closed", "Open");
-		menu_addItem_bool(IS_VEHICLE_DOOR_FULLY_OPEN(wagon_spawned_vehicle, 5));
+					if (menu_get_current_bool())
+					{
+						wagon_override_door = true;
+						wagon_override_door_request = GET_GAME_TIMER();
+						SET_VEHICLE_DOOR_SHUT(wagon_spawned_vehicle, 5, 0);
+					}
+					else
+					{
+						wagon_override_door = false;
+						SET_VEHICLE_DOOR_OPEN(wagon_spawned_vehicle, 5, 0, 0);
+					}
+					menu_toggle_current_bool();
+				},
+			true);
+			menu_set_bool_strings("Closed", "Open");
+			menu_addItem_bool(IS_VEHICLE_DOOR_FULLY_OPEN(wagon_spawned_vehicle, 5));
+		}
 	}
 
 	menu_addItem("Settings", 
@@ -458,8 +501,10 @@ void menu_set()
 		}
 	);
 
-	if (wagon_debug_menu_enabled)
-		menu_addItem("Debug", &wagon_menu_debug);
+	#ifdef LOGGING
+		if (wagon_debug_menu_enabled)
+			menu_addItem("Debug", &wagon_menu_debug);
+	#endif
 }
 
 float trainer_test_float_1 = 10.0f, trainer_test_float_2 = 10.0f, trainer_test_float_3 = 10.0f, trainer_test_float_4 = 0.0f, trainer_test_float_5 = 0.0f, trainer_test_float_6 = 0.0f, trainer_test_float_7 = 0.0f, trainer_test_float_8 = 0.0f, trainer_test_float_9 = 0.0f, trainer_test_float_10 = 100.0f;
@@ -624,9 +669,9 @@ void wagon_menu_debug()
 
 			float spawn_distance = max.x - min.x + cur_max.y - cur_min.y;
 
-			wagon_spawn_camp_coords = GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(entity_type, 0.0f, spawn_distance + 4.5f, 1.0f);
-			CLEAR_AREA(wagon_spawn_camp_coords.x, wagon_spawn_camp_coords.y, wagon_spawn_camp_coords.z, 2.5f, 3490746);
-			wagon_spawn_camp_heading = GET_ENTITY_HEADING(entity_type) + 90.0f;
+			wagon_custom_spawn_coords = GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(entity_type, 0.0f, spawn_distance + 4.5f, 1.0f);
+			CLEAR_AREA(wagon_custom_spawn_coords.x, wagon_custom_spawn_coords.y, wagon_custom_spawn_coords.z, 2.5f, 3490746);
+			wagon_custom_spawn_heading = GET_ENTITY_HEADING(entity_type) + 90.0f;
 
 			wagon_spawn_action = true;
 		}
@@ -649,9 +694,9 @@ void wagon_menu_debug()
 			else
 				entity_type = PLAYER_PED_ID();
 
-			wagon_spawn_camp_coords = GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(entity_type, 0.0f, 2.5f, 1.0f);
+			Vector3 spawn_coords = GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(entity_type, 0.0f, 2.5f, 1.0f);
 
-			Ped animal_ped = CREATE_PED(ped_hash, wagon_spawn_camp_coords.x, wagon_spawn_camp_coords.y, wagon_spawn_camp_coords.z, GET_ENTITY_HEADING(PLAYER_PED_ID()), 0, 0, 0, 0);
+			Ped animal_ped = CREATE_PED(ped_hash, spawn_coords.x, spawn_coords.y, spawn_coords.z, GET_ENTITY_HEADING(PLAYER_PED_ID()), 0, 0, 0, 0);
 			_SET_PED_VISIBLE(animal_ped, true);
 			_SET_ENTITY_HEALTH(animal_ped, 0, 0);
 
@@ -837,6 +882,9 @@ void wagon_menu_debug()
 			Log::Write(Log::Type::Normal, "wagon_spawn_camp_coords.x = %f", wagon_spawn_camp_coords.x);
 			Log::Write(Log::Type::Normal, "wagon_spawn_camp_coords.y = %f", wagon_spawn_camp_coords.y);
 			Log::Write(Log::Type::Normal, "wagon_spawn_camp_coords.z = %f", wagon_spawn_camp_coords.z);
+			Log::Write(Log::Type::Normal, "wagon_custom_spawn_coords.x = %f", wagon_custom_spawn_coords.x);
+			Log::Write(Log::Type::Normal, "wagon_custom_spawn_coords.y = %f", wagon_custom_spawn_coords.y);
+			Log::Write(Log::Type::Normal, "wagon_custom_spawn_coords.z = %f", wagon_custom_spawn_coords.z);
 			Log::Write(Log::Type::Normal, "wagon_spawn_camp_heading = %f", wagon_spawn_camp_heading);
 			Log::Write(Log::Type::Normal, "wagon_vehicle_hash = %s", wagon_vehicle_hash);
 			Log::Write(Log::Type::Normal, "wagon_bone = %i", wagon_bone);

@@ -82,17 +82,17 @@ bool wagon_debug_menu_enabled, wagon_log_debug_info;
 int wagon_debug_menu;
 
 Vehicle wagon_spawned_vehicle;
-Vector3 wagon_spawn_camp_coords;
+Vector3 wagon_spawn_camp_coords, wagon_custom_spawn_coords;
 Blip wagon_blip;
 Hash wagon_vehicle_lantern;
 Ped animal_holding, wagon_stow_entity;
 
 char* wagon_vehicle_hash;
 
-float wagon_spawn_camp_heading;
+float wagon_spawn_camp_heading, wagon_custom_spawn_heading;
 
 bool wagon_using_global, wagon_spawn_action, wagon_stow, wagon_run_set_code, wagon_run_dead_code, wagon_spawn_into, wagon_override_door,
-wagon_was_in_vehicle, wagon_saved_coords, wagon_whistle, wagon_whistle_unload_hold;
+wagon_was_in_vehicle, wagon_saved_coords, wagon_whistle, wagon_whistle_unload_hold, wagon_in_camp_menu;
 
 int wagon_camp_global_var, wagon_camp_global_member, wagon_spawn_action_mode, wagon_pickup_action_mode,
 wagon_bone, wagon_prompt, wagon_menu_prompt, wagon_camp_menu_prompt, wagon_closest_camp, wagon_stow_time, wagon_request_time, wagon_override_door_request,

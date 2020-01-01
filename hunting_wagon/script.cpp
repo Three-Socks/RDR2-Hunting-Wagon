@@ -36,6 +36,11 @@ bool wagon_load_pressed()
 			return true;
 		else if ((_UIPROMPT_IS_VALID(wagon_camp_menu_prompt) && _UIPROMPT_HAS_HOLD_MODE_COMPLETED(wagon_camp_menu_prompt)) || (_UIPROMPT_IS_VALID(wagon_menu_prompt) && _UIPROMPT_IS_JUST_RELEASED(wagon_menu_prompt)))
 		{
+			if (_UIPROMPT_HAS_HOLD_MODE_COMPLETED(wagon_camp_menu_prompt))
+				wagon_in_camp_menu = true;
+			else if (_UIPROMPT_IS_JUST_RELEASED(wagon_menu_prompt))
+				wagon_in_camp_menu = false;
+
 			_UIPROMPT_DELETE(wagon_camp_menu_prompt);
 			wagon_camp_menu_prompt = 0;
 
@@ -293,10 +298,10 @@ void wagon_get_config_default_ini()
 		ini.SetValue("config", "wagon_vehicle_hash", wagon_vehicle_hash);
 	}
 
-	wagon_spawn_camp_coords.x = (float) ini.GetDoubleValue("config", "saved_coord_x", 0.0f);
-	wagon_spawn_camp_coords.y = (float) ini.GetDoubleValue("config", "saved_coord_y", 0.0f);
-	wagon_spawn_camp_coords.z = (float) ini.GetDoubleValue("config", "saved_coord_z", 0.0f);
-	wagon_spawn_camp_heading = (float) ini.GetDoubleValue("config", "saved_heading", 0.0f);
+	wagon_custom_spawn_coords.x = (float) ini.GetDoubleValue("config", "saved_coord_x", 0.0f);
+	wagon_custom_spawn_coords.y = (float) ini.GetDoubleValue("config", "saved_coord_y", 0.0f);
+	wagon_custom_spawn_coords.z = (float) ini.GetDoubleValue("config", "saved_coord_z", 0.0f);
+	wagon_custom_spawn_heading = (float) ini.GetDoubleValue("config", "saved_heading", 0.0f);
 
 	wagon_whistle = ini.GetBoolValue("config", "wagon_whistle", 0);
 
@@ -329,6 +334,8 @@ void wagon_setup()
 
 	wagon_spawn_camp_coords = { 0.0f, 0.0f, 0.0f };
 	wagon_spawn_camp_heading = 0.0f;
+	wagon_custom_spawn_coords = { 0.0f, 0.0f, 0.0f };
+	wagon_custom_spawn_heading = 0.0f;
 	wagon_vehicle_lantern = 0;
 	wagon_vehicle_lantern_index = 0;
 
@@ -347,6 +354,7 @@ void wagon_setup()
 	wagon_was_in_vehicle = false;
 	wagon_whistle_unload_hold = false;
 	wagon_whistle_hold = GET_GAME_TIMER();
+	wagon_in_camp_menu = false;
 
 	#ifdef LOGGING
 		wagon_debug_menu_enabled = true;

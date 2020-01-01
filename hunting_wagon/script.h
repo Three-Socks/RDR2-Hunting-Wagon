@@ -74,7 +74,6 @@
 #define WAGON_CART06 STR(cart06)
 #define WAGON_CART07 STR(cart07)
 #define WAGON_CART08 STR(cart07)
-#define WAGON_HUNTERCART01 STR(Huntercart01)
 
 #include "globals.h"
 #include "menu.h"
