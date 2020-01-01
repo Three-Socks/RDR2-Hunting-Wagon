@@ -342,6 +342,16 @@ bool wagon_spawn_call(Vector3 player_coords, Vector3 vehicle_coords)
 	int node_id;
 	bool success_spawn_node = false;
 
+	#ifdef LOGGING
+		Log::Write(Log::Type::Normal, "wagon_whistle_pressed");
+		Log::Write(Log::Type::Normal, "player_coords.x = %f", player_coords.x);
+		Log::Write(Log::Type::Normal, "player_coords.y = %f", player_coords.y);
+		Log::Write(Log::Type::Normal, "player_coords.z = %f", player_coords.z);
+		Log::Write(Log::Type::Normal, "vehicle_coords.x = %f", vehicle_coords.x);
+		Log::Write(Log::Type::Normal, "vehicle_coords.y = %f", vehicle_coords.y);
+		Log::Write(Log::Type::Normal, "vehicle_coords.z = %f", vehicle_coords.z);
+	#endif
+
 	if (!GET_RANDOM_VEHICLE_NODE(player_coords.x, player_coords.y, player_coords.z, 120.0f, true, false, false, &outPos_spawn, &node_id))
 		success_spawn_node = GET_RANDOM_VEHICLE_NODE(player_coords.x, player_coords.y, player_coords.z, 200.0f, true, false, false, &outPos_spawn, &node_id);
 
@@ -363,8 +373,11 @@ bool wagon_spawn_call(Vector3 player_coords, Vector3 vehicle_coords)
 			Log::Write(Log::Type::Normal, "outPos_road.z = %f", outPos_road.z);
 		#endif
 
-		if (outPos_road.x != 0 || outPos_road.y != 0 || outPos_road.z != 0)
+		if (outPos_road.x != 0 && outPos_road.y != 0 && outPos_road.z != 0)
+		{
+			Log::Write(Log::Type::Normal, "valid");
 			outPos_spawn = outPos_road;
+		}
 	}
 	else
 		outHeading = GET_ENTITY_HEADING(wagon_spawned_vehicle);
@@ -426,16 +439,7 @@ void wagon_process_whistle()
 		Vector3 vehicle_coords = GET_ENTITY_COORDS(wagon_spawned_vehicle, true, false);
 		float vehicle_distance = VDIST(player_coords.x, player_coords.y, player_coords.z, vehicle_coords.x, vehicle_coords.y, vehicle_coords.z);
 
-		#ifdef LOGGING
-			Log::Write(Log::Type::Normal, "wagon_whistle_pressed");
-			Log::Write(Log::Type::Normal, "player_coords.x = %f", player_coords.x);
-			Log::Write(Log::Type::Normal, "player_coords.y = %f", player_coords.y);
-			Log::Write(Log::Type::Normal, "player_coords.z = %f", player_coords.z);
-			Log::Write(Log::Type::Normal, "vehicle_coords.x = %f", vehicle_coords.x);
-			Log::Write(Log::Type::Normal, "vehicle_coords.y = %f", vehicle_coords.y);
-			Log::Write(Log::Type::Normal, "vehicle_coords.z = %f", vehicle_coords.z);
-			Log::Write(Log::Type::Normal, "vehicle_distance = %f", vehicle_distance);
-		#endif
+		Log::Write(Log::Type::Normal, "vehicle_distance = %f", vehicle_distance);
 
 		if (vehicle_distance >= 200.0f)
 		{

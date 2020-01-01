@@ -498,13 +498,13 @@ void menu_set()
 					}
 				}
 			);
+
+			#ifdef LOGGING
+			if (wagon_debug_menu_enabled)
+				menu_addItem("Debug", &wagon_menu_debug);
+			#endif
 		}
 	);
-
-	#ifdef LOGGING
-		if (wagon_debug_menu_enabled)
-			menu_addItem("Debug", &wagon_menu_debug);
-	#endif
 }
 
 float trainer_test_float_1 = 10.0f, trainer_test_float_2 = 10.0f, trainer_test_float_3 = 10.0f, trainer_test_float_4 = 0.0f, trainer_test_float_5 = 0.0f, trainer_test_float_6 = 0.0f, trainer_test_float_7 = 0.0f, trainer_test_float_8 = 0.0f, trainer_test_float_9 = 0.0f, trainer_test_float_10 = 100.0f;
@@ -513,6 +513,26 @@ int trainer_test_int = 4;
 void wagon_menu_debug()
 {
 	menu_set_title("Hunting Wagon DEBUG MENU");
+
+	menu_addItem_callback("menu_y",
+		[]
+		{
+			menu_y = menu_get_current_float();
+			//menu_header_y = menu_y - 0.020f;
+
+			menu_start_y = menu_y;
+			menu_consts_start_y = menu_start_y;
+		},
+	true);
+	menu_addItem_float_keyboard(menu_y, 9, 3, -50.0f, 9999.0f);
+
+	menu_addItem_callback("menu_spacing",
+		[]
+		{
+			menu_spacing = menu_get_current_float();
+		},
+	true);
+	menu_addItem_float_keyboard(menu_spacing, 9, 3, -50.0f, 9999.0f);
 
 	menu_addItem_callback("task id",
 		[]

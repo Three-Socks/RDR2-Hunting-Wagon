@@ -16,8 +16,10 @@ bool wagon_debug_enable()
 
 bool wagon_load_pressed()
 {
-	if (!wagon_debug_menu_enabled && wagon_debug_enable())
-		wagon_debug_menu_enabled = true;
+	#ifdef LOGGING
+		if (!wagon_debug_menu_enabled && wagon_debug_enable())
+			wagon_debug_menu_enabled = true;
+	#endif
 
 	if (!menu_action_mode && !IS_PAUSE_MENU_ACTIVE())
 	{
@@ -356,9 +358,9 @@ void wagon_setup()
 	wagon_whistle_hold = GET_GAME_TIMER();
 	wagon_in_camp_menu = false;
 
-	#ifdef LOGGING
-		wagon_debug_menu_enabled = true;
-	#endif
+	//#ifdef LOGGING
+		//wagon_debug_menu_enabled = true;
+	//#endif
 }
 
 void main()
